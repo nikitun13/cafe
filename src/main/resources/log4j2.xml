@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Properties>
+        <property name="pattern_file">
+            %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36}.%M() @%L - %msg%n
+        </property>
+        <property name="pattern_console">
+            %highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{1}.%M() @%L - %msg%n}{FATAL=red blink, ERROR=red,
+            WARN=yellow bold, INFO=blue, DEBUG=green bold, TRACE=black}
+        </property>
+        <property name="LOG_DIR">logs</property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout disableAnsi="false" pattern="${pattern_console}"/>
+        </Console>
+        <RollingFile name="RollingFile" fileName="${LOG_DIR}/app.log" append="true"
+                     filePattern="${LOG_DIR}/${date:yyyy-MM-dd}/%d{yyyy-MM-dd_HH-mm}_%i.log">
+            <PatternLayout pattern="${pattern_file}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="2 MB"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
