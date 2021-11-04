@@ -12,17 +12,17 @@ public class OrderedDish {
 
     private Order order;
     private Dish dish;
-    private Long price;
-    private Short number;
+    private Long dishPrice;
+    private Short dishCount;
 
     public OrderedDish() {
     }
 
-    public OrderedDish(Order order, Dish dish, Long price, Short number) {
+    public OrderedDish(Order order, Dish dish, Long dishPrice, Short dishCount) {
         this.order = order;
         this.dish = dish;
-        this.price = price;
-        this.number = number;
+        this.dishPrice = dishPrice;
+        this.dishCount = dishCount;
     }
 
     public static OrderedDishBuilder builder() {
@@ -30,7 +30,7 @@ public class OrderedDish {
     }
 
     public Long getTotalPrice() {
-        return price * number;
+        return dishPrice * dishCount;
     }
 
     public Order getOrder() {
@@ -41,12 +41,12 @@ public class OrderedDish {
         return this.dish;
     }
 
-    public Long getPrice() {
-        return this.price;
+    public Long getDishPrice() {
+        return this.dishPrice;
     }
 
-    public Short getNumber() {
-        return this.number;
+    public Short getDishCount() {
+        return this.dishCount;
     }
 
     public void setOrder(Order order) {
@@ -57,12 +57,12 @@ public class OrderedDish {
         this.dish = dish;
     }
 
-    public void setPrice(Long price) {
-        this.price = price;
+    public void setDishPrice(Long dishPrice) {
+        this.dishPrice = dishPrice;
     }
 
-    public void setNumber(Short number) {
-        this.number = number;
+    public void setDishCount(Short dishCount) {
+        this.dishCount = dishCount;
     }
 
     @Override
@@ -72,13 +72,13 @@ public class OrderedDish {
         OrderedDish that = (OrderedDish) o;
         return Objects.equals(order, that.order)
                 && Objects.equals(dish, that.dish)
-                && Objects.equals(price, that.price)
-                && Objects.equals(number, that.number);
+                && Objects.equals(dishPrice, that.dishPrice)
+                && Objects.equals(dishCount, that.dishCount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(order, dish, price, number);
+        return Objects.hash(order, dish, dishPrice, dishCount);
     }
 
     @Override
@@ -86,8 +86,8 @@ public class OrderedDish {
         return "OrderedDish{"
                 + "order=" + order
                 + ", dish=" + dish
-                + ", price=" + price
-                + ", number=" + number
+                + ", price=" + dishPrice
+                + ", number=" + dishCount
                 + '}';
     }
 

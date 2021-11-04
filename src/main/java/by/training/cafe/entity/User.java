@@ -75,7 +75,7 @@ public class User {
         return this.points;
     }
 
-    public Boolean getIsBlocked() {
+    public Boolean isBlocked() {
         return this.isBlocked;
     }
 
@@ -115,7 +115,7 @@ public class User {
         this.points = points;
     }
 
-    public void setIsBlocked(Boolean isBlocked) {
+    public void setBlocked(Boolean isBlocked) {
         this.isBlocked = isBlocked;
     }
 
