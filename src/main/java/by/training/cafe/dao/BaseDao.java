@@ -45,17 +45,21 @@ public interface BaseDao<K, E> {
      * Updates {@code entity} in the storage.
      *
      * @param entity {@code entity} to be updated in the storage.
+     * @return {@code true} if {@code entity} was updated,
+     * {@code false} otherwise.
      * @throws DaoException if storage access error occurs
      *                      or some update constraints have occurred.
      */
-    void update(E entity) throws DaoException;
+    boolean update(E entity) throws DaoException;
 
     /**
      * Deletes {@code entity} from the storage by its {@code id}.
      *
      * @param id of the {@code entity} to be deleted.
+     * @return {@code true} if {@code entity} was deleted,
+     * {@code false} otherwise.
      * @throws DaoException if storage access error occurs
      *                      or some delete constraints have occurred.
      */
-    void delete(K id) throws DaoException;
+    boolean delete(K id) throws DaoException;
 }

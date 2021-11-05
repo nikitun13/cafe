@@ -1,6 +1,8 @@
 package by.training.cafe.dao.postgres;
 
 import by.training.cafe.dao.DaoException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,10 +25,14 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
  */
 public abstract class AbstractSqlDao<K, E> {
 
+    private static final Logger log = LogManager.getLogger(AbstractSqlDao.class);
+
     protected static final String SQL_EXCEPTION_OCCURRED_MESSAGE
             = "SQLException occurred";
-    protected static final String RESULT_LOG_MESSAGE = "result: {}";
+    protected static final String RESULT_LOG_MESSAGE = "Result: {}";
+    protected static final String EXECUTING_SQL_LOG_MESSAGE = "Executing SQL: {}";
 
+    protected static final String PERCENT = "%";
     protected static final String AND_SQL = " AND ";
     protected static final String OR_SQL = " OR ";
     protected static final String WHERE_SQL = " WHERE ";
@@ -53,6 +59,7 @@ public abstract class AbstractSqlDao<K, E> {
             for (int i = 0; i < params.size(); ++i) {
                 prepareStatement.setObject(i + 1, params.get(i));
             }
+            log.debug(EXECUTING_SQL_LOG_MESSAGE, prepareStatement);
             ResultSet resultSet = prepareStatement.executeQuery();
             List<E> entities = new ArrayList<>();
             while (resultSet.next()) {
@@ -70,16 +77,21 @@ public abstract class AbstractSqlDao<K, E> {
      *
      * @param sql    {@code SQL} query to be executed.
      * @param params params for this {@code SQL} query.
+     * @return returns updated rows count.
      * @throws DaoException if SQLException occurred.
      */
-    protected void executeUpdateQuery(String sql, List<Object> params)
+    protected int executeUpdateQuery(String sql, List<Object> params)
             throws DaoException {
         try (PreparedStatement prepareStatement
                      = connection.prepareStatement(sql)) {
             for (int i = 0; i < params.size(); ++i) {
                 prepareStatement.setObject(i + 1, params.get(i));
             }
+            log.debug(EXECUTING_SQL_LOG_MESSAGE, prepareStatement);
             prepareStatement.executeUpdate();
+            int updateCount = prepareStatement.getUpdateCount();
+            log.debug("updated rows: {}", updateCount);
+            return updateCount;
         } catch (SQLException e) {
             throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
         }
@@ -107,6 +119,7 @@ public abstract class AbstractSqlDao<K, E> {
             for (int i = 0; i < params.size(); ++i) {
                 prepareStatement.setObject(i + 1, params.get(i));
             }
+            log.debug(EXECUTING_SQL_LOG_MESSAGE, prepareStatement);
             prepareStatement.executeUpdate();
             ResultSet generatedKeys = prepareStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
@@ -134,6 +147,22 @@ public abstract class AbstractSqlDao<K, E> {
         } else {
             return Optional.ofNullable(entities.get(0));
         }
+    }
+
+    /**
+     * Checks that there is only one updated row.<br/>
+     * Warns if there are more than one updated row.
+     *
+     * @param updatedRowCount number of updated rows.
+     * @return {@code true} is there is only one updated row,
+     * {@code false} otherwise.
+     */
+    protected boolean isOnlyOneRowUpdated(int updatedRowCount) {
+        if (updatedRowCount > 1) {
+            log.warn("More than 1 updated rows. Updated rows = {}",
+                    updatedRowCount);
+        }
+        return updatedRowCount == 1;
     }
 
     /**

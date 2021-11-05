@@ -17,13 +17,13 @@ public interface DishDao extends BaseDao<Long, Dish> {
 
     /**
      * Finds {@code dishes} by string in the {@code name}
-     * or {@code description}.
+     * or {@code description} (case insensitive).
      *
      * @param str string for searching.
      * @return list of found {@code dishes}.
      * @throws DaoException if storage access error occurs.
      */
-    List<Dish> findByNameLikeOrDescriptionLike(String str) throws DaoException;
+    List<Dish> findByNameOrDescriptionLike(String str) throws DaoException;
 
     /**
      * Finds {@code dishes} by {@code category}.
