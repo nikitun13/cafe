@@ -86,8 +86,8 @@ public class OrderedDish {
         return "OrderedDish{"
                 + "order=" + order
                 + ", dish=" + dish
-                + ", price=" + dishPrice
-                + ", number=" + dishCount
+                + ", dishPrice=" + dishPrice
+                + ", dishCount=" + dishCount
                 + '}';
     }
 
@@ -95,8 +95,8 @@ public class OrderedDish {
 
         private Order order;
         private Dish dish;
-        private Long price;
-        private Short number;
+        private Long dishPrice;
+        private Short dishCount;
 
         OrderedDishBuilder() {
         }
@@ -111,18 +111,18 @@ public class OrderedDish {
             return this;
         }
 
-        public OrderedDishBuilder price(Long price) {
-            this.price = price;
+        public OrderedDishBuilder dishPrice(Long price) {
+            this.dishPrice = price;
             return this;
         }
 
-        public OrderedDishBuilder number(Short number) {
-            this.number = number;
+        public OrderedDishBuilder dishCount(Short count) {
+            this.dishCount = count;
             return this;
         }
 
         public OrderedDish build() {
-            return new OrderedDish(order, dish, price, number);
+            return new OrderedDish(order, dish, dishPrice, dishCount);
         }
     }
 }
