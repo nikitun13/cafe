@@ -18,4 +18,7 @@ public interface Transaction extends AutoCloseable {
      * @return implementation of the given {@code daoClass}.
      */
     <T extends BaseDao<?, ?>> T createDao(Class<T> daoClass);
+
+    @Override
+    void close();
 }

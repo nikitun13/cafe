@@ -31,6 +31,7 @@ public final class ConnectionPool {
     private static final String USERNAME_KEY = "db.username";
     private static final String URL_KEY = "db.url";
     private static final String POOL_SIZE_KEY = "db.pool.size";
+    private static final String DRIVER_KEY = "db.driver";
 
     private final BlockingQueue<Connection> pool;
     private final List<Connection> sourceConnections;
@@ -40,6 +41,12 @@ public final class ConnectionPool {
     }
 
     private ConnectionPool() {
+        try {
+            Class.forName(PropertiesUtil.get(DRIVER_KEY));
+        } catch (ClassNotFoundException e) {
+            log.fatal("Driver not found", e);
+            throw new ConnectionPoolException("Driver not found", e);
+        }
         int initSize = Integer.parseInt(PropertiesUtil.get(POOL_SIZE_KEY));
         pool = new LinkedBlockingQueue<>(initSize);
         sourceConnections = new ArrayList<>(initSize);
@@ -58,7 +65,9 @@ public final class ConnectionPool {
      */
     public Connection getConnection() {
         try {
-            return pool.take();
+            Connection connection = pool.take();
+            log.debug("Give connection. Remaining connections: {}", pool.size());
+            return connection;
         } catch (InterruptedException e) {
             log.fatal(e);
             Thread.currentThread().interrupt();
@@ -70,6 +79,7 @@ public final class ConnectionPool {
      * Closes all connections.
      */
     public void closePool() {
+        log.debug("Closing connection pool");
         try {
             for (Connection sourceConnection : sourceConnections) {
                 sourceConnection.close();
@@ -84,8 +94,14 @@ public final class ConnectionPool {
                 ConnectionPool.class.getClassLoader(),
                 new Class[]{Connection.class},
                 (proxy, method, args) -> method.getName().equals("close")
-                        ? pool.add((Connection) proxy)
+                        ? putBackConnection((Connection) proxy)
                         : method.invoke(connection, args));
+    }
+
+    private boolean putBackConnection(Connection connection) {
+        boolean result = pool.add(connection);
+        log.debug("Put connection back. Remaining connections: {}", pool.size());
+        return result;
     }
 
     private Connection openConnection() {

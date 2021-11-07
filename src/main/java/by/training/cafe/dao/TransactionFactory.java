@@ -16,4 +16,7 @@ public interface TransactionFactory extends AutoCloseable {
      * @return new {@link Transaction}.
      */
     Transaction createTransaction();
+
+    @Override
+    void close();
 }

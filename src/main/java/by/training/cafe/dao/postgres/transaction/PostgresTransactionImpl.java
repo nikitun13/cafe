@@ -27,15 +27,15 @@ public class PostgresTransactionImpl implements Transaction {
 
     private static final Map<
             Class<? extends BaseDao<?, ?>>,
-            Function<Connection, ? extends BaseDao<?, ?>>> mapper;
+            Function<Connection, ? extends BaseDao<?, ?>>> MAPPER;
 
     static {
-        mapper = new HashMap<>();
-        mapper.put(DishDao.class, DishDaoImpl::new);
-        mapper.put(OrderDao.class, OrderDaoImpl::new);
-        mapper.put(CommentDao.class, CommentDaoImpl::new);
-        mapper.put(OrderedDishDao.class, OrderedDishDaoImpl::new);
-        mapper.put(UserDao.class, UserDaoImpl::new);
+        MAPPER = new HashMap<>();
+        MAPPER.put(DishDao.class, DishDaoImpl::new);
+        MAPPER.put(OrderDao.class, OrderDaoImpl::new);
+        MAPPER.put(CommentDao.class, CommentDaoImpl::new);
+        MAPPER.put(OrderedDishDao.class, OrderedDishDaoImpl::new);
+        MAPPER.put(UserDao.class, UserDaoImpl::new);
     }
 
     private final Connection connection;
@@ -48,23 +48,23 @@ public class PostgresTransactionImpl implements Transaction {
     @SuppressWarnings("unchecked")
     public <T extends BaseDao<?, ?>> T createDao(Class<T> daoClass) {
         log.debug("received class: {}", daoClass);
-        if (mapper.containsKey(daoClass)) {
-            T daoImpl = (T) mapper.get(daoClass).apply(connection);
-            log.debug("Dao implementation: {}", daoImpl);
+        if (MAPPER.containsKey(daoClass)) {
+            T daoImpl = (T) MAPPER.get(daoClass).apply(connection);
+            log.debug("Dao implementation: {}", daoImpl.getClass());
             return daoImpl;
         } else {
             log.fatal("No such dao implementation: {}", daoClass);
             throw new PostgresTransactionException(
-                    "nNo such dao implementation for: " + daoClass);
+                    "No such dao implementation for: " + daoClass);
         }
     }
 
     @Override
-    public void close() throws DaoException {
+    public void close() {
         try {
             connection.close();
         } catch (SQLException e) {
-            throw new DaoException("Close exception occurred", e);
+            log.fatal("Unexpected exception", e);
         }
     }
 
