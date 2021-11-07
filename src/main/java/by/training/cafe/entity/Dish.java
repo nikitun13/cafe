@@ -1,6 +1,5 @@
 package by.training.cafe.entity;
 
-import java.nio.file.Path;
 import java.util.Objects;
 
 /**
@@ -13,7 +12,6 @@ public class Dish {
 
     private Long id;
     private String name;
-    private Path picturePath;
     private DishCategory category;
     private Long price;
     private String description;
@@ -21,11 +19,10 @@ public class Dish {
     public Dish() {
     }
 
-    public Dish(Long id, String name, Path picturePath,
-                DishCategory category, Long price, String description) {
+    public Dish(Long id, String name, DishCategory category,
+                Long price, String description) {
         this.id = id;
         this.name = name;
-        this.picturePath = picturePath;
         this.category = category;
         this.price = price;
         this.description = description;
@@ -41,10 +38,6 @@ public class Dish {
 
     public String getName() {
         return this.name;
-    }
-
-    public Path getPicturePath() {
-        return this.picturePath;
     }
 
     public DishCategory getCategory() {
@@ -67,10 +60,6 @@ public class Dish {
         this.name = name;
     }
 
-    public void setPicturePath(Path picturePath) {
-        this.picturePath = picturePath;
-    }
-
     public void setCategory(DishCategory category) {
         this.category = category;
     }
@@ -90,7 +79,6 @@ public class Dish {
         Dish dish = (Dish) o;
         return Objects.equals(id, dish.id)
                 && Objects.equals(name, dish.name)
-                && Objects.equals(picturePath, dish.picturePath)
                 && category == dish.category
                 && Objects.equals(price, dish.price)
                 && Objects.equals(description, dish.description);
@@ -98,8 +86,7 @@ public class Dish {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, picturePath,
-                category, price, description);
+        return Objects.hash(id, name, category, price, description);
     }
 
     @Override
@@ -107,7 +94,6 @@ public class Dish {
         return "Dish{"
                 + "id=" + id
                 + ", name='" + name + '\''
-                + ", picturePath=" + picturePath
                 + ", category=" + category
                 + ", price=" + price
                 + ", description='" + description + '\''
@@ -118,7 +104,6 @@ public class Dish {
 
         private Long id;
         private String name;
-        private Path picturePath;
         private DishCategory category;
         private Long price;
         private String description;
@@ -133,11 +118,6 @@ public class Dish {
 
         public DishBuilder name(String name) {
             this.name = name;
-            return this;
-        }
-
-        public DishBuilder picturePath(Path picturePath) {
-            this.picturePath = picturePath;
             return this;
         }
 
@@ -157,9 +137,7 @@ public class Dish {
         }
 
         public Dish build() {
-            return new Dish(id, name, picturePath,
-                    category, price, description);
+            return new Dish(id, name, category, price, description);
         }
     }
 }
-

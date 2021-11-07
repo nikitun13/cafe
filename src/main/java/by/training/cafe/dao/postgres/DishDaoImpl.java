@@ -7,7 +7,6 @@ import by.training.cafe.entity.DishCategory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,19 +15,27 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The class {@code DishDaoImpl} is a class that extends
+ * {@link AbstractSqlDao} and implements {@link DishDao}.<br/>
+ * Provides access to the PostgreSQL database.
+ *
+ * @author Nikita Romanov
+ * @see AbstractSqlDao
+ * @see DishDao
+ */
 public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
 
     private static final Logger log = LogManager.getLogger(DishDaoImpl.class);
 
     private static final String ID_COLUMN_NAME = "id";
     private static final String NAME_COLUMN_NAME = "name";
-    private static final String PICTURE_COLUMN_NAME = "picture";
     private static final String CATEGORY_COLUMN_NAME = "category";
     private static final String PRICE_COLUMN_NAME = "price";
     private static final String DESCRIPTION_COLUMN_NAME = "description";
 
     private static final String FIND_ALL_SQL = """
-            SELECT id, name, picture, category, price, description
+            SELECT id, name, category, price, description
             FROM dish""";
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
@@ -39,12 +46,11 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
     private static final String FIND_BY_CATEGORY_SQL
             = FIND_ALL_SQL + WHERE_SQL + "category = ?::dish_category";
     private static final String CREATE_SQL = """
-            INSERT INTO dish (name, picture, category, price, description)
-            VALUES (?, ?, ?::dish_category, ?, ?)""";
+            INSERT INTO dish (name, category, price, description)
+            VALUES (?, ?::dish_category, ?, ?)""";
     private static final String UPDATE_SQL = """
             UPDATE dish
             SET name        = ?,
-                picture     = ?,
                 category    = ?::dish_category,
                 price       = ?,
                 description = ?
@@ -122,7 +128,10 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
     public List<Dish> findByNameOrDescriptionLike(String str)
             throws DaoException {
         log.debug("Received string: {}", str);
-        str = PERCENT + str + PERCENT;
+        str = PERCENT
+                + str.strip().replaceAll("\\s+", PERCENT)
+                + PERCENT;
+        log.debug("Modified string: {}", str);
         List<Dish> dishes = executeSelectQuery(
                 FIND_BY_NAME_LIKE_OR_DESCRIPTION_LIKE_SQL, List.of(str, str));
         log.debug(RESULT_LOG_MESSAGE, dishes);
@@ -148,10 +157,6 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
                 NAME_COLUMN_NAME, String.class);
         log.trace("name = {}", name);
 
-        Path picturePath = Path.of(resultSet.getObject(
-                PICTURE_COLUMN_NAME, String.class));
-        log.trace("picturePath = {}", picturePath);
-
         DishCategory category = DishCategory.valueOf(resultSet.getObject(
                 CATEGORY_COLUMN_NAME, String.class));
         log.trace("category = {}", category);
@@ -167,7 +172,6 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
         return Dish.builder()
                 .id(id)
                 .name(name)
-                .picturePath(picturePath)
                 .category(category)
                 .price(price)
                 .description(description)
@@ -177,7 +181,6 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
     private List<Object> createParamsList(Dish dish) {
         List<Object> params = new ArrayList<>();
         params.add(dish.getName());
-        params.add(dish.getPicturePath().toString());
         params.add(dish.getCategory().toString());
         params.add(dish.getPrice());
         params.add(dish.getDescription());
