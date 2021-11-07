@@ -45,13 +45,13 @@ class UserDaoImplTest {
     private static final String TEAR_DOWN_SQL = "DELETE FROM users";
     private static final String FIND_BY_ID_SQL = "SELECT * FROM users WHERE id = ?";
 
-    private static final Connection connection = ConnectionPool.getInstance().getConnection();
-    private static final User ivan;
-    private static final User petr;
-    private static final User john;
+    private static final Connection CONNECTION = ConnectionPool.getInstance().getConnection();
+    private static final User IVAN;
+    private static final User PETR;
+    private static final User JOHN;
 
     static {
-        ivan = User.builder()
+        IVAN = User.builder()
                 .id(1_000_000L)
                 .email("ivan@gmail.com")
                 .password("$2a$10$.IVAN.PASS.43WRAZ3Fnyx.C/6PveEHf6JGzGo9X2SQSwM5djXdrO")
@@ -64,7 +64,7 @@ class UserDaoImplTest {
                 .language(Language.RU)
                 .build();
 
-        petr = User.builder()
+        PETR = User.builder()
                 .id(1_000_001L)
                 .email("petr@mail.ru")
                 .password("$2a$10$.ПЕТР.PASS.43NRAZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr1")
@@ -77,7 +77,7 @@ class UserDaoImplTest {
                 .language(Language.RU)
                 .build();
 
-        john = User.builder()
+        JOHN = User.builder()
                 .id(1_000_002L)
                 .email("john@gmail.com")
                 .password("$2a$10$.John.PASS.43NRAZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr2")
@@ -127,7 +127,7 @@ class UserDaoImplTest {
 
     @BeforeEach
     void setUp() throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(SET_UP_SQL)) {
+        try (PreparedStatement statement = CONNECTION.prepareStatement(SET_UP_SQL)) {
             statement.executeUpdate();
         }
     }
@@ -135,7 +135,7 @@ class UserDaoImplTest {
     @Test
     @Tag("findAll")
     void shouldReturnAllUsersFromDatabase() throws DaoException {
-        List<User> expected = List.of(ivan, petr, john, hans);
+        List<User> expected = List.of(IVAN, PETR, JOHN, hans);
 
         List<User> actual = userDao.findAll();
 
@@ -145,7 +145,7 @@ class UserDaoImplTest {
     @Test
     @Tag("findById")
     void shouldReturnExistingUserById() throws DaoException {
-        User expected = john;
+        User expected = JOHN;
 
         Optional<User> optionalUser = userDao.findById(1_000_002L);
 
@@ -158,14 +158,14 @@ class UserDaoImplTest {
     @Test
     @Tag("findById")
     void shouldReturnEmptyOptionalIfThereIsNoSuchUserId() throws DaoException {
-        Optional<User> maybeActual = userDao.findById(-1L);
+        Optional<User> actual = userDao.findById(-1L);
 
-        assertTrue(maybeActual.isEmpty());
+        assertTrue(actual.isEmpty());
     }
 
     @Test
     @Tag("create")
-    void shouldCreatedUserInDatabase() throws DaoException, SQLException {
+    void shouldCreateUserInDatabase() throws DaoException, SQLException {
         User expected = adam;
 
         userDao.create(expected);
@@ -200,7 +200,7 @@ class UserDaoImplTest {
 
     @Test
     @Tag("delete")
-    void delete() throws DaoException, SQLException {
+    void shouldDeleteUserFromDatabaseById() throws DaoException, SQLException {
         User expected = hans;
 
         boolean isDeleted = userDao.delete(expected.getId());
@@ -223,7 +223,7 @@ class UserDaoImplTest {
     @Test
     @Tag("findByPhone")
     void shouldReturnUserByPhone() throws DaoException {
-        User expected = ivan;
+        User expected = IVAN;
 
         Optional<User> optionalUser = userDao.findByPhone("+375251111111");
 
@@ -235,7 +235,7 @@ class UserDaoImplTest {
 
     @Test
     @Tag("findByPhone")
-    void shouldReturnEmptyOptionalIfThereIsNoPhone() throws DaoException {
+    void shouldReturnEmptyOptionalIfThereIsNoSuchPhone() throws DaoException {
         Optional<User> maybeActual = userDao.findByPhone("+375000000000");
 
         assertTrue(maybeActual.isEmpty());
@@ -244,7 +244,7 @@ class UserDaoImplTest {
     @Test
     @Tag("findByEmail")
     void findByEmail() throws DaoException {
-        User expected = petr;
+        User expected = PETR;
 
         Optional<User> optionalUser = userDao.findByEmail("petr@mail.ru");
 
@@ -256,7 +256,7 @@ class UserDaoImplTest {
 
     @Test
     @Tag("findByEmail")
-    void shouldReturnEmptyOptionalIfThereIsEmail() throws DaoException {
+    void shouldReturnEmptyOptionalIfThereIsNoSuchEmail() throws DaoException {
         Optional<User> maybeActual = userDao.findByEmail("no@such.email");
 
         assertTrue(maybeActual.isEmpty());
@@ -265,7 +265,7 @@ class UserDaoImplTest {
     @Test
     @Tag("findByRole")
     void shouldReturnAllClients() throws DaoException {
-        List<User> expected = List.of(ivan, petr, hans);
+        List<User> expected = List.of(IVAN, PETR, hans);
 
         List<User> actual = userDao.findByRole("CLIENT");
 
@@ -275,7 +275,7 @@ class UserDaoImplTest {
     @Test
     @Tag("findByRole")
     void shouldReturnAllAdmins() throws DaoException {
-        List<User> expected = List.of(john);
+        List<User> expected = List.of(JOHN);
 
         List<User> actual = userDao.findByRole("ADMIN");
 
@@ -290,10 +290,9 @@ class UserDaoImplTest {
                 () -> "Must throw %s if there is no such role".formatted(DaoException.class.getName()));
     }
 
-
     @AfterEach
     void tearDown() throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(TEAR_DOWN_SQL)) {
+        try (PreparedStatement statement = CONNECTION.prepareStatement(TEAR_DOWN_SQL)) {
             statement.executeUpdate();
         }
     }
@@ -301,14 +300,14 @@ class UserDaoImplTest {
     @AfterAll
     static void closeConnection() {
         try {
-            connection.close();
+            CONNECTION.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     private User findById(Long id) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_SQL)) {
+        try (PreparedStatement statement = CONNECTION.prepareStatement(FIND_BY_ID_SQL)) {
             statement.setObject(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {

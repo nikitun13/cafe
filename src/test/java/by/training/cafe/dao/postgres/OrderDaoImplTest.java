@@ -53,7 +53,7 @@ class OrderDaoImplTest {
     private static final String DELETE_ORDERS_SQL = "DELETE FROM orders";
     private static final String DELETE_USERS_SQL = "DELETE FROM users";
     private static final String FIND_BY_ID_SQL = "SELECT * FROM orders WHERE id = ?";
-    private static final Connection connection = ConnectionPool.getInstance().getConnection();
+    private static final Connection CONNECTION = ConnectionPool.getInstance().getConnection();
 
     private static final Order IVAN_FIRST_ORDER;
     private static final Order IVAN_SECOND_ORDER;
@@ -166,7 +166,7 @@ class OrderDaoImplTest {
 
     @BeforeEach
     void setUp() throws SQLException {
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = CONNECTION.createStatement()) {
             statement.executeUpdate(INSERT_INTO_USERS_SQL);
             statement.executeUpdate(INSERT_INTO_ORDERS_SQL);
         }
@@ -187,9 +187,9 @@ class OrderDaoImplTest {
     void shouldReturnExistingOrderById() throws DaoException {
         Order expected = IVAN_SECOND_ORDER;
 
-        Optional<Order> optionalComment = orderDao.findById(3000001L);
+        Optional<Order> optionalOrder = orderDao.findById(3000001L);
 
-        optionalComment.ifPresentOrElse(
+        optionalOrder.ifPresentOrElse(
                 (actual) -> assertEquals(expected, actual, () -> "expected to get:" + expected),
                 Assertions::fail
         );
@@ -205,7 +205,7 @@ class OrderDaoImplTest {
 
     @Test
     @Tag("create")
-    void shouldCreatedCommentInDatabase() throws DaoException, SQLException {
+    void shouldCreateOrderInDatabase() throws DaoException, SQLException {
         Order expected = johnOrder;
 
         orderDao.create(expected);
@@ -216,7 +216,7 @@ class OrderDaoImplTest {
 
     @Test
     @Tag("update")
-    void shouldUpdateCommentInDatabase() throws DaoException, SQLException {
+    void shouldUpdateOrderInDatabase() throws DaoException, SQLException {
         Order expected = petrOrderClone;
         expected.setStatus(OrderStatus.COMPLETED);
         expected.setActualRetrieveDate(LocalDateTime.parse("2021-11-06T15:12:36"));
@@ -232,7 +232,7 @@ class OrderDaoImplTest {
 
     @Test
     @Tag("update")
-    void shouldReturnFalseIfCommentWasNotUpdated() throws DaoException {
+    void shouldReturnFalseIfOrderWasNotUpdated() throws DaoException {
         petrOrderClone.setId(-1L);
         boolean isUpdated = orderDao.update(petrOrderClone);
 
@@ -241,7 +241,7 @@ class OrderDaoImplTest {
 
     @Test
     @Tag("delete")
-    void shouldDeleteCommentFromDatabaseById() throws DaoException, SQLException {
+    void shouldDeleteOrderFromDatabaseById() throws DaoException, SQLException {
         Order expected = petrOrderClone;
 
         boolean isDeleted = orderDao.delete(expected.getId());
@@ -255,7 +255,7 @@ class OrderDaoImplTest {
 
     @Test
     @Tag("delete")
-    void shouldReturnFalseIfCommentWasNotDeleted() throws DaoException {
+    void shouldReturnFalseIfOrderWasNotDeleted() throws DaoException {
         boolean isDeleted = orderDao.delete(-1L);
 
         assertFalse(isDeleted, "mustn't delete any orders if no such order id");
@@ -264,7 +264,8 @@ class OrderDaoImplTest {
     @ParameterizedTest
     @MethodSource("dataForFindByStatusMethod")
     @Tag("findByStatus")
-    void shouldReturnAllOrdersWithGivenStatus(String status, List<Order> expected) throws DaoException {
+    void shouldReturnAllOrdersWithGivenStatus(String status,
+                                              List<Order> expected) throws DaoException {
         List<Order> actual = orderDao.findByStatus(status);
 
         assertEquals(expected, actual, () -> "Must return list: " + expected);
@@ -282,7 +283,9 @@ class OrderDaoImplTest {
     @ParameterizedTest
     @MethodSource("dataForFindByCreatedAtBetweenMethod")
     @Tag("findByCreatedAtBetween")
-    void shouldReturnAllOrdersWithCreatedDateBetween(LocalDateTime from, LocalDateTime to, List<Order> expected) throws DaoException {
+    void shouldReturnAllOrdersWithCreatedDateBetween(LocalDateTime from,
+                                                     LocalDateTime to, List<Order> expected)
+            throws DaoException {
         List<Order> actual = orderDao.findByCreatedAtBetween(from, to);
 
         assertEquals(expected, actual, () -> "Must return list: " + expected);
@@ -290,7 +293,7 @@ class OrderDaoImplTest {
 
     @AfterEach
     void tearDown() throws SQLException {
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = CONNECTION.createStatement()) {
             statement.executeUpdate(DELETE_ORDERS_SQL);
             statement.executeUpdate(DELETE_USERS_SQL);
         }
@@ -299,14 +302,14 @@ class OrderDaoImplTest {
     @AfterAll
     static void closeConnection() {
         try {
-            connection.close();
+            CONNECTION.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     private Order findById(Long id) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_SQL)) {
+        try (PreparedStatement statement = CONNECTION.prepareStatement(FIND_BY_ID_SQL)) {
             statement.setObject(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {

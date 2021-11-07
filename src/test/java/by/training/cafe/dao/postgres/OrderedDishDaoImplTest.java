@@ -39,10 +39,10 @@ class OrderedDishDaoImplTest {
                    (3000000, 1000001, 2500, 2),
                    (3000003, 1000002, 200, 5)""";
     private static final String INSERT_INTO_DISH_SQL = """
-            INSERT INTO dish (id, name, picture, category, price, description)
-            VALUES (1000000, 'Four seasons', 'pictures/four-seasons.png', 'PIZZA', 2000, 'Really delicious pizza!'),
-                   (1000001, 'Chicken BBQ','pictures/chicken-bbq.png', 'PIZZA', 2500, 'Pizza with chicken and sauce BBQ'),
-                   (1000002, 'Coca-Cola 1L','pictures/coca-cola.png', 'DRINKS', 200, 'Soft drink with caffeine and plant extracts.')""";
+            INSERT INTO dish (id, name, category, price, description)
+            VALUES (1000000, 'Four seasons', 'PIZZA', 2000, 'Really delicious pizza!'),
+                   (1000001, 'Chicken BBQ', 'PIZZA', 2500, 'Pizza with chicken and sauce BBQ'),
+                   (1000002, 'Coca-Cola 1L', 'DRINKS', 200, 'Soft drink with caffeine and plant extracts.')""";
     private static final String INSERT_INTO_USERS_SQL = """
             INSERT INTO users (id, email, password, role, first_name, last_name, phone, points, is_blocked, language)
             VALUES (1000000, 'ivan@gmail.com', '$2a$10$.IVAN.PASS.43WRAZ3Fnyx.C/6PveEHf6JGzGo9X2SQSwM5djXdrO', 'CLIENT', 'Ivan', 'Melnikov','+375251111111',30,TRUE,'RU'),

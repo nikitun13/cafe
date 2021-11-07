@@ -42,10 +42,10 @@ class CommentDaoImplTest {
                    (1000002, 'john@gmail.com', '$2a$10$.John.PASS.43NRAZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr2', 'ADMIN', 'John', 'Henson','+375333333333',270,FALSE,'EN'),
                    (1000003, 'hans@gmail.com', '$2a$10$.Hans.PASS.43NRAZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr3', 'CLIENT', 'Hans', 'Münz','+375254444444',0,FALSE,'DE')""";
     private static final String INSERT_INTO_DISH_SQL = """
-            INSERT INTO dish (id, name, picture, category, price, description)
-            VALUES (1000000, 'Four seasons', 'pictures/four-seasons.png', 'PIZZA', 2000, 'Really delicious pizza!'),
-                   (1000001, 'Chicken BBQ','pictures/chicken-bbq.png', 'PIZZA', 2500, 'Pizza with chicken and sauce BBQ'),
-                   (1000002, 'Coca-Cola 1L','pictures/coca-cola.png', 'DRINKS', 200, 'Soft drink with caffeine and plant extracts.')""";
+            INSERT INTO dish (id, name, category, price, description)
+            VALUES (1000000, 'Four seasons', 'PIZZA', 2000, 'Really delicious pizza!'),
+                   (1000001, 'Chicken BBQ', 'PIZZA', 2500, 'Pizza with chicken and sauce BBQ'),
+                   (1000002, 'Coca-Cola 1L', 'DRINKS', 200, 'Soft drink with caffeine and plant extracts.')""";
     private static final String INSERT_INTO_COMMENT_SQL = """
             INSERT INTO comment (id, user_id, dish_id, rating, body, created_at)
             VALUES (5000001, 1000001, 1000000, 3, 'Normal', '2021-11-03 10:25:06'),
@@ -55,13 +55,14 @@ class CommentDaoImplTest {
     private static final String DELETE_USERS_SQL = "DELETE FROM users";
     private static final String DELETE_COMMENTS_SQL = "DELETE FROM comment";
     private static final String FIND_BY_ID_SQL = "SELECT * FROM comment WHERE id = ?";
-    private static final Connection connection = ConnectionPool.getInstance().getConnection();
+    private static final Connection CONNECTION = ConnectionPool.getInstance().getConnection();
 
-    private static final Comment petrAboutFourSeasons;
-    private static final Comment petrAboutChickenBbq;
+    private static final Comment PETR_ABOUT_FOUR_SEASONS;
+    private static final Comment PETR_ABOUT_CHICKEN_BBQ;
+    private static final Comment JOHN_ABOUT_FOUR_SEASONS;
 
     static {
-        petrAboutFourSeasons = Comment.builder()
+        PETR_ABOUT_FOUR_SEASONS = Comment.builder()
                 .id(5000001L)
                 .user(User.builder().id(1000001L).build())
                 .dish(Dish.builder().id(1000000L).build())
@@ -70,7 +71,7 @@ class CommentDaoImplTest {
                 .createdAt(LocalDateTime.parse("2021-11-03T10:25:06"))
                 .build();
 
-        petrAboutChickenBbq = Comment.builder()
+        PETR_ABOUT_CHICKEN_BBQ = Comment.builder()
                 .id(5000003L)
                 .user(User.builder().id(1000001L).build())
                 .dish(Dish.builder().id(1000001L).build())
@@ -78,18 +79,25 @@ class CommentDaoImplTest {
                 .body("Perfect!")
                 .createdAt(LocalDateTime.parse("2021-11-05T17:28:12"))
                 .build();
+
+        JOHN_ABOUT_FOUR_SEASONS = Comment.builder()
+                .id(5000002L)
+                .user(User.builder().id(1000002L).build())
+                .dish(Dish.builder().id(1000000L).build())
+                .rating((short) 5)
+                .createdAt(LocalDateTime.parse("2021-11-04T15:35:36"))
+                .build();
     }
 
-    private final Comment johnAboutFourSeasons;
+    private final Comment johnAboutFourSeasonsClone;
     private final Comment hansAboutCola;
-
 
     private final CommentDaoImpl commentDao;
 
     CommentDaoImplTest(CommentDaoImpl commentDao) {
         this.commentDao = commentDao;
 
-        johnAboutFourSeasons = Comment.builder()
+        johnAboutFourSeasonsClone = Comment.builder()
                 .id(5000002L)
                 .user(User.builder().id(1000002L).build())
                 .dish(Dish.builder().id(1000000L).build())
@@ -106,39 +114,25 @@ class CommentDaoImplTest {
     }
 
     public static Stream<Arguments> dataForFindByUserId() {
-        Comment johnAboutFourSeasons = Comment.builder()
-                .id(5000002L)
-                .user(User.builder().id(1000002L).build())
-                .dish(Dish.builder().id(1000000L).build())
-                .rating((short) 5)
-                .createdAt(LocalDateTime.parse("2021-11-04T15:35:36"))
-                .build();
         return Stream.of(
-                Arguments.of(1000001L, List.of(petrAboutFourSeasons, petrAboutChickenBbq)),
-                Arguments.of(1000002L, List.of(johnAboutFourSeasons)),
+                Arguments.of(1000001L, List.of(PETR_ABOUT_FOUR_SEASONS, PETR_ABOUT_CHICKEN_BBQ)),
+                Arguments.of(1000002L, List.of(JOHN_ABOUT_FOUR_SEASONS)),
                 Arguments.of(1000000L, Collections.emptyList()),
                 Arguments.of(1000003L, Collections.emptyList())
         );
     }
 
     public static Stream<Arguments> dataForFindByDishId() {
-        Comment johnAboutFourSeasons = Comment.builder()
-                .id(5000002L)
-                .user(User.builder().id(1000002L).build())
-                .dish(Dish.builder().id(1000000L).build())
-                .rating((short) 5)
-                .createdAt(LocalDateTime.parse("2021-11-04T15:35:36"))
-                .build();
         return Stream.of(
-                Arguments.of(1000000L, List.of(petrAboutFourSeasons, johnAboutFourSeasons)),
-                Arguments.of(1000001L, List.of(petrAboutChickenBbq)),
+                Arguments.of(1000000L, List.of(PETR_ABOUT_FOUR_SEASONS, JOHN_ABOUT_FOUR_SEASONS)),
+                Arguments.of(1000001L, List.of(PETR_ABOUT_CHICKEN_BBQ)),
                 Arguments.of(1000002L, Collections.emptyList())
         );
     }
 
     @BeforeEach
     void setUp() throws SQLException {
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = CONNECTION.createStatement()) {
             statement.executeUpdate(INSERT_INTO_USERS_SQL);
             statement.executeUpdate(INSERT_INTO_DISH_SQL);
             statement.executeUpdate(INSERT_INTO_COMMENT_SQL);
@@ -148,7 +142,7 @@ class CommentDaoImplTest {
     @Test
     @Tag("findAll")
     void shouldReturnAllCommentsFromDatabase() throws DaoException {
-        List<Comment> expected = List.of(petrAboutFourSeasons, johnAboutFourSeasons, petrAboutChickenBbq);
+        List<Comment> expected = List.of(PETR_ABOUT_FOUR_SEASONS, johnAboutFourSeasonsClone, PETR_ABOUT_CHICKEN_BBQ);
 
         List<Comment> actual = commentDao.findAll();
 
@@ -158,7 +152,7 @@ class CommentDaoImplTest {
     @Test
     @Tag("findById")
     void shouldReturnExistingCommentById() throws DaoException {
-        Comment expected = petrAboutChickenBbq;
+        Comment expected = PETR_ABOUT_CHICKEN_BBQ;
 
         Optional<Comment> optionalComment = commentDao.findById(5000003L);
 
@@ -178,7 +172,7 @@ class CommentDaoImplTest {
 
     @Test
     @Tag("create")
-    void shouldCreatedCommentInDatabase() throws DaoException, SQLException {
+    void shouldCreateCommentInDatabase() throws DaoException, SQLException {
         Comment expected = hansAboutCola;
 
         commentDao.create(expected);
@@ -190,7 +184,7 @@ class CommentDaoImplTest {
     @Test
     @Tag("update")
     void shouldUpdateCommentInDatabase() throws DaoException, SQLException {
-        Comment expected = johnAboutFourSeasons;
+        Comment expected = johnAboutFourSeasonsClone;
         expected.setBody("It's the best!");
 
         boolean isUpdated = commentDao.update(expected);
@@ -204,8 +198,8 @@ class CommentDaoImplTest {
     @Test
     @Tag("update")
     void shouldReturnFalseIfCommentWasNotUpdated() throws DaoException {
-        johnAboutFourSeasons.setId(-1L);
-        boolean isUpdated = commentDao.update(johnAboutFourSeasons);
+        johnAboutFourSeasonsClone.setId(-1L);
+        boolean isUpdated = commentDao.update(johnAboutFourSeasonsClone);
 
         assertFalse(isUpdated, "mustn't update any comments if no such comment id");
     }
@@ -213,7 +207,7 @@ class CommentDaoImplTest {
     @Test
     @Tag("delete")
     void shouldDeleteCommentFromDatabaseById() throws DaoException, SQLException {
-        Comment expected = petrAboutFourSeasons;
+        Comment expected = PETR_ABOUT_FOUR_SEASONS;
 
         boolean isDeleted = commentDao.delete(expected.getId());
         Comment actual = findById(expected.getId());
@@ -252,7 +246,7 @@ class CommentDaoImplTest {
 
     @AfterEach
     void tearDown() throws SQLException {
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = CONNECTION.createStatement()) {
             statement.executeUpdate(DELETE_COMMENTS_SQL);
             statement.executeUpdate(DELETE_USERS_SQL);
             statement.executeUpdate(DELETE_DISHES_SQL);
@@ -262,14 +256,14 @@ class CommentDaoImplTest {
     @AfterAll
     static void closeConnection() {
         try {
-            connection.close();
+            CONNECTION.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     private Comment findById(Long id) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_SQL)) {
+        try (PreparedStatement statement = CONNECTION.prepareStatement(FIND_BY_ID_SQL)) {
             statement.setObject(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
