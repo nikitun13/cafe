@@ -46,4 +46,15 @@ public interface UserDao extends BaseDao<Long, User> {
      * @throws DaoException if storage access error occurs.
      */
     List<User> findByRole(String role) throws DaoException;
+
+    /**
+     * Updates {@link User} password with given {@code id}.
+     *
+     * @param id       {@link User} {@code id}.
+     * @param password newPassword to be set.
+     * @return {@code true} if password was updated,
+     * {@code false} otherwise.
+     * @throws DaoException if storage access error occurs.
+     */
+    boolean updatePassword(Long id, String password) throws DaoException;
 }

@@ -243,7 +243,7 @@ class UserDaoImplTest {
 
     @Test
     @Tag("findByEmail")
-    void findByEmail() throws DaoException {
+    void shouldFindUserById() throws DaoException {
         User expected = PETR;
 
         Optional<User> optionalUser = userDao.findByEmail("petr@mail.ru");
@@ -288,6 +288,30 @@ class UserDaoImplTest {
         assertThrows(DaoException.class,
                 () -> userDao.findByRole("noSuchRole"),
                 () -> "Must throw %s if there is no such role".formatted(DaoException.class.getName()));
+    }
+
+    @Test
+    @Tag("updatePassword")
+    void shouldUpdatePasswordInDatabase() throws DaoException, SQLException {
+        Long id = hans.getId();
+        String expected = "$2a$10$.NEW.HANS.PASS.AZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr1";
+
+        boolean isUpdated = userDao.updatePassword(id, expected);
+        String actual = findById(id).getPassword();
+
+        assertAll(
+                () -> assertTrue(isUpdated, "must return true if password was updated in the database"),
+                () -> assertEquals(expected, actual, () -> "should update password in db to: " + expected)
+        );
+    }
+
+    @Test
+    @Tag("updatePassword")
+    void shouldReturnFalseIfPasswordWasNotUpdated() throws DaoException {
+        String dummy = "$2a$10$.NEW.HANS.PASS.AZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr1";
+        boolean isUpdated = userDao.updatePassword(-1L, dummy);
+
+        assertFalse(isUpdated, "mustn't update any users if no such user id");
     }
 
     @AfterEach

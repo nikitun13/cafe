@@ -53,13 +53,12 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
     private static final String FIND_BY_ROLE
             = FIND_ALL_SQL + WHERE_SQL + "role = ?::user_role";
     private static final String CREATE_SQL = """
-            INSERT INTO users (email, password, role, first_name,
-            last_name, phone, points, is_blocked, language)
-            VALUES (?, ?, ?::user_role, ?, ?, ?, ?, ?, ?::app_language)""";
+            INSERT INTO users (email, role, first_name,
+            last_name, phone, points, is_blocked, language, password)
+            VALUES (?, ?::user_role, ?, ?, ?, ?, ?, ?::app_language, ?)""";
     private static final String UPDATE_SQL = """
             UPDATE users
             SET email      = ?,
-                password   = ?,
                 role       = ?::user_role,
                 first_name = ?,
                 last_name  = ?,
@@ -67,6 +66,10 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
                 points     = ?,
                 is_blocked = ?,
                 language   = ?::app_language
+            WHERE id = ?""";
+    private static final String UPDATE_PASSWORD_SQL = """
+            UPDATE users
+            SET password = ?
             WHERE id = ?""";
     private static final String DELETE_SQL = """
             DELETE FROM users
@@ -98,6 +101,7 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
     public void create(User entity) throws DaoException {
         log.debug("Received user: {}", entity);
         List<Object> params = createParamsList(entity);
+        params.add(entity.getPassword());
         log.debug("{} params for query: {}", entity, params);
         Optional<Long> maybeId = executeCreateQuery(
                 CREATE_SQL, Long.class, params);
@@ -164,6 +168,20 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
     }
 
     @Override
+    public boolean updatePassword(Long id, String password) throws DaoException {
+        log.debug("Received id = {}, password = {}", id, password);
+        int updatedRows = executeUpdateQuery(
+                UPDATE_PASSWORD_SQL, List.of(password, id));
+        boolean isUpdated = isOnlyOneRowUpdated(updatedRows);
+        if (isUpdated) {
+            log.debug("Entity password with id = {} was updated", id);
+        } else {
+            log.warn("Entity password with id = {} wasn't updated", id);
+        }
+        return isUpdated;
+    }
+
+    @Override
     protected User buildEntity(ResultSet resultSet) throws SQLException {
         Long id = resultSet.getObject(
                 ID_COLUMN_NAME, Long.class);
@@ -222,7 +240,6 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
     private List<Object> createParamsList(User user) {
         List<Object> params = new ArrayList<>();
         params.add(user.getEmail());
-        params.add(user.getPassword());
         params.add(user.getRole().toString());
         params.add(user.getFirstName());
         params.add(user.getLastName());
