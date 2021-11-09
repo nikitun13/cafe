@@ -2,7 +2,6 @@ package by.training.cafe.dao.postgres;
 
 import by.training.cafe.dao.DaoException;
 import by.training.cafe.dao.pool.ConnectionPool;
-import by.training.cafe.entity.Language;
 import by.training.cafe.entity.User;
 import by.training.cafe.entity.UserRole;
 import by.training.cafe.extension.DatabaseExtension;
@@ -37,11 +36,11 @@ class UserDaoImplTest {
     private static final String LANGUAGE_COLUMN_NAME = "language";
 
     private static final String SET_UP_SQL = """
-            INSERT INTO users (id, email, password, role, first_name, last_name, phone, points, is_blocked, language)
-            VALUES (1000000, 'ivan@gmail.com', '$2a$10$.IVAN.PASS.43WRAZ3Fnyx.C/6PveEHf6JGzGo9X2SQSwM5djXdrO', 'CLIENT', 'Ivan', 'Melnikov','+375251111111',30,TRUE,'RU'),
-                   (1000001, 'petr@mail.ru', '$2a$10$.ПЕТР.PASS.43NRAZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr1', 'CLIENT', 'Петр', 'Шариков','+375442222222',130,FALSE,'RU'),
-                   (1000002, 'john@gmail.com', '$2a$10$.John.PASS.43NRAZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr2', 'ADMIN', 'John', 'Henson','+375333333333',270,FALSE,'EN'),
-                   (1000003, 'hans@gmail.com', '$2a$10$.Hans.PASS.43NRAZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr3', 'CLIENT', 'Hans', 'Münz','+375254444444',0,FALSE,'DE')""";
+            INSERT INTO users (id, email, password, role, first_name, last_name, phone, points, is_blocked)
+            VALUES (1000000, 'ivan@gmail.com', '$2a$10$.IVAN.PASS.43WRAZ3Fnyx.C/6PveEHf6JGzGo9X2SQSwM5djXdrO', 'CLIENT', 'Ivan', 'Melnikov','+375251111111',30,TRUE),
+                   (1000001, 'petr@mail.ru', '$2a$10$.ПЕТР.PASS.43NRAZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr1', 'CLIENT', 'Петр', 'Шариков','+375442222222',130,FALSE),
+                   (1000002, 'john@gmail.com', '$2a$10$.John.PASS.43NRAZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr2', 'ADMIN', 'John', 'Henson','+375333333333',270,FALSE),
+                   (1000003, 'hans@gmail.com', '$2a$10$.Hans.PASS.43NRAZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr3', 'CLIENT', 'Hans', 'Münz','+375254444444',0,FALSE)""";
     private static final String TEAR_DOWN_SQL = "DELETE FROM users";
     private static final String FIND_BY_ID_SQL = "SELECT * FROM users WHERE id = ?";
 
@@ -61,7 +60,6 @@ class UserDaoImplTest {
                 .phone("+375251111111")
                 .points(30L)
                 .isBlocked(true)
-                .language(Language.RU)
                 .build();
 
         PETR = User.builder()
@@ -74,7 +72,6 @@ class UserDaoImplTest {
                 .phone("+375442222222")
                 .points(130L)
                 .isBlocked(false)
-                .language(Language.RU)
                 .build();
 
         JOHN = User.builder()
@@ -87,7 +84,6 @@ class UserDaoImplTest {
                 .phone("+375333333333")
                 .points(270L)
                 .isBlocked(false)
-                .language(Language.EN)
                 .build();
     }
 
@@ -109,7 +105,6 @@ class UserDaoImplTest {
                 .phone("+375254444444")
                 .points(0L)
                 .isBlocked(false)
-                .language(Language.DE)
                 .build();
 
         adam = User.builder()
@@ -121,7 +116,6 @@ class UserDaoImplTest {
                 .phone("+375445555555")
                 .points(500L)
                 .isBlocked(false)
-                .language(Language.EN)
                 .build();
     }
 
@@ -345,7 +339,6 @@ class UserDaoImplTest {
                         .phone(resultSet.getObject(PHONE_COLUMN_NAME, String.class))
                         .points(resultSet.getObject(POINTS_COLUMN_NAME, Long.class))
                         .isBlocked(resultSet.getObject(IS_BLOCKED_COLUMN_NAME, Boolean.class))
-                        .language(Language.valueOf(resultSet.getObject(LANGUAGE_COLUMN_NAME, String.class)))
                         .build();
             }
         }

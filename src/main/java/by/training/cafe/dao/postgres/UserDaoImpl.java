@@ -2,7 +2,6 @@ package by.training.cafe.dao.postgres;
 
 import by.training.cafe.dao.DaoException;
 import by.training.cafe.dao.UserDao;
-import by.training.cafe.entity.Language;
 import by.training.cafe.entity.User;
 import by.training.cafe.entity.UserRole;
 import org.apache.logging.log4j.LogManager;
@@ -38,11 +37,10 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
     private static final String PHONE_COLUMN_NAME = "phone";
     private static final String POINTS_COLUMN_NAME = "points";
     private static final String IS_BLOCKED_COLUMN_NAME = "is_blocked";
-    private static final String LANGUAGE_COLUMN_NAME = "language";
 
     private static final String FIND_ALL_SQL = """
             SELECT id, email, password, role, first_name,
-            last_name, phone, points, is_blocked, language
+            last_name, phone, points, is_blocked
             FROM users""";
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
@@ -54,8 +52,8 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
             = FIND_ALL_SQL + WHERE_SQL + "role = ?::user_role";
     private static final String CREATE_SQL = """
             INSERT INTO users (email, role, first_name,
-            last_name, phone, points, is_blocked, language, password)
-            VALUES (?, ?::user_role, ?, ?, ?, ?, ?, ?::app_language, ?)""";
+            last_name, phone, points, is_blocked, password)
+            VALUES (?, ?::user_role, ?, ?, ?, ?, ?, ?)""";
     private static final String UPDATE_SQL = """
             UPDATE users
             SET email      = ?,
@@ -64,8 +62,7 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
                 last_name  = ?,
                 phone      = ?,
                 points     = ?,
-                is_blocked = ?,
-                language   = ?::app_language
+                is_blocked = ?
             WHERE id = ?""";
     private static final String UPDATE_PASSWORD_SQL = """
             UPDATE users
@@ -219,10 +216,6 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
                 IS_BLOCKED_COLUMN_NAME, Boolean.class);
         log.trace("isBlocked = {}", isBlocked);
 
-        Language language = Language.valueOf(resultSet.getObject(
-                LANGUAGE_COLUMN_NAME, String.class));
-        log.trace("language = {}", language);
-
         return User.builder()
                 .id(id)
                 .email(email)
@@ -233,7 +226,6 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
                 .phone(phone)
                 .points(points)
                 .isBlocked(isBlocked)
-                .language(language)
                 .build();
     }
 
@@ -246,7 +238,6 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
         params.add(user.getPhone());
         params.add(user.getPoints());
         params.add(user.isBlocked());
-        params.add(user.getLanguage().toString());
         return params;
     }
 }

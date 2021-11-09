@@ -19,14 +19,13 @@ public class User {
     private String phone;
     private Long points;
     private Boolean isBlocked;
-    private Language language;
 
     public User() {
     }
 
     public User(Long id, String email, String password, UserRole role,
-                String firstName, String lastName, String phone, Long points,
-                Boolean isBlocked, Language language) {
+                String firstName, String lastName, String phone,
+                Long points, Boolean isBlocked) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -36,7 +35,6 @@ public class User {
         this.phone = phone;
         this.points = points;
         this.isBlocked = isBlocked;
-        this.language = language;
     }
 
     public static UserBuilder builder() {
@@ -79,10 +77,6 @@ public class User {
         return this.isBlocked;
     }
 
-    public Language getLanguage() {
-        return this.language;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -119,10 +113,6 @@ public class User {
         this.isBlocked = isBlocked;
     }
 
-    public void setLanguage(Language language) {
-        this.language = language;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -136,14 +126,13 @@ public class User {
                 && Objects.equals(lastName, user.lastName)
                 && Objects.equals(phone, user.phone)
                 && Objects.equals(points, user.points)
-                && Objects.equals(isBlocked, user.isBlocked)
-                && language == user.language;
+                && Objects.equals(isBlocked, user.isBlocked);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, email, password, role, firstName,
-                lastName, phone, points, isBlocked, language);
+                lastName, phone, points, isBlocked);
     }
 
     @Override
@@ -158,7 +147,6 @@ public class User {
                 + ", phone='" + phone + '\''
                 + ", points=" + points
                 + ", isBlocked=" + isBlocked
-                + ", language=" + language
                 + '}';
     }
 
@@ -173,7 +161,6 @@ public class User {
         private String phone;
         private Long points;
         private Boolean isBlocked;
-        private Language language;
 
         UserBuilder() {
         }
@@ -223,14 +210,9 @@ public class User {
             return this;
         }
 
-        public UserBuilder language(Language language) {
-            this.language = language;
-            return this;
-        }
-
         public User build() {
             return new User(id, email, password, role, firstName,
-                    lastName, phone, points, isBlocked, language);
+                    lastName, phone, points, isBlocked);
         }
     }
 }
