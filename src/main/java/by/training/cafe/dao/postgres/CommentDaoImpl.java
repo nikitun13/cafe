@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -170,8 +169,8 @@ public class CommentDaoImpl
                 BODY_COLUMN_NAME, String.class);
         log.trace("body = {}", body);
 
-        LocalDateTime createdAt = resultSet.getObject(
-                CREATED_AT_COLUMN_NAME, Timestamp.class).toLocalDateTime();
+        Timestamp createdAt = resultSet.getObject(
+                CREATED_AT_COLUMN_NAME, Timestamp.class);
         log.trace("createdAt = {}", createdAt);
 
         return Comment.builder()

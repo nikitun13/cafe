@@ -14,7 +14,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -46,10 +45,10 @@ class OrderDaoImplTest {
                    (1000003, 'hans@gmail.com', '$2a$10$.Hans.PASS.43NRAZ3Fny.C/6PveEH6JGzGo9X2SQSwM5djXwpdr3', 'CLIENT', 'Hans', 'Münz','+375254444444',0,FALSE)""";
     private static final String INSERT_INTO_ORDERS_SQL = """
             INSERT INTO orders (id, user_id, created_at, expected_retrieve_date, actual_retrieve_date, status, debited_points, accrued_points, total_price)
-            VALUES (3000000, 1000000, '2021-11-04T15:35:36', '2021-11-04T17:35:36', '2021-11-04T17:27:36', 'COMPLETED', 100, 10, 3000),
-                   (3000001, 1000000, '2021-11-04T17:52:19', '2021-11-05T15:52:19', NULL, 'CANCELED', 0, 0, 400),
-                   (3000002, 1000003, '2021-11-05T15:35:36', '2021-11-06T15:35:36', NULL, 'PENDING', 250, 0, 4000),
-                   (3000003, 1000001, '2021-11-06T10:12:36', '2021-11-06T15:12:36', NULL, 'PENDING', 90, 0, 2500)""";
+            VALUES (3000000, 1000000, '2021-11-04 15:35:36', '2021-11-04 17:35:36', '2021-11-04 17:27:36', 'COMPLETED', 100, 10, 3000),
+                   (3000001, 1000000, '2021-11-04 17:52:19', '2021-11-05 15:52:19', NULL, 'CANCELED', 0, 0, 400),
+                   (3000002, 1000003, '2021-11-05 15:35:36', '2021-11-06 15:35:36', NULL, 'PENDING', 250, 0, 4000),
+                   (3000003, 1000001, '2021-11-06 10:12:36', '2021-11-06 15:12:36', NULL, 'PENDING', 90, 0, 2500)""";
     private static final String DELETE_ORDERS_SQL = "DELETE FROM orders";
     private static final String DELETE_USERS_SQL = "DELETE FROM users";
     private static final String FIND_BY_ID_SQL = "SELECT * FROM orders WHERE id = ?";
@@ -64,9 +63,9 @@ class OrderDaoImplTest {
         IVAN_FIRST_ORDER = Order.builder()
                 .id(3000000L)
                 .user(User.builder().id(1000000L).build())
-                .createdAt(LocalDateTime.parse("2021-11-04T15:35:36"))
-                .expectedRetrieveDate(LocalDateTime.parse("2021-11-04T17:35:36"))
-                .actualRetrieveDate(LocalDateTime.parse("2021-11-04T17:27:36"))
+                .createdAt(Timestamp.valueOf("2021-11-04 15:35:36"))
+                .expectedRetrieveDate(Timestamp.valueOf("2021-11-04 17:35:36"))
+                .actualRetrieveDate(Timestamp.valueOf("2021-11-04 17:27:36"))
                 .status(OrderStatus.COMPLETED)
                 .accruedPoints(10L)
                 .debitedPoints(100L)
@@ -76,8 +75,8 @@ class OrderDaoImplTest {
         IVAN_SECOND_ORDER = Order.builder()
                 .id(3000001L)
                 .user(User.builder().id(1000000L).build())
-                .createdAt(LocalDateTime.parse("2021-11-04T17:52:19"))
-                .expectedRetrieveDate(LocalDateTime.parse("2021-11-05T15:52:19"))
+                .createdAt(Timestamp.valueOf("2021-11-04 17:52:19"))
+                .expectedRetrieveDate(Timestamp.valueOf("2021-11-05 15:52:19"))
                 .status(OrderStatus.CANCELED)
                 .accruedPoints(0L)
                 .debitedPoints(0L)
@@ -87,8 +86,8 @@ class OrderDaoImplTest {
         HANS_ORDER = Order.builder()
                 .id(3000002L)
                 .user(User.builder().id(1000003L).build())
-                .createdAt(LocalDateTime.parse("2021-11-05T15:35:36"))
-                .expectedRetrieveDate(LocalDateTime.parse("2021-11-06T15:35:36"))
+                .createdAt(Timestamp.valueOf("2021-11-05 15:35:36"))
+                .expectedRetrieveDate(Timestamp.valueOf("2021-11-06 15:35:36"))
                 .status(OrderStatus.PENDING)
                 .accruedPoints(0L)
                 .debitedPoints(250L)
@@ -98,8 +97,8 @@ class OrderDaoImplTest {
         PETR_ORDER = Order.builder()
                 .id(3000003L)
                 .user(User.builder().id(1000001L).build())
-                .createdAt(LocalDateTime.parse("2021-11-06T10:12:36"))
-                .expectedRetrieveDate(LocalDateTime.parse("2021-11-06T15:12:36"))
+                .createdAt(Timestamp.valueOf("2021-11-06 10:12:36"))
+                .expectedRetrieveDate(Timestamp.valueOf("2021-11-06 15:12:36"))
                 .status(OrderStatus.PENDING)
                 .accruedPoints(0L)
                 .debitedPoints(90L)
@@ -117,8 +116,8 @@ class OrderDaoImplTest {
 
         johnOrder = Order.builder()
                 .user(User.builder().id(1000002L).build())
-                .createdAt(LocalDateTime.parse("2021-11-07T10:00:00"))
-                .expectedRetrieveDate(LocalDateTime.parse("2021-11-07T12:11:00"))
+                .createdAt(Timestamp.valueOf("2021-11-07 10:00:00"))
+                .expectedRetrieveDate(Timestamp.valueOf("2021-11-07 12:11:00"))
                 .status(OrderStatus.PENDING)
                 .accruedPoints(0L)
                 .debitedPoints(350L)
@@ -128,8 +127,8 @@ class OrderDaoImplTest {
         petrOrderClone = Order.builder()
                 .id(3000003L)
                 .user(User.builder().id(1000001L).build())
-                .createdAt(LocalDateTime.parse("2021-11-06T10:12:36"))
-                .expectedRetrieveDate(LocalDateTime.parse("2021-11-06T15:12:36"))
+                .createdAt(Timestamp.valueOf("2021-11-06 10:12:36"))
+                .expectedRetrieveDate(Timestamp.valueOf("2021-11-06 15:12:36"))
                 .status(OrderStatus.PENDING)
                 .accruedPoints(0L)
                 .debitedPoints(90L)
@@ -157,10 +156,10 @@ class OrderDaoImplTest {
 
     public static Stream<Arguments> dataForFindByCreatedAtBetweenMethod() {
         return Stream.of(
-                Arguments.of(LocalDateTime.parse("2021-11-04T00:00:00"), LocalDateTime.parse("2021-11-05T00:00:00"), List.of(IVAN_FIRST_ORDER, IVAN_SECOND_ORDER)),
-                Arguments.of(LocalDateTime.parse("2021-11-05T15:00:00"), LocalDateTime.parse("2021-11-05T16:00:00"), List.of(HANS_ORDER)),
-                Arguments.of(LocalDateTime.parse("2021-11-02T00:00:00"), LocalDateTime.parse("2021-11-10T00:00:00"), List.of(IVAN_FIRST_ORDER, IVAN_SECOND_ORDER, HANS_ORDER, PETR_ORDER)),
-                Arguments.of(LocalDateTime.parse("2021-11-10T00:00:00"), LocalDateTime.parse("2021-11-20T00:00:00"), Collections.emptyList())
+                Arguments.of(Timestamp.valueOf("2021-11-04 00:00:00"), Timestamp.valueOf("2021-11-05 00:00:00"), List.of(IVAN_FIRST_ORDER, IVAN_SECOND_ORDER)),
+                Arguments.of(Timestamp.valueOf("2021-11-05 15:00:00"), Timestamp.valueOf("2021-11-05 16:00:00"), List.of(HANS_ORDER)),
+                Arguments.of(Timestamp.valueOf("2021-11-02 00:00:00"), Timestamp.valueOf("2021-11-10 00:00:00"), List.of(IVAN_FIRST_ORDER, IVAN_SECOND_ORDER, HANS_ORDER, PETR_ORDER)),
+                Arguments.of(Timestamp.valueOf("2021-11-10 00:00:00"), Timestamp.valueOf("2021-11-20 00:00:00"), Collections.emptyList())
         );
     }
 
@@ -219,7 +218,7 @@ class OrderDaoImplTest {
     void shouldUpdateOrderInDatabase() throws DaoException, SQLException {
         Order expected = petrOrderClone;
         expected.setStatus(OrderStatus.COMPLETED);
-        expected.setActualRetrieveDate(LocalDateTime.parse("2021-11-06T15:12:36"));
+        expected.setActualRetrieveDate(Timestamp.valueOf("2021-11-06 15:12:36"));
         expected.setAccruedPoints(20L);
 
         boolean isUpdated = orderDao.update(expected);
@@ -283,8 +282,8 @@ class OrderDaoImplTest {
     @ParameterizedTest
     @MethodSource("dataForFindByCreatedAtBetweenMethod")
     @Tag("findByCreatedAtBetween")
-    void shouldReturnAllOrdersWithCreatedDateBetween(LocalDateTime from,
-                                                     LocalDateTime to, List<Order> expected)
+    void shouldReturnAllOrdersWithCreatedDateBetween(Timestamp from,
+                                                     Timestamp to, List<Order> expected)
             throws DaoException {
         List<Order> actual = orderDao.findByCreatedAtBetween(from, to);
 
@@ -313,16 +312,12 @@ class OrderDaoImplTest {
             statement.setObject(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                Timestamp timestamp = resultSet.getObject(ACTUAL_RETRIEVE_DATE_COLUMN_NAME, Timestamp.class);
-                LocalDateTime actualRetrieveDate = timestamp != null
-                        ? timestamp.toLocalDateTime()
-                        : null;
                 return Order.builder()
                         .id(resultSet.getObject(ID_COLUMN_NAME, Long.class))
                         .user(User.builder().id(resultSet.getObject(USER_ID_COLUMN_NAME, Long.class)).build())
-                        .createdAt(resultSet.getObject(CREATED_AT_COLUMN_NAME, Timestamp.class).toLocalDateTime())
-                        .expectedRetrieveDate(resultSet.getObject(EXPECTED_RETRIEVE_DATE_COLUMN_NAME, Timestamp.class).toLocalDateTime())
-                        .actualRetrieveDate(actualRetrieveDate)
+                        .createdAt(resultSet.getObject(CREATED_AT_COLUMN_NAME, Timestamp.class))
+                        .expectedRetrieveDate(resultSet.getObject(EXPECTED_RETRIEVE_DATE_COLUMN_NAME, Timestamp.class))
+                        .actualRetrieveDate(resultSet.getObject(ACTUAL_RETRIEVE_DATE_COLUMN_NAME, Timestamp.class))
                         .status(OrderStatus.valueOf(resultSet.getObject(STATUS_COLUMN_NAME, String.class)))
                         .debitedPoints(resultSet.getObject(DEBITED_POINTS_COLUMN_NAME, Long.class))
                         .accruedPoints(resultSet.getObject(ACCRUED_POINTS_COLUMN_NAME, Long.class))

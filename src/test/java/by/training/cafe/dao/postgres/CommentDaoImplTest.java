@@ -14,7 +14,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -49,8 +48,8 @@ class CommentDaoImplTest {
     private static final String INSERT_INTO_COMMENT_SQL = """
             INSERT INTO comment (id, user_id, dish_id, rating, body, created_at)
             VALUES (5000001, 1000001, 1000000, 3, 'Normal', '2021-11-03 10:25:06'),
-                   (5000002, 1000002, 1000000, 5, NULL, '2021-11-04T15:35:36'),
-                   (5000003, 1000001, 1000001, 5, 'Perfect!', '2021-11-05T17:28:12')""";
+                   (5000002, 1000002, 1000000, 5, NULL, '2021-11-04 15:35:36'),
+                   (5000003, 1000001, 1000001, 5, 'Perfect!', '2021-11-05 17:28:12')""";
     private static final String DELETE_DISHES_SQL = "DELETE FROM dish";
     private static final String DELETE_USERS_SQL = "DELETE FROM users";
     private static final String DELETE_COMMENTS_SQL = "DELETE FROM comment";
@@ -68,7 +67,7 @@ class CommentDaoImplTest {
                 .dish(Dish.builder().id(1000000L).build())
                 .rating((short) 3)
                 .body("Normal")
-                .createdAt(LocalDateTime.parse("2021-11-03T10:25:06"))
+                .createdAt(Timestamp.valueOf("2021-11-03 10:25:06"))
                 .build();
 
         PETR_ABOUT_CHICKEN_BBQ = Comment.builder()
@@ -77,7 +76,7 @@ class CommentDaoImplTest {
                 .dish(Dish.builder().id(1000001L).build())
                 .rating((short) 5)
                 .body("Perfect!")
-                .createdAt(LocalDateTime.parse("2021-11-05T17:28:12"))
+                .createdAt(Timestamp.valueOf("2021-11-05 17:28:12"))
                 .build();
 
         JOHN_ABOUT_FOUR_SEASONS = Comment.builder()
@@ -85,7 +84,7 @@ class CommentDaoImplTest {
                 .user(User.builder().id(1000002L).build())
                 .dish(Dish.builder().id(1000000L).build())
                 .rating((short) 5)
-                .createdAt(LocalDateTime.parse("2021-11-04T15:35:36"))
+                .createdAt(Timestamp.valueOf("2021-11-04 15:35:36"))
                 .build();
     }
 
@@ -102,14 +101,14 @@ class CommentDaoImplTest {
                 .user(User.builder().id(1000002L).build())
                 .dish(Dish.builder().id(1000000L).build())
                 .rating((short) 5)
-                .createdAt(LocalDateTime.parse("2021-11-04T15:35:36"))
+                .createdAt(Timestamp.valueOf("2021-11-04 15:35:36"))
                 .build();
 
         hansAboutCola = Comment.builder()
                 .user(User.builder().id(1000003L).build())
                 .dish(Dish.builder().id(1000002L).build())
                 .rating((short) 2)
-                .createdAt(LocalDateTime.parse("2021-11-03T10:10:09"))
+                .createdAt(Timestamp.valueOf("2021-11-03 10:10:09"))
                 .build();
     }
 
@@ -273,7 +272,7 @@ class CommentDaoImplTest {
                         .dish(Dish.builder().id(resultSet.getObject(DISH_ID_COLUMN_NAME, Long.class)).build())
                         .rating(resultSet.getObject(RATING_COLUMN_NAME, Short.class))
                         .body(resultSet.getObject(BODY_COLUMN_NAME, String.class))
-                        .createdAt(resultSet.getObject(CREATED_AT_COLUMN_NAME, Timestamp.class).toLocalDateTime())
+                        .createdAt(resultSet.getObject(CREATED_AT_COLUMN_NAME, Timestamp.class))
                         .build();
             }
         }

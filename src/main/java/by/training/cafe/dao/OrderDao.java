@@ -2,7 +2,7 @@ package by.training.cafe.dao;
 
 import by.training.cafe.entity.Order;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -43,6 +43,6 @@ public interface OrderDao extends BaseDao<Long, Order> {
      * @return list of {@code orders} in the given range.
      * @throws DaoException if storage access error occurs.
      */
-    List<Order> findByCreatedAtBetween(LocalDateTime from, LocalDateTime to)
+    List<Order> findByCreatedAtBetween(Timestamp from, Timestamp to)
             throws DaoException;
 }

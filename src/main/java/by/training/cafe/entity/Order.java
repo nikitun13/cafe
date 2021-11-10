@@ -1,6 +1,6 @@
 package by.training.cafe.entity;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
@@ -13,9 +13,9 @@ public class Order {
 
     private Long id;
     private User user;
-    private LocalDateTime createdAt;
-    private LocalDateTime expectedRetrieveDate;
-    private LocalDateTime actualRetrieveDate;
+    private Timestamp createdAt;
+    private Timestamp expectedRetrieveDate;
+    private Timestamp actualRetrieveDate;
     private OrderStatus status;
     private Long debitedPoints;
     private Long accruedPoints;
@@ -24,9 +24,9 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, User user, LocalDateTime createdAt,
-                 LocalDateTime expectedRetrieveDate,
-                 LocalDateTime actualRetrieveDate, OrderStatus status,
+    public Order(Long id, User user, Timestamp createdAt,
+                 Timestamp expectedRetrieveDate,
+                 Timestamp actualRetrieveDate, OrderStatus status,
                  Long debitedPoints, Long accruedPoints, Long totalPrice) {
         this.id = id;
         this.user = user;
@@ -51,15 +51,15 @@ public class Order {
         return this.user;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return this.createdAt;
     }
 
-    public LocalDateTime getExpectedRetrieveDate() {
+    public Timestamp getExpectedRetrieveDate() {
         return this.expectedRetrieveDate;
     }
 
-    public LocalDateTime getActualRetrieveDate() {
+    public Timestamp getActualRetrieveDate() {
         return this.actualRetrieveDate;
     }
 
@@ -87,15 +87,15 @@ public class Order {
         this.user = user;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    public void setExpectedRetrieveDate(LocalDateTime expectedRetrieveDate) {
+    public void setExpectedRetrieveDate(Timestamp expectedRetrieveDate) {
         this.expectedRetrieveDate = expectedRetrieveDate;
     }
 
-    public void setActualRetrieveDate(LocalDateTime actualRetrieveDate) {
+    public void setActualRetrieveDate(Timestamp actualRetrieveDate) {
         this.actualRetrieveDate = actualRetrieveDate;
     }
 
@@ -157,9 +157,9 @@ public class Order {
 
         private Long id;
         private User user;
-        private LocalDateTime createdAt;
-        private LocalDateTime expectedRetrieveDate;
-        private LocalDateTime actualRetrieveDate;
+        private Timestamp createdAt;
+        private Timestamp expectedRetrieveDate;
+        private Timestamp actualRetrieveDate;
         private OrderStatus status;
         private Long debitedPoints;
         private Long accruedPoints;
@@ -178,17 +178,17 @@ public class Order {
             return this;
         }
 
-        public OrderBuilder createdAt(LocalDateTime createdAt) {
+        public OrderBuilder createdAt(Timestamp createdAt) {
             this.createdAt = createdAt;
             return this;
         }
 
-        public OrderBuilder expectedRetrieveDate(LocalDateTime expectedRetrieveDate) {
+        public OrderBuilder expectedRetrieveDate(Timestamp expectedRetrieveDate) {
             this.expectedRetrieveDate = expectedRetrieveDate;
             return this;
         }
 
-        public OrderBuilder actualRetrieveDate(LocalDateTime actualRetrieveDate) {
+        public OrderBuilder actualRetrieveDate(Timestamp actualRetrieveDate) {
             this.actualRetrieveDate = actualRetrieveDate;
             return this;
         }

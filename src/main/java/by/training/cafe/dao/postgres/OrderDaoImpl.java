@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -157,8 +156,8 @@ public class OrderDaoImpl
     }
 
     @Override
-    public List<Order> findByCreatedAtBetween(LocalDateTime from,
-                                              LocalDateTime to)
+    public List<Order> findByCreatedAtBetween(Timestamp from,
+                                              Timestamp to)
             throws DaoException {
         log.debug("Received from date = {} and to date = {}", from, to);
         List<Order> orders = executeSelectQuery(
@@ -176,20 +175,16 @@ public class OrderDaoImpl
         log.trace("userId = {}", userId);
         User user = User.builder().id(userId).build();
 
-        LocalDateTime createdAt = resultSet.getObject(
-                CREATED_AT_COLUMN_NAME, Timestamp.class).toLocalDateTime();
+        Timestamp createdAt = resultSet.getObject(
+                CREATED_AT_COLUMN_NAME, Timestamp.class);
         log.trace("createdAt = {}", createdAt);
 
-        LocalDateTime expectedRetrieveDate = resultSet.getObject(
-                EXPECTED_RETRIEVE_DATE_COLUMN_NAME, Timestamp.class).toLocalDateTime();
+        Timestamp expectedRetrieveDate = resultSet.getObject(
+                EXPECTED_RETRIEVE_DATE_COLUMN_NAME, Timestamp.class);
         log.trace("expectedRetrieveDate = {}", expectedRetrieveDate);
 
-        LocalDateTime actualRetrieveDate;
-        Timestamp timestamp = resultSet.getObject(
+        Timestamp actualRetrieveDate = resultSet.getObject(
                 ACTUAL_RETRIEVE_DATE_COLUMN_NAME, Timestamp.class);
-        actualRetrieveDate = timestamp != null
-                ? timestamp.toLocalDateTime()
-                : null;
         log.trace("actualRetrieveDate = {}", actualRetrieveDate);
 
         OrderStatus status = OrderStatus.valueOf(resultSet.getObject(
@@ -226,11 +221,7 @@ public class OrderDaoImpl
         params.add(order.getUser().getId());
         params.add(order.getCreatedAt().toString());
         params.add(order.getExpectedRetrieveDate().toString());
-        LocalDateTime actualRetrieveDate = order.getActualRetrieveDate();
-        String actualRetrieveParam = actualRetrieveDate != null
-                ? actualRetrieveDate.toString()
-                : null;
-        params.add(actualRetrieveParam);
+        params.add(order.getActualRetrieveDate());
         params.add(order.getStatus().toString());
         params.add(order.getDebitedPoints());
         params.add(order.getAccruedPoints());

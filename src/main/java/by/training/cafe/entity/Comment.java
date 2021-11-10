@@ -1,6 +1,6 @@
 package by.training.cafe.entity;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
@@ -16,13 +16,13 @@ public class Comment {
     private Dish dish;
     private Short rating;
     private String body;
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
 
     public Comment() {
     }
 
     public Comment(Long id, User user, Dish dish,
-                   Short rating, String body, LocalDateTime createdAt) {
+                   Short rating, String body, Timestamp createdAt) {
         this.id = id;
         this.user = user;
         this.dish = dish;
@@ -55,7 +55,7 @@ public class Comment {
         return this.body;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return this.createdAt;
     }
 
@@ -79,7 +79,7 @@ public class Comment {
         this.body = body;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -120,7 +120,7 @@ public class Comment {
         private Dish dish;
         private Short rating;
         private String body;
-        private LocalDateTime createdAt;
+        private Timestamp createdAt;
 
         CommentBuilder() {
         }
@@ -150,7 +150,7 @@ public class Comment {
             return this;
         }
 
-        public CommentBuilder createdAt(LocalDateTime createdAt) {
+        public CommentBuilder createdAt(Timestamp createdAt) {
             this.createdAt = createdAt;
             return this;
         }
