@@ -8,7 +8,7 @@ import java.util.Objects;
  *
  * @author Nikita Romanov
  */
-public class OrderedDish {
+public class OrderedDish implements Entity {
 
     private Order order;
     private Dish dish;

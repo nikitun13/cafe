@@ -9,7 +9,7 @@ import java.util.Objects;
  *
  * @author Nikita Romanov
  */
-public class Comment {
+public class Comment implements Entity {
 
     private Long id;
     private User user;

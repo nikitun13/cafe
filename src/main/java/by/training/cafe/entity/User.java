@@ -8,7 +8,7 @@ import java.util.Objects;
  *
  * @author Nikita Romanov
  */
-public class User {
+public class User implements Entity {
 
     private Long id;
     private String email;

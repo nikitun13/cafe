@@ -8,7 +8,7 @@ import java.util.Objects;
  *
  * @author Nikita Romanov
  */
-public class Dish {
+public class Dish implements Entity {
 
     private Long id;
     private String name;

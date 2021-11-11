@@ -8,5 +8,14 @@ package by.training.cafe.entity;
  */
 public enum OrderStatus {
 
-    CANCELED, COMPLETED, NOT_COLLECTED, PENDING
+    CANCELED, COMPLETED, NOT_COLLECTED, PENDING;
+
+    public static boolean contains(String test) {
+        for (OrderStatus status : values()) {
+            if (status.name().equals(test)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

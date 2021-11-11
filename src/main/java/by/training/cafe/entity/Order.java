@@ -9,7 +9,7 @@ import java.util.Objects;
  *
  * @author Nikita Romanov
  */
-public class Order {
+public class Order implements Entity {
 
     private Long id;
     private User user;
