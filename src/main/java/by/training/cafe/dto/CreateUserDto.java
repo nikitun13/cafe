@@ -1,8 +1,9 @@
 package by.training.cafe.dto;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class CreateUserDto {
+public class CreateUserDto implements Serializable {
 
     private String email;
     private String password;

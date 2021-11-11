@@ -1,8 +1,9 @@
 package by.training.cafe.dto;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class DishDto {
+public class DishDto implements Serializable {
 
     private Long id;
     private String name;
@@ -95,7 +96,7 @@ public class DishDto {
     }
 
     public static class DishDtoBuilder {
-        
+
         private Long id;
         private String name;
         private String category;
