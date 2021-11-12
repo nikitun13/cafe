@@ -52,6 +52,8 @@ public interface DishService extends Service {
      * Updates {@link Dish} in the storage using {@link DishDto}.
      *
      * @param dishDto to be mapped to {@link Dish} and updated in the storage.
+     * @return {@code true} if {@code dish} was updated successfully,
+     * {@code false} otherwise.
      * @throws ServiceException if {@code dishDto} is invalid
      *                          or DaoException occurred.
      */
@@ -61,6 +63,8 @@ public interface DishService extends Service {
      * Deletes {@link Dish} in the storage using {@link DishDto}.
      *
      * @param dishDto to be mapped to {@link Dish} and deleted in the storage.
+     * @return {@code true} if {@code dish} was deleted successfully,
+     * {@code false} otherwise.
      * @throws ServiceException if {@code dishDto} is invalid
      *                          or DaoException occurred.
      */
@@ -80,16 +84,19 @@ public interface DishService extends Service {
      * that contains in name or description given {@code str}.
      * It is possible to use more than one word in the {@code str}.
      *
+     * @param str string for searching.
      * @return list of {@link DishDto}.
      * @throws ServiceException if DaoException occurred
      *                          or {@code str} is invalid.
      */
-    List<DishDto> findByNameOrDescriptionLike(String str) throws ServiceException;
+    List<DishDto> findByNameOrDescriptionLike(String str)
+            throws ServiceException;
 
     /**
      * Returns all {@link Dish} mapped to {@link DishDto}
      * that have given {@code category}.
      *
+     * @param category dish category.
      * @return list of {@link DishDto}.
      * @throws ServiceException if DaoException occurred
      *                          or {@code category} is invalid.

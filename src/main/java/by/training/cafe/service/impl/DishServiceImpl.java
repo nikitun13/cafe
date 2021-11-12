@@ -108,7 +108,9 @@ public class DishServiceImpl implements DishService {
     @Override
     public boolean update(DishDto dishDto) throws ServiceException {
         log.debug(RECEIVED_DISH_DTO_LOG_MESSAGE, dishDto);
-        if (!dishDtoValidator.isValid(dishDto) || dishDto.getId() == null) {
+        if (!dishDtoValidator.isValid(dishDto)
+                || dishDto.getId() == null
+                || dishDto.getId() < 1) {
             throw new ServiceException(DISH_DTO_IS_INVALID_MESSAGE + dishDto);
         }
         Dish dish = mapper.mapDtoToEntity(dishDto);
@@ -123,7 +125,9 @@ public class DishServiceImpl implements DishService {
     @Override
     public boolean delete(DishDto dishDto) throws ServiceException {
         log.debug(RECEIVED_DISH_DTO_LOG_MESSAGE, dishDto);
-        if (dishDto == null || dishDto.getId() == null || dishDto.getId() < 1) {
+        if (!dishDtoValidator.isValid(dishDto)
+                || dishDto.getId() == null
+                || dishDto.getId() < 1) {
             throw new ServiceException(DISH_DTO_IS_INVALID_MESSAGE + dishDto);
         }
         Long id = dishDto.getId();
