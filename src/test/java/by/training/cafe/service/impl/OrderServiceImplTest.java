@@ -10,13 +10,13 @@ import by.training.cafe.entity.User;
 import by.training.cafe.entity.UserRole;
 import by.training.cafe.service.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -298,7 +298,82 @@ class OrderServiceImplTest {
     }
 
     public static Stream<Arguments> invalidOrderDtos() {
-        return Stream.of(Arguments.of());
+        return Stream.of(
+                Arguments.of(OrderDto.builder().build()),
+                Arguments.of(OrderDto.builder()
+                        .user(JOHN_DTO)
+                        .createdAt(Timestamp.valueOf("2021-11-05 13:00:00"))
+                        .expectedRetrieveDate(Timestamp.valueOf("2021-11-10 13:00:00"))
+                        .status("Pending")
+                        .accruedPoints(300L)
+                        .debitedPoints(20L)
+                        .totalPrice(4000L)
+                        .build()),
+                Arguments.of(OrderDto.builder()
+                        .id(3000002L)
+                        .createdAt(Timestamp.valueOf("2021-11-05 13:00:00"))
+                        .expectedRetrieveDate(Timestamp.valueOf("2021-11-10 13:00:00"))
+                        .status("Pending")
+                        .accruedPoints(300L)
+                        .debitedPoints(20L)
+                        .totalPrice(4000L)
+                        .build()),
+                Arguments.of(OrderDto.builder()
+                        .id(3000002L)
+                        .user(UserDto.builder().build())
+                        .createdAt(Timestamp.valueOf("2021-11-05 13:00:00"))
+                        .expectedRetrieveDate(Timestamp.valueOf("2021-11-10 13:00:00"))
+                        .status("Pending")
+                        .accruedPoints(300L)
+                        .debitedPoints(20L)
+                        .totalPrice(4000L)
+                        .build()),
+                Arguments.of(OrderDto.builder()
+                        .id(3000002L)
+                        .user(JOHN_DTO)
+                        .expectedRetrieveDate(Timestamp.valueOf("2021-11-10 13:00:00"))
+                        .status("Pending")
+                        .accruedPoints(300L)
+                        .debitedPoints(20L)
+                        .totalPrice(4000L)
+                        .build()),
+                Arguments.of(OrderDto.builder()
+                        .id(3000002L)
+                        .user(JOHN_DTO)
+                        .createdAt(Timestamp.valueOf("2021-11-05 13:00:00"))
+                        .expectedRetrieveDate(Timestamp.valueOf("2021-11-10 13:00:00"))
+                        .accruedPoints(300L)
+                        .debitedPoints(20L)
+                        .totalPrice(4000L)
+                        .build()),
+                Arguments.of(OrderDto.builder()
+                        .id(3000002L)
+                        .user(JOHN_DTO)
+                        .createdAt(Timestamp.valueOf("2021-11-05 13:00:00"))
+                        .expectedRetrieveDate(Timestamp.valueOf("2021-11-10 13:00:00"))
+                        .status("Pending")
+                        .debitedPoints(20L)
+                        .totalPrice(4000L)
+                        .build()),
+                Arguments.of(OrderDto.builder()
+                        .id(3000002L)
+                        .user(JOHN_DTO)
+                        .createdAt(Timestamp.valueOf("2021-11-05 13:00:00"))
+                        .expectedRetrieveDate(Timestamp.valueOf("2021-11-10 13:00:00"))
+                        .status("Pending")
+                        .accruedPoints(300L)
+                        .totalPrice(4000L)
+                        .build()),
+                Arguments.of(OrderDto.builder()
+                        .id(3000002L)
+                        .user(JOHN_DTO)
+                        .createdAt(Timestamp.valueOf("2021-11-05 13:00:00"))
+                        .expectedRetrieveDate(Timestamp.valueOf("2021-11-10 13:00:00"))
+                        .status("Pending")
+                        .accruedPoints(300L)
+                        .debitedPoints(20L)
+                        .build())
+        );
     }
 
     @BeforeEach
@@ -399,9 +474,9 @@ class OrderServiceImplTest {
         assertThat(actual).isTrue();
     }
 
-    @Disabled("Not implemented")
     @ParameterizedTest
     @MethodSource("invalidOrderDtos")
+    @NullSource
     @Tag("update")
     void shouldThrowExceptionIfReceivedInvalidDtoForUpdateMethod(OrderDto dto) {
         assertThatThrownBy(() -> service.update(dto)).isInstanceOf(ServiceException.class);
@@ -417,9 +492,9 @@ class OrderServiceImplTest {
         assertThat(actual).isTrue();
     }
 
-    @Disabled("Not implemented")
     @ParameterizedTest
     @MethodSource("invalidOrderDtos")
+    @NullSource
     @Tag("delete")
     void shouldThrowExceptionIfReceivedInvalidDtoForDeleteMethod(OrderDto dto) {
         assertThatThrownBy(() -> service.delete(dto)).isInstanceOf(ServiceException.class);

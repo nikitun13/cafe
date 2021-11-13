@@ -57,13 +57,15 @@ public class OrderedDishServiceImpl implements OrderedDishService {
         try (Transaction transaction = transactionFactory.createTransaction()) {
             OrderedDishDao orderedDishDao
                     = transaction.createDao(OrderedDishDao.class);
-            OrderDao orderDao = transaction.createDao(OrderDao.class);
-            DishDao dishDao = transaction.createDao(DishDao.class);
-            UserDao userDao = transaction.createDao(UserDao.class);
             orderedDishes = orderedDishDao.findAll();
-            for (OrderedDish orderedDish : orderedDishes) {
-                findOrderAndSetToOrderedDish(orderDao, userDao, orderedDish);
-                findDishAndSetToOrderedDish(dishDao, orderedDish);
+            if (!orderedDishes.isEmpty()) {
+                OrderDao orderDao = transaction.createDao(OrderDao.class);
+                DishDao dishDao = transaction.createDao(DishDao.class);
+                UserDao userDao = transaction.createDao(UserDao.class);
+                for (OrderedDish orderedDish : orderedDishes) {
+                    findOrderAndSetToOrderedDish(orderDao, userDao, orderedDish);
+                    findDishAndSetToOrderedDish(dishDao, orderedDish);
+                }
             }
         } catch (DaoException e) {
             throw new ServiceException(
@@ -194,7 +196,8 @@ public class OrderedDishServiceImpl implements OrderedDishService {
         return result;
     }
 
-    private void findOrderAndSetToOrderedDish(OrderDao orderDao, UserDao userDao,
+    private void findOrderAndSetToOrderedDish(OrderDao orderDao,
+                                              UserDao userDao,
                                               OrderedDish orderedDish)
             throws DaoException, ServiceException {
         Long orderId = orderedDish.getOrder().getId();

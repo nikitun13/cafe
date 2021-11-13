@@ -62,10 +62,12 @@ public class OrderServiceImpl implements OrderService {
         List<Order> orders;
         try (Transaction transaction = transactionFactory.createTransaction()) {
             OrderDao orderDao = transaction.createDao(OrderDao.class);
-            UserDao userDao = transaction.createDao(UserDao.class);
             orders = orderDao.findAll();
-            for (Order order : orders) {
-                findUserAndSetToOrder(userDao, order);
+            if (!orders.isEmpty()) {
+                UserDao userDao = transaction.createDao(UserDao.class);
+                for (Order order : orders) {
+                    findUserAndSetToOrder(userDao, order);
+                }
             }
         } catch (DaoException e) {
             throw new ServiceException(
@@ -87,15 +89,12 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> maybeOrder;
         try (Transaction transaction = transactionFactory.createTransaction()) {
             OrderDao orderDao = transaction.createDao(OrderDao.class);
-            UserDao userDao = transaction.createDao(UserDao.class);
             maybeOrder = orderDao.findById(id);
-            maybeOrder.ifPresent(order -> {
-                try {
-                    findUserAndSetToOrder(userDao, order);
-                } catch (DaoException e) {
-                    log.warn("unexpected exception", e);
-                }
-            });
+            if (maybeOrder.isPresent()) {
+                UserDao userDao = transaction.createDao(UserDao.class);
+                Order order = maybeOrder.get();
+                findUserAndSetToOrder(userDao, order);
+            }
         } catch (DaoException e) {
             throw new ServiceException(
                     "Dao exception during findById method", e);
@@ -189,10 +188,12 @@ public class OrderServiceImpl implements OrderService {
         List<Order> orders;
         try (Transaction transaction = transactionFactory.createTransaction()) {
             OrderDao orderDao = transaction.createDao(OrderDao.class);
-            UserDao userDao = transaction.createDao(UserDao.class);
             orders = orderDao.findByCreatedAtBetween(from, to);
-            for (Order order : orders) {
-                findUserAndSetToOrder(userDao, order);
+            if (!orders.isEmpty()) {
+                UserDao userDao = transaction.createDao(UserDao.class);
+                for (Order order : orders) {
+                    findUserAndSetToOrder(userDao, order);
+                }
             }
         } catch (DaoException e) {
             throw new ServiceException(
@@ -206,11 +207,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void findUserAndSetToOrder(UserDao userDao, Order order)
-            throws DaoException {
+            throws DaoException, ServiceException {
         Long userId = order.getUser().getId();
         Optional<User> maybeUser = userDao.findById(userId);
-        maybeUser.ifPresentOrElse(order::setUser,
-                () -> log.warn("User with id {} wasn't found. Order: {}",
-                        userId, order));
+        User user = maybeUser.orElseThrow(ServiceException::new);
+        order.setUser(user);
     }
 }

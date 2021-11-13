@@ -14,6 +14,7 @@ import by.training.cafe.entity.DishCategory;
 public final class DishDtoValidator implements Validator<DishDto> {
 
     private static final DishDtoValidator INSTANCE = new DishDtoValidator();
+    private static final int MAX_DESCRIPTION_LENGTH = 1024;
 
     private final Validator<String> stringValidator
             = StringValidator.getInstance();
@@ -40,6 +41,7 @@ public final class DishDtoValidator implements Validator<DishDto> {
                 && DishCategory.contains(category.toUpperCase())
                 && price != null
                 && price > 0L
-                && stringValidator.isValid(description);
+                && stringValidator.isValid(description)
+                && description.length() <= MAX_DESCRIPTION_LENGTH;
     }
 }

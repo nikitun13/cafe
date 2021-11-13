@@ -34,7 +34,7 @@ public interface OrderedDishService extends Service {
      * @param orderId {@code id} of the {@code order}.
      * @param dishId  {@code id} of the {@code dish}.
      * @return optional {@code orderedDishDto}. If entity was found
-     * optional contains {@code dishDao}, otherwise empty optional.
+     * optional contains {@link OrderedDishDto}, otherwise empty optional.
      * @throws ServiceException if {@code id} is invalid
      *                          or DaoException occurred.
      */
@@ -85,5 +85,6 @@ public interface OrderedDishService extends Service {
      * @throws ServiceException if {@code orderDto} is invalid
      *                          or DaoException occurred.
      */
-    List<OrderedDishDto> findByOrderDto(OrderDto orderDto) throws ServiceException;
+    List<OrderedDishDto> findByOrderDto(OrderDto orderDto)
+            throws ServiceException;
 }

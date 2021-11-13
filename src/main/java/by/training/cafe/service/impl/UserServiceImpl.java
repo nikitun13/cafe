@@ -204,7 +204,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean delete(UserDto userDto) throws ServiceException {
         log.debug(RECEIVED_USER_DTO_LOG_MESSAGE, userDto);
-        if (userDto == null || userDto.getId() == null || userDto.getId() < 1) {
+        if (!userDtoValidator.isValid(userDto)) {
             throw new ServiceException(USER_DTO_IS_INVALID_MESSAGE + userDto);
         }
         Long id = userDto.getId();

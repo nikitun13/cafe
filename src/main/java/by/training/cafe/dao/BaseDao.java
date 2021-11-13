@@ -1,5 +1,7 @@
 package by.training.cafe.dao;
 
+import by.training.cafe.entity.Entity;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +13,7 @@ import java.util.Optional;
  * @param <E> entity itself.
  * @author Nikita Romanov
  */
-public interface BaseDao<K, E> {
+public interface BaseDao<K, E extends Entity> {
 
     /**
      * Finds all {@code entities}  from the storage.
