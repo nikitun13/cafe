@@ -2,9 +2,7 @@ package by.training.cafe.service.impl;
 
 import by.training.cafe.dao.TransactionFactory;
 import by.training.cafe.dao.postgres.transaction.TransactionFactoryImpl;
-import by.training.cafe.service.DishService;
-import by.training.cafe.service.Service;
-import by.training.cafe.service.ServiceFactory;
+import by.training.cafe.service.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,9 +30,24 @@ public final class ServiceFactoryImpl implements ServiceFactory, AutoCloseable {
     private ServiceFactoryImpl() {
         TransactionFactory transactionFactory
                 = TransactionFactoryImpl.getInstance();
+        EncoderService encoderService = new BCryptEncoderServiceImpl();
         repository = new HashMap<>();
         repository.put(DishService.class,
                 new DishServiceImpl(transactionFactory));
+
+        repository.put(UserService.class,
+                new UserServiceImpl(transactionFactory, encoderService));
+
+        repository.put(OrderService.class,
+                new OrderServiceImpl(transactionFactory));
+
+        repository.put(OrderedDishService.class,
+                new OrderedDishServiceImpl(transactionFactory));
+
+        repository.put(CommentService.class,
+                new CommentServiceImpl(transactionFactory));
+
+        repository.put(EncoderService.class, encoderService);
     }
 
     public static ServiceFactoryImpl getInstance() {
