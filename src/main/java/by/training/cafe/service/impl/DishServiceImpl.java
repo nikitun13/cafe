@@ -17,6 +17,7 @@ import by.training.cafe.service.validator.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -140,9 +141,9 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public Map<String, List<DishDto>> findAllGroupByCategory()
-            throws ServiceException {
-        Map<String, List<DishDto>> resultMap = findAll().stream()
+    public Map<String, List<DishDto>> groupByCategory(List<DishDto> dishes) {
+        Map<String, List<DishDto>> resultMap = dishes.stream()
+                .filter(dishDto -> dishDto.getCategory() != null)
                 .collect(groupingBy(DishDto::getCategory));
         log.debug("result map: {}", resultMap);
         return resultMap;
@@ -152,12 +153,14 @@ public class DishServiceImpl implements DishService {
     public List<DishDto> findByNameOrDescriptionLike(String str)
             throws ServiceException {
         log.debug("Received str: {}", str);
-        if (!stringValidator.isValid(str)) {
+        if (!stringValidator.isValid(str) || str.length() > 64) {
             throw new ServiceException("String is invalid: " + str);
         }
+        List<String> words = Arrays.asList(str.strip().split("\\s+"));
+        log.debug("Result words: {}", words);
         try (Transaction transaction = transactionFactory.createTransaction()) {
             DishDao dishDao = transaction.createDao(DishDao.class);
-            List<DishDto> result = dishDao.findByNameOrDescriptionLike(str)
+            List<DishDto> result = dishDao.findByNameOrDescriptionLike(words)
                     .stream()
                     .map(mapper::mapEntityToDto)
                     .toList();

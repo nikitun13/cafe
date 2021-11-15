@@ -108,22 +108,21 @@ class DishDaoImplTest {
 
     public static Stream<Arguments> dataForFindByNameLikeOrDescriptionLike() {
         return Stream.of(
-                Arguments.of("pizza", List.of(FOUR_SEASONS, CHICKEN_BBQ)),
-                Arguments.of("Pizza", List.of(FOUR_SEASONS, CHICKEN_BBQ)),
-                Arguments.of("PIZZA", List.of(FOUR_SEASONS, CHICKEN_BBQ)),
-                Arguments.of("PiZzA", List.of(FOUR_SEASONS, CHICKEN_BBQ)),
-                Arguments.of("pizza", List.of(FOUR_SEASONS, CHICKEN_BBQ)),
-                Arguments.of("                  pizza              ", List.of(FOUR_SEASONS, CHICKEN_BBQ)),
-                Arguments.of("                  piz za              ", List.of(FOUR_SEASONS, CHICKEN_BBQ)),
-                Arguments.of("        Really          pizza              ", List.of(FOUR_SEASONS)),
-                Arguments.of("really pizza", List.of(FOUR_SEASONS)),
-                Arguments.of("drink", List.of(COCA_COLA)),
-                Arguments.of("bbq", List.of(CHICKEN_BBQ)),
-                Arguments.of("BBQ", List.of(CHICKEN_BBQ)),
-                Arguments.of("season", List.of(FOUR_SEASONS)),
-                Arguments.of("and", List.of(CHICKEN_BBQ, COCA_COLA)),
-                Arguments.of("Really", List.of(FOUR_SEASONS)),
-                Arguments.of("i", List.of(FOUR_SEASONS, CHICKEN_BBQ, COCA_COLA))
+                Arguments.of(List.of("pizza"), List.of(FOUR_SEASONS, CHICKEN_BBQ)),
+                Arguments.of(List.of("Pizza"), List.of(FOUR_SEASONS, CHICKEN_BBQ)),
+                Arguments.of(List.of("PIZZA"), List.of(FOUR_SEASONS, CHICKEN_BBQ)),
+                Arguments.of(List.of("PiZzA"), List.of(FOUR_SEASONS, CHICKEN_BBQ)),
+                Arguments.of(List.of("pizZa"), List.of(FOUR_SEASONS, CHICKEN_BBQ)),
+                Arguments.of(List.of("piz", "za"), List.of(FOUR_SEASONS, CHICKEN_BBQ)),
+                Arguments.of(List.of("Really", "pizza"), List.of(FOUR_SEASONS)),
+                Arguments.of(List.of("drink"), List.of(COCA_COLA)),
+                Arguments.of(List.of("bbq"), List.of(CHICKEN_BBQ)),
+                Arguments.of(List.of("BBQ"), List.of(CHICKEN_BBQ)),
+                Arguments.of(List.of("season"), List.of(FOUR_SEASONS)),
+                Arguments.of(List.of("and"), List.of(CHICKEN_BBQ, COCA_COLA)),
+                Arguments.of(List.of("Really"), List.of(FOUR_SEASONS)),
+                Arguments.of(List.of("i"), List.of(FOUR_SEASONS, CHICKEN_BBQ, COCA_COLA)),
+                Arguments.of(List.of("pizza", "caffeine"), Collections.emptyList())
         );
     }
 
@@ -245,10 +244,10 @@ class DishDaoImplTest {
     @ParameterizedTest
     @MethodSource("dataForFindByNameLikeOrDescriptionLike")
     @Tag("findByNameLikeOrDescriptionLike")
-    void shouldReturnListOfDishesWhichNameOrDescriptionContainsGivenString(String str,
-                                                                           List<Dish> expected)
+    void shouldReturnListOfDishesWhichNameOrDescriptionContainsGivenWords(List<String> words,
+                                                                          List<Dish> expected)
             throws DaoException {
-        List<Dish> actual = dishDao.findByNameOrDescriptionLike(str);
+        List<Dish> actual = dishDao.findByNameOrDescriptionLike(words);
 
         Assertions.assertThat(actual).hasSameSizeAs(expected).hasSameElementsAs(expected);
     }

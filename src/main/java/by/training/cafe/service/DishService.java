@@ -72,15 +72,14 @@ public interface DishService extends Service {
      * Returns all {@code Dish} mapped to {@link DishDto}
      * and groups them by category.
      *
+     * @param dishes DTOs to be grouped by category.
      * @return Map of Category vs List of {@link DishDto}.
-     * @throws ServiceException if DaoException occurred.
      */
-    Map<String, List<DishDto>> findAllGroupByCategory() throws ServiceException;
+    Map<String, List<DishDto>> groupByCategory(List<DishDto> dishes);
 
     /**
-     * Returns all {@code Dish} mapped to {@link DishDto}
-     * that contains in name or description given {@code str}.
-     * It is possible to use more than one word in the {@code str}.
+     * Returns all {@code Dish} mapped to {@link DishDto} that contains
+     * all words from the given {@code str} in the name or description.
      *
      * @param str string for searching.
      * @return list of {@link DishDto}.

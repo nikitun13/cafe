@@ -379,14 +379,12 @@ class DishServiceImplTest {
 
     @Test
     @Tag("findAllGroupByCategory")
-    void shouldMapToEntityAndGroupByCategory() throws DaoException, ServiceException {
-        doReturn(List.of(FOUR_SEASONS_DISH, CHICKEN_BBQ_DISH, COCA_COLA_DISH))
-                .when(dishDao).findAll();
+    void shouldGroupByCategory() {
         Map<String, List<DishDto>> expected = Map.of(
                 "Pizza", List.of(FOUR_SEASONS_DTO, CHICKEN_BBQ_DTO),
                 "Drinks", List.of(COCA_COLA_DTO));
 
-        Map<String, List<DishDto>> actual = service.findAllGroupByCategory();
+        Map<String, List<DishDto>> actual = service.groupByCategory(List.of(FOUR_SEASONS_DTO, CHICKEN_BBQ_DTO, COCA_COLA_DTO));
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -397,7 +395,7 @@ class DishServiceImplTest {
         List<DishDto> expected = List.of(FOUR_SEASONS_DTO, CHICKEN_BBQ_DTO);
         doReturn(List.of(FOUR_SEASONS_DISH, CHICKEN_BBQ_DISH))
                 .when(dishDao)
-                .findByNameOrDescriptionLike("pizza");
+                .findByNameOrDescriptionLike(List.of("pizza"));
 
         List<DishDto> actual = service.findByNameOrDescriptionLike("pizza");
 

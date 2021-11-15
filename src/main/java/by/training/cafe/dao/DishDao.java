@@ -16,14 +16,15 @@ import java.util.List;
 public interface DishDao extends BaseDao<Long, Dish> {
 
     /**
-     * Finds {@code dishes} by string in the {@code name}
+     * Finds {@code dishes} by all the given strings
+     * (or substring) in the {@code name}
      * or {@code description} (case insensitive).
      *
-     * @param str string for searching.
+     * @param words list of string for searching.
      * @return list of found {@code dishes}.
      * @throws DaoException if storage access error occurs.
      */
-    List<Dish> findByNameOrDescriptionLike(String str) throws DaoException;
+    List<Dish> findByNameOrDescriptionLike(List<String> words) throws DaoException;
 
     /**
      * Finds {@code dishes} by {@code category}.

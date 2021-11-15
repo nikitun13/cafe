@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -39,10 +40,10 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
             FROM dish""";
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
-    private static final String FIND_BY_NAME_LIKE_SQL
-            = FIND_ALL_SQL + WHERE_SQL + "name ILIKE ?";
+    private static final String NAME_LIKE_OR_DESCRIPTION_LIKE_SQL
+            = "(name ILIKE ?" + OR_SQL + "description ILIKE ?)";
     private static final String FIND_BY_NAME_LIKE_OR_DESCRIPTION_LIKE_SQL
-            = FIND_BY_NAME_LIKE_SQL + OR_SQL + "description ILIKE ?";
+            = FIND_ALL_SQL + WHERE_SQL + NAME_LIKE_OR_DESCRIPTION_LIKE_SQL;
     private static final String FIND_BY_CATEGORY_SQL
             = FIND_ALL_SQL + WHERE_SQL + "category = ?::dish_category";
     private static final String CREATE_SQL = """
@@ -125,17 +126,36 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
     }
 
     @Override
-    public List<Dish> findByNameOrDescriptionLike(String str)
+    public List<Dish> findByNameOrDescriptionLike(List<String> words)
             throws DaoException {
-        log.debug("Received string: {}", str);
-        str = PERCENT
-                + str.strip().replaceAll("\\s+", PERCENT)
-                + PERCENT;
-        log.debug("Modified string: {}", str);
-        List<Dish> dishes = executeSelectQuery(
-                FIND_BY_NAME_LIKE_OR_DESCRIPTION_LIKE_SQL, List.of(str, str));
-        log.debug(RESULT_LOG_MESSAGE, dishes);
-        return dishes;
+        log.debug("Received words: {}", words);
+        StringBuilder sqlBuilder = new StringBuilder(FIND_BY_NAME_LIKE_OR_DESCRIPTION_LIKE_SQL);
+        for (int i = 1; i < words.size(); i++) {
+            sqlBuilder.append(AND_SQL)
+                    .append(NAME_LIKE_OR_DESCRIPTION_LIKE_SQL);
+        }
+        List<String> sqlWords = words.stream()
+                .map(word -> PERCENT + word + PERCENT)
+                .toList();
+        log.debug("Modified words: {}", sqlWords);
+        try (PreparedStatement prepareStatement
+                     = connection.prepareStatement(sqlBuilder.toString())) {
+            int counter = 0;
+            for (String sqlWord : sqlWords) {
+                prepareStatement.setObject(++counter, sqlWord);
+                prepareStatement.setObject(++counter, sqlWord);
+            }
+            log.debug(EXECUTING_SQL_LOG_MESSAGE, prepareStatement);
+            ResultSet resultSet = prepareStatement.executeQuery();
+            List<Dish> dishes = new ArrayList<>();
+            while (resultSet.next()) {
+                dishes.add(buildEntity(resultSet));
+            }
+            log.debug(RESULT_LOG_MESSAGE, dishes);
+            return dishes;
+        } catch (SQLException e) {
+            throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
+        }
     }
 
     @Override
