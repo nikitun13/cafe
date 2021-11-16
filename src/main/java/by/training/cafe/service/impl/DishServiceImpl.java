@@ -17,10 +17,7 @@ import by.training.cafe.service.validator.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -142,9 +139,11 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public Map<String, List<DishDto>> groupByCategory(List<DishDto> dishes) {
-        Map<String, List<DishDto>> resultMap = dishes.stream()
+        Map<String, List<DishDto>> resultMap = new TreeMap<>(
+                Comparator.comparing(o -> DishCategory.valueOf(o.toUpperCase())));
+        resultMap.putAll(dishes.stream()
                 .filter(dishDto -> dishDto.getCategory() != null)
-                .collect(groupingBy(DishDto::getCategory));
+                .collect(groupingBy(DishDto::getCategory)));
         log.debug("result map: {}", resultMap);
         return resultMap;
     }

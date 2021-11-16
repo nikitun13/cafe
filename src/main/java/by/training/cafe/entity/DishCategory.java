@@ -8,7 +8,7 @@ package by.training.cafe.entity;
  */
 public enum DishCategory {
 
-    PIZZA, SNACKS, DESSERTS, SAUCES, DRINKS, SALADS;
+    PIZZA, SNACKS, SAUCES, DRINKS, DESSERTS, SALADS;
 
     public static boolean contains(String test) {
         for (DishCategory category : DishCategory.values()) {
