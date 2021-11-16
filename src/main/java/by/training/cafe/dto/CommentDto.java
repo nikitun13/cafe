@@ -1,10 +1,14 @@
 package by.training.cafe.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 public class CommentDto implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private Long id;
     private UserDto user;

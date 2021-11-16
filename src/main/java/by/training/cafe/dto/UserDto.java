@@ -2,10 +2,14 @@ package by.training.cafe.dto;
 
 import by.training.cafe.entity.UserRole;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class UserDto implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private Long id;
     private String email;

@@ -1,9 +1,13 @@
 package by.training.cafe.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class OrderedDishDto implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private OrderDto order;
     private DishDto dish;

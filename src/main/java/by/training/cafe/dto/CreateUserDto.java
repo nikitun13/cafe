@@ -1,9 +1,13 @@
 package by.training.cafe.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class CreateUserDto implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private String email;
     private String password;
