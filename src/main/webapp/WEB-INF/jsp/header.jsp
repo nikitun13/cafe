@@ -38,9 +38,6 @@
         <div class="col-md-3 col-sm-12 text-end">
             <c:choose>
                 <c:when test="${empty sessionScope.user}">
-                    <a href="<c:url value="/cart"/>" class="btn btn-success me-2">
-                        <fmt:message key="cafe.cart"/>
-                    </a>
                     <a href="<c:url value="/signin"/>" class="btn btn-outline-primary me-2">
                         <fmt:message key="cafe.signIn"/>
                     </a>
