@@ -5,14 +5,22 @@ import java.io.IOException;
 
 public class EncodingFilter implements Filter {
 
-    private static final String ENCODING = "UTF-8";
+    private String encoding;
+
+    @Override
+    public void init(FilterConfig filterConfig) {
+        ServletContext context = filterConfig.getServletContext();
+        String encodingKey = "encoding";
+        encoding = (String) context.getAttribute(encodingKey);
+        context.removeAttribute(encodingKey);
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain filterChain)
             throws IOException, ServletException {
-        request.setCharacterEncoding(ENCODING);
-        response.setCharacterEncoding(ENCODING);
+        request.setCharacterEncoding(encoding);
+        response.setCharacterEncoding(encoding);
 
         filterChain.doFilter(request, response);
     }
