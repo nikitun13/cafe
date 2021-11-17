@@ -1,9 +1,13 @@
 package by.training.cafe.controller.filter;
 
 import javax.servlet.*;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 
 public class RequestFilter implements Filter {
 
@@ -23,6 +27,16 @@ public class RequestFilter implements Filter {
             httpRequest.getRequestDispatcher(requestURI)
                     .forward(request, response);
         } else {
+            String localeKey = "locale";
+            HttpSession session = httpRequest.getSession();
+            if (session.getAttribute(localeKey) == null) {
+                Optional<Cookie> maybeLocaleCookie
+                        = Arrays.stream(httpRequest.getCookies())
+                        .filter(cookie -> cookie.getName().equals(localeKey))
+                        .findFirst();
+                maybeLocaleCookie.ifPresent(cookie ->
+                        session.setAttribute(localeKey, cookie.getValue()));
+            }
             filterChain.doFilter(request, response);
         }
     }
