@@ -41,6 +41,7 @@ public final class ConnectionPool {
     }
 
     private ConnectionPool() {
+        log.info("Initializing connection pool");
         try {
             Class.forName(PropertiesUtil.get(DRIVER_KEY));
         } catch (ClassNotFoundException e) {
@@ -52,10 +53,11 @@ public final class ConnectionPool {
         sourceConnections = new ArrayList<>(initSize);
         for (int i = 0; i < initSize; i++) {
             Connection connection = openConnection();
-            Connection proxyConnection = proxyConnection(connection);
             sourceConnections.add(connection);
+            Connection proxyConnection = proxyConnection(connection);
             pool.add(proxyConnection);
         }
+        log.info("Connection pool initialized");
     }
 
     /**
@@ -79,14 +81,15 @@ public final class ConnectionPool {
      * Closes all connections.
      */
     public void closePool() {
-        log.debug("Closing connection pool");
-        try {
-            for (Connection sourceConnection : sourceConnections) {
+        log.info("Closing connection pool");
+        for (Connection sourceConnection : sourceConnections) {
+            try {
                 sourceConnection.close();
+            } catch (SQLException e) {
+                log.fatal(e);
             }
-        } catch (SQLException e) {
-            log.fatal(e);
         }
+        log.info("Connection pool closed");
     }
 
     private Connection proxyConnection(Connection connection) {
