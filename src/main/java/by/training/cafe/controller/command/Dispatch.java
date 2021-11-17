@@ -15,6 +15,7 @@ public class Dispatch {
     private String path;
 
     public Dispatch() {
+        this(DispatchType.RETURN, null);
     }
 
     public Dispatch(DispatchType type, String path) {
@@ -60,6 +61,6 @@ public class Dispatch {
     }
 
     public enum DispatchType {
-        FORWARD, REDIRECT
+        FORWARD, REDIRECT, RETURN
     }
 }
