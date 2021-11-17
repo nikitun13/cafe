@@ -13,11 +13,11 @@
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout disableAnsi="false" pattern="${pattern_console}"/>
+            <PatternLayout charset="UTF-8" disableAnsi="false" pattern="${pattern_console}"/>
         </Console>
         <RollingFile name="RollingFile" fileName="${LOG_DIR}/app.log" append="true"
                      filePattern="${LOG_DIR}/${date:yyyy-MM-dd}/%d{yyyy-MM-dd_HH-mm}_%i.log">
-            <PatternLayout pattern="${pattern_file}"/>
+            <PatternLayout charset="UTF-8" pattern="${pattern_file}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="2 MB"/>
             </Policies>
