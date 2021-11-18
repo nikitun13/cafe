@@ -32,7 +32,11 @@
 
         <form class="col-md-6 col-sm-12 mb-1 mt-2 mb-sm-2">
             <input name="q" type="search" class="form-control"
-                   placeholder="<fmt:message key="header.search"/>..." aria-label="Search">
+                   placeholder="<fmt:message key="header.search"/>..." aria-label="Search"
+                    <c:if test="${not empty requestScope.searchString}">
+                        value="<c:out value="${requestScope.searchString}"/>"
+                    </c:if>
+            />
         </form>
 
         <div class="col-md-3 col-sm-12 text-end">

@@ -1,11 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fmd" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<jsp:include page="locale.jsp"/>
+<c:import url="locale.jsp" charEncoding="utf-8"/>
+
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-100">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -13,10 +13,10 @@
     <link rel="shortcut icon" href="<c:url value="/img/favicon.ico"/>" type="image/x-icon"/>
     <title>Cafe - <fmt:message key="cafe.main"/></title>
 </head>
-<body class="d-flex flex-column h-100" data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="50"
-      style="position:relative;">
+<body class="d-flex flex-column h-100 position-relative"
+      data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="50">
 
-<jsp:include page="header.jsp"/>
+<c:import url="header.jsp" charEncoding="utf-8"/>
 
 <main>
     <div class="container text-center">
@@ -70,9 +70,14 @@
             <div class="col-xxl-2 col-xl-1 col-sm-12"></div>
             <div class="col-xxl-8 col-xl-8 col-lg-9 col-md-8 col-sm-6">
                 <c:if test="${empty requestScope.groupedDishes}">
-                    <div class="text-center">
-                        <span class="display-6">
+                    <div class="d-flex flex-wrap justify-content-center">
+                        <img src="<c:url value="/img/nothing-found.png"/>"
+                             class="img-fluid my-3" alt="nothing found img"/>
+                        <span class="display-6 col-12 text-center">
                             <fmt:message key="main.nothingFound"/>
+                        </span>
+                        <span class="display-6 col-12 text-center">
+                            <fmt:message key="main.otherKeywords"/>
                         </span>
                     </div>
                 </c:if>
@@ -121,11 +126,11 @@
                 <div class="card me-xxl-3 me-xl-2 me-lg-1 me-md-0" id="cartBlock" style="width: 270px;">
                     <div class="card-body d-flex justify-content-between">
                         <h5 class="card-title">
-                            <fmd:message key="cafe.cart"/>
+                            <fmt:message key="cafe.cart"/>
                         </h5>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger total-count"></span>
                         <button class="border-0 bg-body text-danger mb-1 clear-cart" style="font-size: 14px;">
-                            <fmd:message key="main.clear"/>
+                            <fmt:message key="main.clear"/>
                         </button>
                     </div>
                     <ul class="list-group list-group-flush show-cart">
@@ -148,7 +153,7 @@
     </div>
 </main>
 
-<jsp:include page="footer.jsp"/>
+<c:import url="footer.jsp" charEncoding="utf-8"/>
 
 <script type="text/javascript" src="<c:url value="/js/jquery-3.6.0.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/js/cart.js"/>"></script>
