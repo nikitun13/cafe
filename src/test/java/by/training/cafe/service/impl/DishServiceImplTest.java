@@ -379,7 +379,7 @@ class DishServiceImplTest {
 
     @Test
     @Tag("findAllGroupByCategory")
-    void shouldGroupByCategory() {
+    void shouldGroupByCategory() throws ServiceException {
         Map<String, List<DishDto>> expected = Map.of(
                 "Pizza", List.of(FOUR_SEASONS_DTO, CHICKEN_BBQ_DTO),
                 "Drinks", List.of(COCA_COLA_DTO));

@@ -38,6 +38,7 @@ public class DishServiceImpl implements DishService {
             = "Result list: {}";
     private static final String DISH_DTO_IS_INVALID_MESSAGE
             = "DishDto is invalid: ";
+    private static final int MAX_SEARCH_STRING_LENGTH = 64;
 
     private final Mapper<Dish, DishDto> mapper
             = DishMapper.getInstance();
@@ -138,7 +139,11 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public Map<String, List<DishDto>> groupByCategory(List<DishDto> dishes) {
+    public Map<String, List<DishDto>> groupByCategory(List<DishDto> dishes)
+            throws ServiceException {
+        if (dishes == null) {
+            throw new ServiceException("List of DishDtos is invalid");
+        }
         Map<String, List<DishDto>> resultMap = new TreeMap<>(
                 Comparator.comparing(o -> DishCategory.valueOf(o.toUpperCase())));
         resultMap.putAll(dishes.stream()
@@ -152,7 +157,7 @@ public class DishServiceImpl implements DishService {
     public List<DishDto> findByNameOrDescriptionLike(String str)
             throws ServiceException {
         log.debug("Received str: {}", str);
-        if (!stringValidator.isValid(str) || str.length() > 64) {
+        if (!stringValidator.isValid(str) || str.length() > MAX_SEARCH_STRING_LENGTH) {
             throw new ServiceException("String is invalid: " + str);
         }
         List<String> words = Arrays.asList(str.strip().split("\\s+"));

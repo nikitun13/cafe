@@ -75,7 +75,8 @@ public interface DishService extends Service {
      * @param dishes DTOs to be grouped by category.
      * @return Map of Category vs List of {@link DishDto}.
      */
-    Map<String, List<DishDto>> groupByCategory(List<DishDto> dishes);
+    Map<String, List<DishDto>> groupByCategory(List<DishDto> dishes)
+            throws ServiceException;
 
     /**
      * Returns all {@code Dish} mapped to {@link DishDto} that contains
