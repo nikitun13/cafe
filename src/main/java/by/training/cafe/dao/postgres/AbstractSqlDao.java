@@ -31,11 +31,14 @@ public abstract class AbstractSqlDao<K, E> {
             = "SQLException occurred";
     protected static final String RESULT_LOG_MESSAGE = "Result: {}";
     protected static final String EXECUTING_SQL_LOG_MESSAGE = "Executing SQL: {}";
+    protected static final String COUNT_COLUMN_NAME = "count";
 
     protected static final String PERCENT = "%";
     protected static final String AND_SQL = " AND ";
     protected static final String OR_SQL = " OR ";
     protected static final String WHERE_SQL = " WHERE ";
+    protected static final String LIMIT_SQL = " LIMIT = ?";
+    protected static final String OFFSET_SQL = " OFFSET = ?";
 
     protected final Connection connection;
 
@@ -126,6 +129,21 @@ public abstract class AbstractSqlDao<K, E> {
                 return Optional.ofNullable(generatedKeys.getObject(1, keyClass));
             } else {
                 return Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
+        }
+    }
+
+    protected Long executeCountQuery(String sql) throws DaoException {
+        try (PreparedStatement prepareStatement
+                     = connection.prepareStatement(sql)) {
+            log.debug(EXECUTING_SQL_LOG_MESSAGE, prepareStatement);
+            ResultSet resultSet = prepareStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getObject(COUNT_COLUMN_NAME, Long.class);
+            } else {
+                throw new DaoException("Unexpected error");
             }
         } catch (SQLException e) {
             throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);

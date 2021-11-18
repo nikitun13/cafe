@@ -16,12 +16,31 @@ import java.util.Optional;
 public interface BaseDao<K, E extends Entity> {
 
     /**
-     * Finds all {@code entities}  from the storage.
+     * Finds all {@code entities} from the storage.
      *
      * @return list of all {@code entities} from the storage.
      * @throws DaoException if storage access error occurs.
      */
     List<E> findAll() throws DaoException;
+
+    /**
+     * Finds {@code entities} from the storage with the given
+     * {@code limit} and {@code offset}.
+     *
+     * @param limit  number of returning entities.
+     * @param offset offset in the storage.
+     * @return list of all {@code entities} from the storage.
+     * @throws DaoException if storage access error occurs.
+     */
+    List<E> findAll(Long limit, Long offset) throws DaoException;
+
+    /**
+     * Counts number of entities in the storage.
+     *
+     * @return number of entities.
+     * @throws DaoException if storage access error occurs.
+     */
+    Long count() throws DaoException;
 
     /**
      * Finds {@code entity} by its {@code id}.

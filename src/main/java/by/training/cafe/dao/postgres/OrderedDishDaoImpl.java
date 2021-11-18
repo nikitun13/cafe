@@ -40,6 +40,8 @@ public class OrderedDishDaoImpl
     private static final String FIND_ALL_SQL = """
             SELECT order_id, dish_id, dish_price, dish_count
             FROM dish_orders""";
+    private static final String FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL
+            = FIND_ALL_SQL + LIMIT_SQL + OFFSET_SQL;
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "order_id = ?" + AND_SQL + "dish_id = ?";
     private static final String FIND_BY_ORDER_ID_SQL
@@ -57,6 +59,9 @@ public class OrderedDishDaoImpl
             DELETE FROM dish_orders
             WHERE order_id = ?
               AND dish_id = ?""";
+    private static final String COUNT_SQL = """
+            SELECT count(order_id)
+            FROM dish_orders""";
 
     public OrderedDishDaoImpl(Connection connection) {
         super(connection);
@@ -68,6 +73,22 @@ public class OrderedDishDaoImpl
                 FIND_ALL_SQL, Collections.emptyList());
         log.debug(RESULT_LOG_MESSAGE, orderedDishes);
         return orderedDishes;
+    }
+
+    @Override
+    public List<OrderedDish> findAll(Long limit, Long offset) throws DaoException {
+        log.debug("Received limit = {}, offset = {}", limit, offset);
+        List<OrderedDish> orderedDishes = executeSelectQuery(
+                FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL, List.of(limit, offset));
+        log.debug(RESULT_LOG_MESSAGE, orderedDishes);
+        return orderedDishes;
+    }
+
+    @Override
+    public Long count() throws DaoException {
+        Long count = executeCountQuery(COUNT_SQL);
+        log.debug("Count result: {}", count);
+        return count;
     }
 
     @Override

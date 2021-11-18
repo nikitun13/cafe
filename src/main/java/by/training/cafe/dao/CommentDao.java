@@ -3,6 +3,7 @@ package by.training.cafe.dao;
 import by.training.cafe.entity.Comment;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The interface {@code CommentDao} is an interface that
@@ -33,4 +34,12 @@ public interface CommentDao extends BaseDao<Long, Comment> {
      * @throws DaoException if storage access error occurs.
      */
     List<Comment> findByDishId(Long dishId) throws DaoException;
+
+    /**
+     * Counts all comments grouped by rating.
+     *
+     * @return map where key is rating, value is counted entities.
+     * @throws DaoException if storage access error occurs.
+     */
+    Map<Short, Long> countGroupByRating() throws DaoException;
 }

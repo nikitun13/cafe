@@ -42,6 +42,8 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
             SELECT id, email, password, role, first_name,
             last_name, phone, points, is_blocked
             FROM users""";
+    private static final String FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL
+            = FIND_ALL_SQL + LIMIT_SQL + OFFSET_SQL;
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
     private static final String FIND_BY_EMAIL
@@ -71,6 +73,9 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
     private static final String DELETE_SQL = """
             DELETE FROM users
             WHERE id = ?""";
+    private static final String COUNT_SQL = """
+            SELECT count(id)
+            FROM users""";
 
     public UserDaoImpl(Connection connection) {
         super(connection);
@@ -82,6 +87,22 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
                 FIND_ALL_SQL, Collections.emptyList());
         log.debug(RESULT_LOG_MESSAGE, users);
         return users;
+    }
+
+    @Override
+    public List<User> findAll(Long limit, Long offset) throws DaoException {
+        log.debug("Received limit = {}, offset = {}", limit, offset);
+        List<User> users = executeSelectQuery(
+                FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL, List.of(limit, offset));
+        log.debug(RESULT_LOG_MESSAGE, users);
+        return users;
+    }
+
+    @Override
+    public Long count() throws DaoException {
+        Long count = executeCountQuery(COUNT_SQL);
+        log.debug("Count result: {}", count);
+        return count;
     }
 
     @Override

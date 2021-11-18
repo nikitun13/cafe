@@ -45,6 +45,8 @@ public class OrderDaoImpl
             SELECT id, user_id, created_at, expected_retrieve_date, actual_retrieve_date,
             status, debited_points, accrued_points, total_price
             FROM orders""";
+    private static final String FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL
+            = FIND_ALL_SQL + LIMIT_SQL + OFFSET_SQL;
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
     private static final String FIND_BY_USER_ID_SQL
@@ -71,6 +73,9 @@ public class OrderDaoImpl
     private static final String DELETE_SQL = """
             DELETE FROM orders
             WHERE id = ?""";
+    private static final String COUNT_SQL = """
+            SELECT count(id)
+            FROM orders""";
 
     public OrderDaoImpl(Connection connection) {
         super(connection);
@@ -82,6 +87,22 @@ public class OrderDaoImpl
                 FIND_ALL_SQL, Collections.emptyList());
         log.debug(RESULT_LOG_MESSAGE, orders);
         return orders;
+    }
+
+    @Override
+    public List<Order> findAll(Long limit, Long offset) throws DaoException {
+        log.debug("Received limit = {}, offset = {}", limit, offset);
+        List<Order> orders = executeSelectQuery(
+                FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL, List.of(limit, offset));
+        log.debug(RESULT_LOG_MESSAGE, orders);
+        return orders;
+    }
+
+    @Override
+    public Long count() throws DaoException {
+        Long count = executeCountQuery(COUNT_SQL);
+        log.debug("Count result: {}", count);
+        return count;
     }
 
     @Override

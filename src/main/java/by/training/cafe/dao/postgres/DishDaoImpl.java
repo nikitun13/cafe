@@ -38,6 +38,8 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
     private static final String FIND_ALL_SQL = """
             SELECT id, name, category, price, description
             FROM dish""";
+    private static final String FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL
+            = FIND_ALL_SQL + LIMIT_SQL + OFFSET_SQL;
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
     private static final String NAME_LIKE_OR_DESCRIPTION_LIKE_SQL
@@ -59,6 +61,9 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
     private static final String DELETE_SQL = """
             DELETE FROM dish
             WHERE id = ?""";
+    private static final String COUNT_SQL = """
+            SELECT count(id)
+            FROM dish""";
 
     public DishDaoImpl(Connection connection) {
         super(connection);
@@ -70,6 +75,22 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
                 FIND_ALL_SQL, Collections.emptyList());
         log.debug(RESULT_LOG_MESSAGE, dishes);
         return dishes;
+    }
+
+    @Override
+    public List<Dish> findAll(Long limit, Long offset) throws DaoException {
+        log.debug("Received limit = {}, offset = {}", limit, offset);
+        List<Dish> dishes = executeSelectQuery(
+                FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL, List.of(limit, offset));
+        log.debug(RESULT_LOG_MESSAGE, dishes);
+        return dishes;
+    }
+
+    @Override
+    public Long count() throws DaoException {
+        Long count = executeCountQuery(COUNT_SQL);
+        log.debug("Count result: {}", count);
+        return count;
     }
 
     @Override

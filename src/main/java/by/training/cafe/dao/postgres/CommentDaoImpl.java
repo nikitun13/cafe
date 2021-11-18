@@ -8,14 +8,8 @@ import by.training.cafe.entity.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.sql.*;
+import java.util.*;
 
 /**
  * The class {@code CommentDaoImpl} is a class that extends
@@ -41,6 +35,8 @@ public class CommentDaoImpl
     private static final String FIND_ALL_SQL = """
             SELECT id, user_id, dish_id, rating, body, created_at
             FROM comment""";
+    private static final String FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL
+            = FIND_ALL_SQL + LIMIT_SQL + OFFSET_SQL;
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
     private static final String FIND_BY_USER_ID_SQL
@@ -61,6 +57,14 @@ public class CommentDaoImpl
     private static final String DELETE_SQL = """
             DELETE FROM comment
             WHERE id = ?""";
+    private static final String COUNT_SQL = """
+            SELECT count(id)
+            FROM comment""";
+    private static final String COUNT_GROUP_BY_RATING_SQL = """
+            SELECT rating, count(id)
+            FROM comment
+            GROUP BY rating""";
+
 
     public CommentDaoImpl(Connection connection) {
         super(connection);
@@ -72,6 +76,22 @@ public class CommentDaoImpl
                 FIND_ALL_SQL, Collections.emptyList());
         log.debug(RESULT_LOG_MESSAGE, comments);
         return comments;
+    }
+
+    @Override
+    public List<Comment> findAll(Long limit, Long offset) throws DaoException {
+        log.debug("Received limit = {}, offset = {}", limit, offset);
+        List<Comment> comments = executeSelectQuery(
+                FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL, List.of(limit, offset));
+        log.debug(RESULT_LOG_MESSAGE, comments);
+        return comments;
+    }
+
+    @Override
+    public Long count() throws DaoException {
+        Long count = executeCountQuery(COUNT_SQL);
+        log.debug("Count result: {}", count);
+        return count;
     }
 
     @Override
@@ -143,6 +163,24 @@ public class CommentDaoImpl
                 FIND_BY_DISH_ID_SQL, List.of(dishId));
         log.debug(RESULT_LOG_MESSAGE, comments);
         return comments;
+    }
+
+    @Override
+    public Map<Short, Long> countGroupByRating() throws DaoException {
+        try (PreparedStatement prepareStatement
+                     = connection.prepareStatement(COUNT_GROUP_BY_RATING_SQL)) {
+            ResultSet resultSet = prepareStatement.executeQuery();
+            Map<Short, Long> result = new HashMap<>();
+            while (resultSet.next()) {
+                Short rating = resultSet.getObject(RATING_COLUMN_NAME, Short.class);
+                Long count = resultSet.getObject(COUNT_COLUMN_NAME, Long.class);
+                result.put(rating, count);
+            }
+            log.debug("Result map: {}", result);
+            return result;
+        } catch (SQLException e) {
+            throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
+        }
     }
 
     @Override
