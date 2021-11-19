@@ -1,0 +1,81 @@
+.item-details .top-area {
+    background-color: #f8f9fa;
+    padding: 30px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.product-details-info .single-block {
+    background-color: #f8f9fa;
+    padding: 15px 20px 0;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    margin-top: 30px;
+}
+
+.product-details-info .give-review h4 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 30px;
+}
+
+.product-details-info .give-review ul li {
+    display: block;
+    margin-bottom: 12px;
+}
+
+.product-details-info .give-review ul li span {
+    color: #666;
+    display: inline-block;
+    margin-right: 8px;
+    min-width: 80px;
+}
+
+.product-details-info .reviews .single-review .review-info {
+    border: 3px solid #e7e7e7;
+    border-radius: 4px;
+    padding: 10px 0 0 15px;
+}
+
+.product-details-info .reviews .single-review .review-info h4 {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+
+.review-modal .modal-dialog {
+    max-width: 600px;
+}
+
+.review-modal .modal-header {
+    padding: 25px;
+}
+
+.review-modal .modal-header h5 {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.review-modal .modal-body {
+    padding: 25px;
+}
+
+.review-modal .modal-body .form-group {
+    margin-bottom: 15px;
+}
+
+.review-modal .modal-body .form-group label {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.review-modal .modal-body .form-group input {
+    height: 45px;
+    width: 100%;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 0 18px;
+    font-size: 14px;
+}

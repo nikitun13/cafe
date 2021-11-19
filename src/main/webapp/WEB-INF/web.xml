@@ -60,4 +60,9 @@
         <servlet-name>Dispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+
+    <error-page>
+        <error-code>405</error-code>
+        <location>/WEB-INF/jsp/error.jsp</location>
+    </error-page>
 </web-app>
