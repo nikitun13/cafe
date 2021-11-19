@@ -37,8 +37,8 @@ public abstract class AbstractSqlDao<K, E> {
     protected static final String AND_SQL = " AND ";
     protected static final String OR_SQL = " OR ";
     protected static final String WHERE_SQL = " WHERE ";
-    protected static final String LIMIT_SQL = " LIMIT = ?";
-    protected static final String OFFSET_SQL = " OFFSET = ?";
+    protected static final String LIMIT_SQL = " LIMIT ?";
+    protected static final String OFFSET_SQL = " OFFSET ?";
 
     protected final Connection connection;
 
@@ -135,15 +135,19 @@ public abstract class AbstractSqlDao<K, E> {
         }
     }
 
-    protected Long executeCountQuery(String sql) throws DaoException {
+    protected Long executeCountQuery(String sql, Object... params)
+            throws DaoException {
         try (PreparedStatement prepareStatement
                      = connection.prepareStatement(sql)) {
+            for (int i = 0; i < params.length; ++i) {
+                prepareStatement.setObject(i + 1, params[i]);
+            }
             log.debug(EXECUTING_SQL_LOG_MESSAGE, prepareStatement);
             ResultSet resultSet = prepareStatement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getObject(COUNT_COLUMN_NAME, Long.class);
             } else {
-                throw new DaoException("Unexpected error");
+                throw new DaoException("Unexpected error. Result set is empty.");
             }
         } catch (SQLException e) {
             throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);

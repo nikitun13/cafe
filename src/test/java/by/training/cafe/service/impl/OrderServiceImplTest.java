@@ -501,7 +501,7 @@ class OrderServiceImplTest {
     }
 
     @Test
-    @Tag("findByUserDto")
+    @Tag("findByUserDtoOrderByCreatedAtDesc")
     void shouldReturnAllOrdersByGivenUser() throws DaoException, ServiceException {
         List<OrderDto> expected = List.of(IVAN_FIRST_ORDER_DTO, IVAN_SECOND_ORDER_DTO);
         doReturn(List.of(IVAN_FIRST_ORDER, IVAN_SECOND_ORDER))

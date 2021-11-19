@@ -48,7 +48,7 @@ class CommentDaoImplTest {
     private static final String INSERT_INTO_COMMENT_SQL = """
             INSERT INTO comment (id, user_id, dish_id, rating, body, created_at)
             VALUES (5000001, 1000001, 1000000, 3, 'Normal', '2021-11-03 10:25:06'),
-                   (5000002, 1000002, 1000000, 5, NULL, '2021-11-04 15:35:36'),
+                   (5000002, 1000002, 1000000, 5, 'Good :)', '2021-11-04 15:35:36'),
                    (5000003, 1000001, 1000001, 5, 'Perfect!', '2021-11-05 17:28:12')""";
     private static final String DELETE_DISHES_SQL = "DELETE FROM dish";
     private static final String DELETE_USERS_SQL = "DELETE FROM users";
@@ -84,6 +84,7 @@ class CommentDaoImplTest {
                 .user(User.builder().id(1000002L).build())
                 .dish(Dish.builder().id(1000000L).build())
                 .rating((short) 5)
+                .body("Good :)")
                 .createdAt(Timestamp.valueOf("2021-11-04 15:35:36"))
                 .build();
     }
@@ -101,6 +102,7 @@ class CommentDaoImplTest {
                 .user(User.builder().id(1000002L).build())
                 .dish(Dish.builder().id(1000000L).build())
                 .rating((short) 5)
+                .body("Good :)")
                 .createdAt(Timestamp.valueOf("2021-11-04 15:35:36"))
                 .build();
 
@@ -108,13 +110,14 @@ class CommentDaoImplTest {
                 .user(User.builder().id(1000003L).build())
                 .dish(Dish.builder().id(1000002L).build())
                 .rating((short) 2)
+                .body("Nice")
                 .createdAt(Timestamp.valueOf("2021-11-03 10:10:09"))
                 .build();
     }
 
     public static Stream<Arguments> dataForFindByUserId() {
         return Stream.of(
-                Arguments.of(1000001L, List.of(PETR_ABOUT_FOUR_SEASONS, PETR_ABOUT_CHICKEN_BBQ)),
+                Arguments.of(1000001L, List.of(PETR_ABOUT_CHICKEN_BBQ, PETR_ABOUT_FOUR_SEASONS)),
                 Arguments.of(1000002L, List.of(JOHN_ABOUT_FOUR_SEASONS)),
                 Arguments.of(1000000L, Collections.emptyList()),
                 Arguments.of(1000003L, Collections.emptyList())
@@ -123,7 +126,7 @@ class CommentDaoImplTest {
 
     public static Stream<Arguments> dataForFindByDishId() {
         return Stream.of(
-                Arguments.of(1000000L, List.of(PETR_ABOUT_FOUR_SEASONS, JOHN_ABOUT_FOUR_SEASONS)),
+                Arguments.of(1000000L, List.of(JOHN_ABOUT_FOUR_SEASONS, PETR_ABOUT_FOUR_SEASONS)),
                 Arguments.of(1000001L, List.of(PETR_ABOUT_CHICKEN_BBQ)),
                 Arguments.of(1000002L, Collections.emptyList())
         );
@@ -229,7 +232,7 @@ class CommentDaoImplTest {
     @MethodSource("dataForFindByUserId")
     @Tag("findByUserId")
     void shouldReturnListOfCommentsByUserId(Long userId, List<Comment> expected) throws DaoException {
-        List<Comment> actual = commentDao.findByUserId(userId);
+        List<Comment> actual = commentDao.findByUserIdOrderByCreatedAtDesc(userId);
 
         assertEquals(expected, actual, () -> "Must return list: " + expected);
     }
@@ -238,7 +241,7 @@ class CommentDaoImplTest {
     @MethodSource("dataForFindByDishId")
     @Tag("findByDishId")
     void findByDishId(Long dishId, List<Comment> expected) throws DaoException {
-        List<Comment> actual = commentDao.findByDishId(dishId);
+        List<Comment> actual = commentDao.findByDishIdOrderByCreatedAtDesc(dishId);
 
         assertEquals(expected, actual, () -> "Must return list: " + expected);
     }

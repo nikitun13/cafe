@@ -8,8 +8,18 @@ import by.training.cafe.entity.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.*;
-import java.util.*;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * The class {@code CommentDaoImpl} is a class that extends
@@ -32,6 +42,8 @@ public class CommentDaoImpl
     private static final String BODY_COLUMN_NAME = "body";
     private static final String CREATED_AT_COLUMN_NAME = "created_at";
 
+    private static final String ORDER_BY_CREATED_AT_DESC_SQL
+            = " ORDER BY created_at DESC";
     private static final String FIND_ALL_SQL = """
             SELECT id, user_id, dish_id, rating, body, created_at
             FROM comment""";
@@ -40,9 +52,13 @@ public class CommentDaoImpl
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
     private static final String FIND_BY_USER_ID_SQL
-            = FIND_ALL_SQL + WHERE_SQL + "user_id = ?";
-    private static final String FIND_BY_DISH_ID_SQL
-            = FIND_ALL_SQL + WHERE_SQL + "dish_id = ?";
+            = FIND_ALL_SQL + WHERE_SQL + "user_id = ?"
+            + ORDER_BY_CREATED_AT_DESC_SQL;
+    private static final String FIND_BY_DISH_ID_ORDER_BY_CREATED_AT_DESC_SQL
+            = FIND_ALL_SQL + WHERE_SQL + "dish_id = ?"
+            + ORDER_BY_CREATED_AT_DESC_SQL;
+    private static final String FIND_WITH_LIMIT_AND_OFFSET_BY_DISH_ID_ORDER_BY_CREATED_AT_DESC_SQL
+            = FIND_BY_DISH_ID_ORDER_BY_CREATED_AT_DESC_SQL + LIMIT_SQL + OFFSET_SQL;
     private static final String CREATE_SQL = """
             INSERT INTO comment (user_id, dish_id, rating, body,created_at)
             VALUES (?, ?, ?, ?, ?::TIMESTAMP)""";
@@ -60,10 +76,17 @@ public class CommentDaoImpl
     private static final String COUNT_SQL = """
             SELECT count(id)
             FROM comment""";
-    private static final String COUNT_GROUP_BY_RATING_SQL = """
+    private static final String COUNT_BY_DISH_ID_SQL
+            = COUNT_SQL + WHERE_SQL + DISH_ID_COLUMN_NAME + " = ?";
+    private static final String COUNT_BY_DISH_ID_GROUP_BY_RATING_SQL = """
             SELECT rating, count(id)
             FROM comment
+            WHERE dish_id = ?
             GROUP BY rating""";
+    private static final String COUNT_AVERAGE_RATING_SQL = """
+            SELECT avg(rating)
+            FROM comment
+            WHERE dish_id = ?""";
 
 
     public CommentDaoImpl(Connection connection) {
@@ -148,7 +171,8 @@ public class CommentDaoImpl
     }
 
     @Override
-    public List<Comment> findByUserId(Long userId) throws DaoException {
+    public List<Comment> findByUserIdOrderByCreatedAtDesc(Long userId)
+            throws DaoException {
         log.debug("Received userId = {}", userId);
         List<Comment> comments = executeSelectQuery(
                 FIND_BY_USER_ID_SQL, List.of(userId));
@@ -157,18 +181,36 @@ public class CommentDaoImpl
     }
 
     @Override
-    public List<Comment> findByDishId(Long dishId) throws DaoException {
+    public List<Comment> findByDishIdOrderByCreatedAtDesc(Long dishId)
+            throws DaoException {
         log.debug("Received dishId = {}", dishId);
         List<Comment> comments = executeSelectQuery(
-                FIND_BY_DISH_ID_SQL, List.of(dishId));
+                FIND_BY_DISH_ID_ORDER_BY_CREATED_AT_DESC_SQL, List.of(dishId));
         log.debug(RESULT_LOG_MESSAGE, comments);
         return comments;
     }
 
     @Override
-    public Map<Short, Long> countGroupByRating() throws DaoException {
+    public List<Comment> findByDishIdOrderByCreatedAtDesc(Long dishId,
+                                                          Long limit,
+                                                          Long offset)
+            throws DaoException {
+        log.debug("Received dishId = {}, limit = {}, offset = {}",
+                dishId, limit, offset);
+        List<Comment> comments = executeSelectQuery(
+                FIND_WITH_LIMIT_AND_OFFSET_BY_DISH_ID_ORDER_BY_CREATED_AT_DESC_SQL,
+                List.of(dishId, limit, offset));
+        log.debug(RESULT_LOG_MESSAGE, comments);
+        return comments;
+    }
+
+    @Override
+    public Map<Short, Long> countCommentsByDishIdGroupByRating(Long dishId)
+            throws DaoException {
         try (PreparedStatement prepareStatement
-                     = connection.prepareStatement(COUNT_GROUP_BY_RATING_SQL)) {
+                     = connection.prepareStatement(
+                COUNT_BY_DISH_ID_GROUP_BY_RATING_SQL)) {
+            prepareStatement.setObject(1, dishId);
             ResultSet resultSet = prepareStatement.executeQuery();
             Map<Short, Long> result = new HashMap<>();
             while (resultSet.next()) {
@@ -181,6 +223,32 @@ public class CommentDaoImpl
         } catch (SQLException e) {
             throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
         }
+    }
+
+    @Override
+    public Double averageDishRating(Long dishId) throws DaoException {
+        try (PreparedStatement prepareStatement
+                     = connection.prepareStatement(COUNT_AVERAGE_RATING_SQL)) {
+            prepareStatement.setObject(1, dishId);
+            ResultSet resultSet = prepareStatement.executeQuery();
+            if (resultSet.next()) {
+                Double average = resultSet.getObject(
+                        "avg", BigDecimal.class).doubleValue();
+                log.debug("Average rating = {} for dishId = {}", average, dishId);
+                return average;
+            } else {
+                throw new DaoException("Unexpected error. Result set is empty.");
+            }
+        } catch (SQLException e) {
+            throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
+        }
+    }
+
+    @Override
+    public Long countByDishId(Long dishId) throws DaoException {
+        Long count = executeCountQuery(COUNT_BY_DISH_ID_SQL, dishId);
+        log.debug("Count result: {}", count);
+        return count;
     }
 
     @Override

@@ -1,6 +1,11 @@
 package by.training.cafe.service.impl;
 
-import by.training.cafe.dao.*;
+import by.training.cafe.dao.CommentDao;
+import by.training.cafe.dao.DaoException;
+import by.training.cafe.dao.DishDao;
+import by.training.cafe.dao.Transaction;
+import by.training.cafe.dao.TransactionFactory;
+import by.training.cafe.dao.UserDao;
 import by.training.cafe.dto.CommentDto;
 import by.training.cafe.dto.DishDto;
 import by.training.cafe.dto.UserDto;
@@ -18,8 +23,12 @@ import by.training.cafe.service.validator.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
+import java.util.function.Function;
 
 /**
  * The class {@code CommentServiceImpl} is a class
@@ -34,10 +43,16 @@ public class CommentServiceImpl implements CommentService {
             = LogManager.getLogger(CommentServiceImpl.class);
     private static final String RECEIVED_COMMENT_DTO_LOG_MESSAGE
             = "Received CommentDto: {}";
+    private static final String RECEIVED_DISH_DTO_LOG_MESSAGE
+            = "Received dishDto: {}";
     private static final String RESULT_LIST_LOG_MESSAGE
             = "Result list: {}";
     private static final String COMMENT_DTO_IS_INVALID_MESSAGE
             = "CommentDto is invalid: ";
+    private static final String DISH_DTO_IS_INVALID_MESSAGE
+            = "DishDto is invalid: ";
+    private static final int MIN_RATING = 1;
+    private static final int MAX_RATING = 5;
 
     private final Mapper<Comment, CommentDto> mapper
             = CommentMapper.getInstance();
@@ -59,14 +74,7 @@ public class CommentServiceImpl implements CommentService {
         try (Transaction transaction = transactionFactory.createTransaction()) {
             CommentDao commentDao = transaction.createDao(CommentDao.class);
             comments = commentDao.findAll();
-            if (!comments.isEmpty()) {
-                UserDao userDao = transaction.createDao(UserDao.class);
-                DishDao dishDao = transaction.createDao(DishDao.class);
-                for (Comment comment : comments) {
-                    findUserAndSetToComment(userDao, comment);
-                    findDishAndSetToComment(dishDao, comment);
-                }
-            }
+            setUserAndDishToComment(comments, transaction);
         } catch (DaoException e) {
             throw new ServiceException(
                     "Dao exception during findAll method", e);
@@ -76,6 +84,43 @@ public class CommentServiceImpl implements CommentService {
                 .toList();
         log.debug(RESULT_LIST_LOG_MESSAGE, result);
         return result;
+    }
+
+
+    @Override
+    public List<CommentDto> findAll(long limit, long offset)
+            throws ServiceException {
+        if (limit < 1 || offset < 0) {
+            throw new ServiceException(
+                    "Limit or offset is invalid. Limit = %d, offset = %d"
+                            .formatted(limit, offset));
+        }
+        List<Comment> comments;
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            CommentDao commentDao = transaction.createDao(CommentDao.class);
+            comments = commentDao.findAll(limit, offset);
+            setUserAndDishToComment(comments, transaction);
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during findAll"
+                            + " with limit and offset method", e);
+        }
+        List<CommentDto> result = comments.stream()
+                .map(mapper::mapEntityToDto)
+                .toList();
+        log.debug(RESULT_LIST_LOG_MESSAGE, result);
+        return result;
+    }
+
+    @Override
+    public Long count() throws ServiceException {
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            CommentDao commentDao = transaction.createDao(CommentDao.class);
+            return commentDao.count();
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during count method", e);
+        }
     }
 
     @Override
@@ -159,7 +204,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDto> findByUserDto(UserDto userDto)
+    public List<CommentDto> findByUserDtoOrderByCreatedAtDesc(UserDto userDto)
             throws ServiceException {
         log.debug("Received userDto: {}", userDto);
         if (!userDtoValidator.isValid(userDto)) {
@@ -168,45 +213,71 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments;
         try (Transaction transaction = transactionFactory.createTransaction()) {
             CommentDao commentDao = transaction.createDao(CommentDao.class);
-            comments = commentDao.findByUserId(userDto.getId());
-            if (!comments.isEmpty()) {
-                DishDao dishDao = transaction.createDao(DishDao.class);
-                for (Comment comment : comments) {
-                    findDishAndSetToComment(dishDao, comment);
-                }
-            }
+            comments = commentDao.findByUserIdOrderByCreatedAtDesc(
+                    userDto.getId());
+            setUserAndDishToComment(comments, transaction);
         } catch (DaoException e) {
             throw new ServiceException(
-                    "Dao exception during findByUserId method", e);
+                    "Dao exception during "
+                            + "findByUserDtoOrderByCreatedAtDesc method", e);
         }
         List<CommentDto> result = comments.stream()
                 .map(mapper::mapEntityToDto)
                 .toList();
-        result.forEach(dto -> dto.setUser(userDto));
         log.debug(RESULT_LIST_LOG_MESSAGE, result);
         return result;
     }
 
     @Override
-    public List<CommentDto> findByDishDto(DishDto dishDto)
+    public List<CommentDto> findByDishDtoOrderByCreatedAtDesc(DishDto dishDto)
             throws ServiceException {
-        log.debug("Received dishDto: {}", dishDto);
+        log.debug(RECEIVED_DISH_DTO_LOG_MESSAGE, dishDto);
         if (!dishDtoValidator.isValid(dishDto)) {
-            throw new ServiceException("DishDto is invalid: " + dishDto);
+            throw new ServiceException(DISH_DTO_IS_INVALID_MESSAGE + dishDto);
         }
         List<Comment> comments;
         try (Transaction transaction = transactionFactory.createTransaction()) {
             CommentDao commentDao = transaction.createDao(CommentDao.class);
-            comments = commentDao.findByDishId(dishDto.getId());
-            if (!comments.isEmpty()) {
-                UserDao userDao = transaction.createDao(UserDao.class);
-                for (Comment comment : comments) {
-                    findUserAndSetToComment(userDao, comment);
-                }
-            }
+            comments = commentDao.findByDishIdOrderByCreatedAtDesc(
+                    dishDto.getId());
+            setUserAndDishToComment(comments, transaction);
         } catch (DaoException e) {
             throw new ServiceException(
-                    "Dao exception during findByUserId method", e);
+                    "Dao exception during"
+                            + " findByDishDtoOrderByCreatedAtDesc method", e);
+        }
+        List<CommentDto> result = comments.stream()
+                .map(mapper::mapEntityToDto)
+                .toList();
+        log.debug(RESULT_LIST_LOG_MESSAGE, result);
+        return result;
+    }
+
+    @Override
+    public List<CommentDto> findByDishDtoOrderByCreatedAtDesc(DishDto dishDto,
+                                                              long limit,
+                                                              long offset)
+            throws ServiceException {
+        log.debug(RECEIVED_DISH_DTO_LOG_MESSAGE, dishDto);
+        log.debug("limit = {}, offset = {}", limit, offset);
+        if (!dishDtoValidator.isValid(dishDto)) {
+            throw new ServiceException(DISH_DTO_IS_INVALID_MESSAGE + dishDto);
+        }
+        if (limit < 1 || offset < 0) {
+            throw new ServiceException(
+                    "Limit or offset is invalid. Limit = %d, offset = %d"
+                            .formatted(limit, offset));
+        }
+        List<Comment> comments;
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            CommentDao commentDao = transaction.createDao(CommentDao.class);
+            comments = commentDao.findByDishIdOrderByCreatedAtDesc(
+                    dishDto.getId(), limit, offset);
+            setUserAndDishToComment(comments, transaction);
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during findByDishDtoOrderByCreatedAtDesc"
+                            + " method with limit and offset", e);
         }
         List<CommentDto> result = comments.stream()
                 .map(mapper::mapEntityToDto)
@@ -214,6 +285,74 @@ public class CommentServiceImpl implements CommentService {
         result.forEach(dto -> dto.setDish(dishDto));
         log.debug(RESULT_LIST_LOG_MESSAGE, result);
         return result;
+    }
+
+    @Override
+    public Map<Short, Long> countCommentsByDishGroupByRating(DishDto dishDto)
+            throws ServiceException {
+        log.debug(RECEIVED_DISH_DTO_LOG_MESSAGE, dishDto);
+        if (!dishDtoValidator.isValid(dishDto)) {
+            throw new ServiceException(DISH_DTO_IS_INVALID_MESSAGE + dishDto);
+        }
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            CommentDao commentDao = transaction.createDao(CommentDao.class);
+            Map<Short, Long> groupByRating
+                    = commentDao.countCommentsByDishIdGroupByRating(dishDto.getId());
+            Map<Short, Long> result = new TreeMap<>(Comparator.reverseOrder());
+            result.putAll(groupByRating);
+            Function<Short, Long> computeAbsent = key -> 0L;
+            for (int i = MIN_RATING; i <= MAX_RATING; ++i) {
+                result.computeIfAbsent((short) i, computeAbsent);
+            }
+            log.debug("Result groups: {}", result);
+            return result;
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during countGroupByRating method", e);
+        }
+    }
+
+    @Override
+    public Double averageDishRating(DishDto dishDto) throws ServiceException {
+        log.debug(RECEIVED_DISH_DTO_LOG_MESSAGE, dishDto);
+        if (!dishDtoValidator.isValid(dishDto)) {
+            throw new ServiceException(DISH_DTO_IS_INVALID_MESSAGE + dishDto);
+        }
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            CommentDao commentDao = transaction.createDao(CommentDao.class);
+            return commentDao.averageDishRating(dishDto.getId());
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during countAverageDishRating method", e);
+        }
+    }
+
+    @Override
+    public Long countByDishDto(DishDto dishDto) throws ServiceException {
+        log.debug(RECEIVED_DISH_DTO_LOG_MESSAGE, dishDto);
+        if (!dishDtoValidator.isValid(dishDto)) {
+            throw new ServiceException(DISH_DTO_IS_INVALID_MESSAGE + dishDto);
+        }
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            CommentDao commentDao = transaction.createDao(CommentDao.class);
+            return commentDao.countByDishId(dishDto.getId());
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during countByDishId method", e);
+        }
+    }
+
+    private void setUserAndDishToComment(List<Comment> comments,
+                                         Transaction transaction)
+            throws DaoException, ServiceException {
+        if (!comments.isEmpty()) {
+            UserDao userDao = transaction.createDao(UserDao.class);
+            DishDao dishDao = transaction.createDao(DishDao.class);
+            for (Comment comment : comments) {
+                findUserAndSetToComment(userDao, comment);
+                findDishAndSetToComment(dishDao, comment);
+            }
+        }
     }
 
     private void findUserAndSetToComment(UserDao userDao, Comment comment)

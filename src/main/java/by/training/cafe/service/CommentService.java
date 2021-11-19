@@ -5,6 +5,7 @@ import by.training.cafe.dto.DishDto;
 import by.training.cafe.dto.UserDto;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -27,6 +28,27 @@ public interface CommentService extends Service {
      * @throws ServiceException if DaoException occurred.
      */
     List<CommentDto> findAll() throws ServiceException;
+
+    /**
+     * Returns entities mapped to {@link CommentDto}
+     * from storage with the given {@code limit} and {@code offset}.
+     *
+     * @param limit  returning number of DTOs.
+     * @param offset offset from storage.
+     * @return all entities mapped to {@link CommentDto}.
+     * @throws ServiceException if DaoException occurred or
+     *                          {@code limit} or {@code offset}
+     *                          is invalid.
+     */
+    List<CommentDto> findAll(long limit, long offset) throws ServiceException;
+
+    /**
+     * Counts number of entities in the storage.
+     *
+     * @return number of entities.
+     * @throws ServiceException if DaoException occurred.
+     */
+    Long count() throws ServiceException;
 
     /**
      * Finds entity by {@code id} and maps it to {@link CommentDto}.
@@ -82,7 +104,8 @@ public interface CommentService extends Service {
      * @throws ServiceException if {@code userDto} is invalid
      *                          or DaoException occurred.
      */
-    List<CommentDto> findByUserDto(UserDto userDto) throws ServiceException;
+    List<CommentDto> findByUserDtoOrderByCreatedAtDesc(UserDto userDto)
+            throws ServiceException;
 
     /**
      * Finds {@code comments} by {@code dishDto}
@@ -93,5 +116,53 @@ public interface CommentService extends Service {
      * @throws ServiceException if {@code dishDto} is invalid
      *                          or DaoException occurred.
      */
-    List<CommentDto> findByDishDto(DishDto dishDto) throws ServiceException;
+    List<CommentDto> findByDishDtoOrderByCreatedAtDesc(DishDto dishDto)
+            throws ServiceException;
+
+    /**
+     * Finds {@code comments} with {@code limit and offset} by {@code dishDto}
+     * and maps them to {@link CommentDto}.
+     *
+     * @param limit   returning number of DTOs.
+     * @param offset  offset from storage.
+     * @param dishDto {@code dishDto} for search.
+     * @return list of {@link CommentDto} for the given {@code dishDto}.
+     * @throws ServiceException if {@code dishDto} is invalid
+     *                          or DaoException occurred.
+     */
+    List<CommentDto> findByDishDtoOrderByCreatedAtDesc(DishDto dishDto,
+                                                       long limit,
+                                                       long offset)
+            throws ServiceException;
+
+    /**
+     * Counts all comments grouped by rating.
+     *
+     * @param dishDto the dish, which comments are needed to be grouped.
+     * @return map where key is rating, value is counted entities.
+     * @throws ServiceException if DaoException occurred.
+     */
+    Map<Short, Long> countCommentsByDishGroupByRating(DishDto dishDto)
+            throws ServiceException;
+
+    /**
+     * Calculates average dish rating.
+     *
+     * @param dishDto the dish, which average rating is needed to be count.
+     * @return average dish rating.
+     * @throws ServiceException if {@code dishDto} is invalid
+     *                          or DaoException occurred.
+     */
+    Double averageDishRating(DishDto dishDto) throws ServiceException;
+
+    /**
+     * Counts number of entities in the storage with the
+     * given {@code dishDto}.
+     *
+     * @param dishDto the dish, which comments are needed to be counted.
+     * @return number of entities with the given {@code dishDto}.
+     * @throws ServiceException if {@code dishDto} is invalid
+     *                          or DaoException occurred.
+     */
+    Long countByDishDto(DishDto dishDto) throws ServiceException;
 }
