@@ -31,7 +31,7 @@
         </div>
 
         <form class="col-md-6 col-sm-12 mb-1 mt-2 mb-sm-2">
-            <input name="q" type="search" class="form-control"
+            <input name="q" type="search" class="form-control" required maxlength="64"
                    placeholder="<fmt:message key="header.search"/>..." aria-label="Search"
                     <c:if test="${not empty requestScope.searchString}">
                         value="<c:out value="${requestScope.searchString}"/>"

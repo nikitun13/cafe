@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:import url="locale.jsp" charEncoding="utf-8"/>
 
@@ -42,7 +43,7 @@
      align-items-center justify-content-end" aria-label="Secondary navigation">
             <div class="container text-end col-12 navbar-toggler border-0 d-flex justify-content-between text-center">
                 <a class="navbar-toggler text-decoration-none col-6 me-2" href="#cartBlock">
-                    <fmt:message key="main.findCart"/>
+                    <fmt:message key="cart.findCart"/>
                 </a>
                 <button class="navbar-toggler col-6" type="button" data-bs-toggle="collapse"
                         data-bs-target="#categoryContent">
@@ -65,10 +66,9 @@
         </nav>
     </div>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xxl-2 col-xl-1 col-sm-12"></div>
-            <div class="col-xxl-8 col-xl-8 col-lg-9 col-md-8 col-sm-6">
+    <div class="d-flex flex-row flex-wrap justify-content-center">
+        <div class="col-xxl-10 col-xl-9 col-lg-9 col-md-8 col-sm-6">
+            <div class="container me-5">
                 <c:if test="${empty requestScope.groupedDishes}">
                     <div class="d-flex flex-wrap justify-content-center">
                         <img src="<c:url value="/img/nothing-found.png"/>"
@@ -90,15 +90,31 @@
                         <c:forEach var="dish" items="${group.value}">
                             <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-12 text-center gy-2">
                                 <div class="card pt-3 h-100 w-100 align-items-center">
-                                    <img src="<c:url value="/img/dishes/dish-${dish.id}.png"/>"
-                                         class="card-img-top p-1"
-                                         alt="${dish.name} picture" style="width: 150px; height: auto;"/>
+                                    <a href="<c:url value="/dish?id=${dish.id}"/>">
+                                        <img src="<c:url value="/img/dishes/dish-${dish.id}.png"/>"
+                                             class="card-img-top p-1"
+                                             alt="${dish.name} picture" style="width: 150px; height: auto;"/>
+                                    </a>
                                     <div class="card-body">
-                                        <h5 class="card-title">
-                                            <c:out value="${dish.name}"/>
-                                        </h5>
+                                        <a class="text-decoration-none h5 text-primary"
+                                           href="<c:url value="/dish?id=${dish.id}"/>">
+                                            <h5 class="card-title">
+                                                <c:out value="${dish.name}"/>
+                                            </h5>
+                                        </a>
                                         <p class="card-text">
-                                            <c:out value="${dish.description}"/>
+                                            <c:choose>
+                                                <c:when test="${fn:length(dish.description) > 70}">
+                                                    <c:out value="${fn:substring(dish.description, 0, 70)}"/>...
+                                                    <a class="text-decoration-none"
+                                                       href="<c:url value="/dish?id=${dish.id}"/>">
+                                                        <fmt:message key="main.seeMore"/>
+                                                    </a>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:out value="${dish.description}"/>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </p>
                                     </div>
                                     <div class="card-footer bg-body">
@@ -112,7 +128,7 @@
                                                 data-id="${dish.id}"
                                                 data-price="${dish.price/100}"
                                                 data-img="<c:url value="/img/dishes/dish-${dish.id}.png"/>">
-                                            <fmt:message key="main.addToCart"/>
+                                            <fmt:message key="cart.addToCart"/>
                                         </button>
                                     </div>
                                 </div>
@@ -121,35 +137,35 @@
                     </div>
                 </c:forEach>
             </div>
-
-            <aside class="col-xxl-2 col-xl-3 col-lg-3 col-md-4 col-sm-6 mt-5">
-                <div class="card me-xxl-3 me-xl-2 me-lg-1 me-md-0" id="cartBlock" style="width: 270px;">
-                    <div class="card-body d-flex justify-content-between">
-                        <h5 class="card-title">
-                            <fmt:message key="cafe.cart"/>
-                        </h5>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger total-count"></span>
-                        <button class="border-0 bg-body text-danger mb-1 clear-cart" style="font-size: 14px;">
-                            <fmt:message key="main.clear"/>
-                        </button>
-                    </div>
-                    <ul class="list-group list-group-flush show-cart">
-                        <%--cart body--%>
-                    </ul>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between col-12 mb-3">
-                        <span>
-                            <fmt:message key="main.totalPrice"/>:
-                        </span>
-                            <span><span class="total-cart"></span> BYN</span>
-                        </div>
-                        <a href="<c:url value="/cart"/>" class="btn btn-outline-success col-12 text-center">
-                            <fmt:message key="main.order"/>
-                        </a>
-                    </div>
-                </div>
-            </aside>
         </div>
+
+        <aside class="col-xxl-2 col-xl-3 col-lg-3 col-md-4 col-sm-6 mt-sm-5 my-3">
+            <div class="card me-xxl-3 me-xl-2 me-lg-1 me-md-0" id="cartBlock" style="width: 270px;">
+                <div class="card-body d-flex justify-content-between">
+                    <h5 class="card-title">
+                        <fmt:message key="cafe.cart"/>
+                    </h5>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger total-count"></span>
+                    <button class="border-0 bg-body text-danger mb-1 clear-cart" style="font-size: 14px;">
+                        <fmt:message key="cart.clear"/>
+                    </button>
+                </div>
+                <ul class="list-group list-group-flush show-cart">
+                    <%--cart body--%>
+                </ul>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between col-12 mb-3">
+                        <span>
+                            <fmt:message key="cart.totalPrice"/>:
+                        </span>
+                        <span><span class="total-cart"></span> BYN</span>
+                    </div>
+                    <a href="<c:url value="/cart"/>" class="btn btn-outline-success col-12 text-center">
+                        <fmt:message key="cart.order"/>
+                    </a>
+                </div>
+            </div>
+        </aside>
     </div>
 </main>
 
