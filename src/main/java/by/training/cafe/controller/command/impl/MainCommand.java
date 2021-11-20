@@ -2,6 +2,7 @@ package by.training.cafe.controller.command.impl;
 
 import by.training.cafe.controller.command.Command;
 import by.training.cafe.controller.command.Dispatch;
+import by.training.cafe.controller.command.HttpMethod;
 import by.training.cafe.dto.DishDto;
 import by.training.cafe.service.DishService;
 import by.training.cafe.service.ServiceException;
@@ -14,6 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
+
+import static java.net.HttpURLConnection.HTTP_BAD_METHOD;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 
 /**
  * The class {@code MainCommand} is a class that
@@ -32,9 +36,7 @@ public class MainCommand implements Command {
     private static final Dispatch ERROR = new Dispatch(
             Dispatch.DispatchType.FORWARD,
             JspPathUtil.getPath("error"));
-    private static final int INTERNAL_SERVER_ERROR_STATUS = 500;
-    private static final int METHOD_NOT_ALLOWED_STATUS = 405;
-    private static final String POST_METHOD = "POST";
+
 
     private final ServiceFactory serviceFactory;
 
@@ -45,9 +47,10 @@ public class MainCommand implements Command {
     @Override
     public Dispatch execute(HttpServletRequest request,
                             HttpServletResponse response) {
-        if (request.getMethod().equals(POST_METHOD)) {
-            response.setStatus(METHOD_NOT_ALLOWED_STATUS);
-            request.setAttribute("errorStatus", METHOD_NOT_ALLOWED_STATUS);
+        String method = request.getMethod();
+        if (!method.equals(HttpMethod.GET.name())) {
+            response.setStatus(HTTP_BAD_METHOD);
+            request.setAttribute("errorStatus", HTTP_BAD_METHOD);
             return ERROR;
         }
         try {
@@ -55,6 +58,7 @@ public class MainCommand implements Command {
             String search = request.getParameter("q");
             List<DishDto> dishes;
             if (search != null) {
+                search = search.strip();
                 dishes = service.findByNameOrDescriptionLike(search);
                 request.setAttribute("searchString", search);
             } else {
@@ -69,8 +73,8 @@ public class MainCommand implements Command {
             if (e.getMessage().startsWith("String is invalid")) {
                 request.setAttribute("errorMessageKey", "main.error.search");
             } else {
-                response.setStatus(INTERNAL_SERVER_ERROR_STATUS);
-                request.setAttribute("errorStatus", INTERNAL_SERVER_ERROR_STATUS);
+                response.setStatus(HTTP_INTERNAL_ERROR);
+                request.setAttribute("errorStatus", HTTP_INTERNAL_ERROR);
             }
             return ERROR;
         }
