@@ -114,6 +114,20 @@
                                         </button>
                                     </c:otherwise>
                                 </c:choose>
+                                <c:if test="${not empty requestScope.errorMessageKey}">
+                                    <div class="alert alert-danger alert-dismissible fade show mt-3">
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        <strong><fmt:message key="cafe.error"/>!</strong>
+                                        <fmt:message key="${requestScope.errorMessageKey}"/>
+                                    </div>
+                                </c:if>
+                                <c:if test="${not empty requestScope.successMessageKey}">
+                                    <div class="alert alert-success alert-dismissible fade show mt-3">
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        <strong><fmt:message key="cafe.success"/>!</strong>
+                                        <fmt:message key="${requestScope.successMessageKey}"/>
+                                    </div>
+                                </c:if>
                             </div>
                         </div>
                         <div class="col-lg-8 col-12">
@@ -123,7 +137,7 @@
                                         <fmt:message key="dish.reviews"/>
                                     </h4>
                                     <c:choose>
-                                        <c:when test="${requestScope.pagesCount != 0}">
+                                        <c:when test="${requestScope.pageCount != 0}">
                                             <c:forEach var="comment" items="${requestScope.comments}">
                                                 <div class="single-review">
                                                 <div class="review-info mb-4">
@@ -155,7 +169,7 @@
                                                 <fmt:formatDate value="${comment.createdAt}" type="both"
                                                                 timeStyle="medium" dateStyle="short"/>
                                             </span>
-                                                    <p><c:out value="${comment.body}"/></p>
+                                                    <p class="text-break"><c:out value="${comment.body}"/></p>
                                                 </div>
                                             </c:forEach>
                                             <c:set var="currentPage" value="${requestScope.currentPage}"/>
@@ -181,7 +195,7 @@
                                                         </span>
                                                     </li>
                                                     <c:forEach var="i" begin="${currentPage + 1}"
-                                                               end="${requestScope.pagesCount}">
+                                                               end="${requestScope.pageCount}">
                                                         <li class="page-item">
                                                             <a class="page-link"
                                                                href="<c:url value="/dish?id=${dish.id}&page=${i}"/>">
@@ -189,7 +203,7 @@
                                                             </a>
                                                         </li>
                                                     </c:forEach>
-                                                    <li class="page-item <c:if test="${currentPage == requestScope.pagesCount}">disabled</c:if>">
+                                                    <li class="page-item <c:if test="${currentPage == requestScope.pageCount}">disabled</c:if>">
                                                         <a class="page-link"
                                                            href="<c:url value="/dish?id=${dish.id}&page=${currentPage + 1}"/>">
                                                             <fmt:message key="pagination.next"/>
@@ -219,13 +233,13 @@
     </div>
 
     <aside class="col-xxl-2 col-xl-3 col-lg-3 col-md-4 col-sm-6">
-        <div class="card me-xxl-3 me-xl-2 me-lg-1 me-md-0 bg-light" id="cartBlock" style="width: 270px;">
+        <div class="card me-xxl-3 me-xl-2 me-lg-1 me-md-0" id="cartBlock" style="width: 270px;">
             <div class="card-body d-flex justify-content-between">
                 <h5 class="card-title">
                     <fmt:message key="cafe.cart"/>
                 </h5>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger total-count"></span>
-                <button class="border-0 bg-light text-danger mb-1 clear-cart" style="font-size: 14px;">
+                <button class="border-0 bg-body text-danger mb-1 clear-cart" style="font-size: 14px;">
                     <fmt:message key="cart.clear"/>
                 </button>
             </div>
@@ -259,7 +273,7 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form class="needs-validation" method="post" action="<c:url value="/dish?id=${dish.id}"/>" novalidate>
+                <form method="post" action="<c:url value="/dish"/>">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-sm-6">
@@ -269,9 +283,8 @@
                                     </label>
                                     <div class="d-flex flex-row">
                                         <input type="range" name="rating" required value="5" class="form-range"
-                                               id="review-rating" min="1" max="5"
-                                               oninput="this.nextElementSibling.value = this.value"/>
-                                        <output class="mt-2 mx-2">5</output>
+                                               id="review-rating" min="1" max="5"/>
+                                        <output class="mt-2 mx-2" id="rating-output">5</output>
                                         <span class="mt-2">
                                             <fmt:message key="dish.stars"/>
                                         </span>
@@ -284,13 +297,12 @@
                                 <fmt:message key="dish.review"/>
                             </label>
                             <textarea name="body" class="form-control" required
-                                      maxlength="1024" rows="8" id="review-message"
-                                      onkeyup="$('#body-len').val(1024-this.textLength)"></textarea>
+                                      maxlength="1024" rows="8" id="review-message"></textarea>
                             <div class="d-flex flex-row text-muted mt-1">
                                 <span class="me-1">
                                     <fmt:message key="dish.comment.left"/>:
                                 </span>
-                                <output id="body-len">1024</output>
+                                <output id="leftChars">1024</output>
                             </div>
                             <div class="invalid-feedback">
                                 <fmt:message key="dish.error.messageBody"/>
@@ -298,7 +310,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-outline-primary">
+                        <button type="submit" class="btn btn-outline-primary" id="sendReview">
                             <fmt:message key="dish.submit"/>
                         </button>
                     </div>
@@ -311,9 +323,9 @@
 
 <c:import url="footer.jsp" charEncoding="utf-8"/>
 
-<script type="text/javascript" src="<c:url value="/js/validation.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/js/jquery-3.6.0.min.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/js/cart.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/js/bootstrap.bundle.min.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/js/cafe.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/js/cart.js"/>"></script>
 </body>
 </html>

@@ -172,7 +172,8 @@
 <c:import url="footer.jsp" charEncoding="utf-8"/>
 
 <script type="text/javascript" src="<c:url value="/js/jquery-3.6.0.min.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/js/cart.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/js/bootstrap.bundle.min.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/js/cafe.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/js/cart.js"/>"></script>
 </body>
 </html>
