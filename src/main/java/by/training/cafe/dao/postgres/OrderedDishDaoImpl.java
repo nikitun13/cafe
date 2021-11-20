@@ -11,9 +11,9 @@ import org.apache.logging.log4j.Logger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -26,7 +26,7 @@ import java.util.Optional;
  * @see OrderedDishDao
  */
 public class OrderedDishDaoImpl
-        extends AbstractSqlDao<SimpleEntry<Long, Long>, OrderedDish>
+        extends AbstractSqlDao<Entry<Long, Long>, OrderedDish>
         implements OrderedDishDao {
 
     private static final Logger log
@@ -92,7 +92,7 @@ public class OrderedDishDaoImpl
     }
 
     @Override
-    public Optional<OrderedDish> findById(SimpleEntry<Long, Long> entry)
+    public Optional<OrderedDish> findById(Entry<Long, Long> entry)
             throws DaoException {
         log.debug("Received order id and dish id: {}", entry);
         List<OrderedDish> list = executeSelectQuery(
@@ -133,7 +133,7 @@ public class OrderedDishDaoImpl
     }
 
     @Override
-    public boolean delete(SimpleEntry<Long, Long> id) throws DaoException {
+    public boolean delete(Entry<Long, Long> id) throws DaoException {
         log.debug("Received id: {}", id);
         int updatedRows = executeUpdateQuery(DELETE_SQL, List.of(id.getKey(), id.getValue()));
         boolean isDeleted = isOnlyOneRowUpdated(updatedRows);

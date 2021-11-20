@@ -2,8 +2,8 @@ package by.training.cafe.dao;
 
 import by.training.cafe.entity.OrderedDish;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * The interface {@code OrderedDishDao} is an interface that
@@ -15,7 +15,7 @@ import java.util.List;
  * @see OrderedDish
  */
 public interface OrderedDishDao
-        extends BaseDao<SimpleEntry<Long, Long>, OrderedDish> {
+        extends BaseDao<Entry<Long, Long>, OrderedDish> {
 
     /**
      * Finds {@code orderedDishes} by order id.
