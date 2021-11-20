@@ -23,6 +23,7 @@ import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import static java.net.HttpURLConnection.HTTP_BAD_METHOD;
@@ -116,6 +117,10 @@ public class DishPageCommand implements Command {
         if (pageCount > 0) {
             currentPage = PaginationUtil.checkCurrentPageIsInRangeOfTotalPagesOrElseDefault(
                     currentPage, pageCount);
+            Entry<Long, Long> entry
+                    = PaginationUtil.calculateStartAndEndPage(currentPage, pageCount);
+            long startPage = entry.getKey();
+            long endPage = entry.getValue();
             long offset = PaginationUtil.calculateOffset(
                     DEFAULT_LIMIT, currentPage);
             List<CommentDto> comments
@@ -126,6 +131,8 @@ public class DishPageCommand implements Command {
             request.setAttribute("comments", comments);
             request.setAttribute("averageRating", averageRating);
             request.setAttribute("currentPage", currentPage);
+            request.setAttribute("startPage", startPage);
+            request.setAttribute("endPage", endPage);
             log.debug("attribute currentPage = {}", currentPage);
         }
         request.setAttribute("dish", dish);

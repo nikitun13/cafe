@@ -173,15 +173,24 @@
                                                 </div>
                                             </c:forEach>
                                             <c:set var="currentPage" value="${requestScope.currentPage}"/>
+                                            <c:set var="pageCount" value="${requestScope.pageCount}"/>
                                             <nav aria-label="Page navigation">
                                                 <ul class="pagination">
+                                                    <li class="page-item <c:if test="${currentPage == 1}">disabled</c:if>">
+                                                        <a class="page-link"
+                                                           href="<c:url value="/dish?id=${dish.id}&page=1"/>"
+                                                           aria-label="first">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
                                                     <li class="page-item <c:if test="${currentPage == 1}">disabled</c:if>">
                                                         <a class="page-link"
                                                            href="<c:url value="/dish?id=${dish.id}&page=${currentPage - 1}"/>">
                                                             <fmt:message key="pagination.previous"/>
                                                         </a>
                                                     </li>
-                                                    <c:forEach var="i" begin="1" end="${currentPage - 1}">
+                                                    <c:forEach var="i" begin="${requestScope.startPage}"
+                                                               end="${currentPage - 1}">
                                                         <li class="page-item">
                                                             <a class="page-link"
                                                                href="<c:url value="/dish?id=${dish.id}&page=${i}"/>">
@@ -195,7 +204,7 @@
                                                         </span>
                                                     </li>
                                                     <c:forEach var="i" begin="${currentPage + 1}"
-                                                               end="${requestScope.pageCount}">
+                                                               end="${requestScope.endPage}">
                                                         <li class="page-item">
                                                             <a class="page-link"
                                                                href="<c:url value="/dish?id=${dish.id}&page=${i}"/>">
@@ -203,10 +212,17 @@
                                                             </a>
                                                         </li>
                                                     </c:forEach>
-                                                    <li class="page-item <c:if test="${currentPage == requestScope.pageCount}">disabled</c:if>">
+                                                    <li class="page-item <c:if test="${currentPage == pageCount}">disabled</c:if>">
                                                         <a class="page-link"
                                                            href="<c:url value="/dish?id=${dish.id}&page=${currentPage + 1}"/>">
                                                             <fmt:message key="pagination.next"/>
+                                                        </a>
+                                                    </li>
+                                                    <li class="page-item <c:if test="${currentPage == pageCount}">disabled</c:if>">
+                                                        <a class="page-link"
+                                                           href="<c:url value="/dish?id=${dish.id}&page=${pageCount}"/>"
+                                                           aria-label="Last">
+                                                            <span aria-hidden="true">&raquo;</span>
                                                         </a>
                                                     </li>
                                                 </ul>
