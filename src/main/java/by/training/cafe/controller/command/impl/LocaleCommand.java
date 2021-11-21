@@ -24,30 +24,29 @@ import static by.training.cafe.controller.command.Dispatch.DispatchType;
 public class LocaleCommand implements Command {
 
     private static final Logger log = LogManager.getLogger(LocaleCommand.class);
-    private static final List<String> LOCALES;
+    private static final List<String> LOCALES = List.of("en-us", "ru-ru", "de-de");
     private static final Dispatch REDIRECT_HOME = new Dispatch(
             DispatchType.REDIRECT,
             CommandUrl.MAIN);
-
-    static {
-        LOCALES = List.of("en-us", "ru-ru", "de-de");
-    }
+    private static final String LOCALE_PARAMETER_KEY = "lc";
+    private static final String LOCALE_ATTRIBUTE_KEY = "locale";
+    private static final String REFERER_HEADER = "referer";
 
     @Override
     public Dispatch execute(HttpServletRequest request,
                             HttpServletResponse response) {
-        String lc = request.getParameter("lc");
+        String lc = request.getParameter(LOCALE_PARAMETER_KEY);
         log.debug("Parameter locale = {}", lc);
         if (lc != null) {
             lc = lc.toLowerCase();
             if (LOCALES.contains(lc)) {
-                request.getSession().setAttribute("locale", lc);
-                Cookie cookie = new Cookie("locale", lc);
+                request.getSession().setAttribute(LOCALE_ATTRIBUTE_KEY, lc);
+                Cookie cookie = new Cookie(LOCALE_ATTRIBUTE_KEY, lc);
                 cookie.setMaxAge(Integer.MAX_VALUE);
                 response.addCookie(cookie);
             }
         }
-        String referer = request.getHeader("referer");
+        String referer = request.getHeader(REFERER_HEADER);
         log.debug("header referer = {}", referer);
         if (referer == null || referer.startsWith(CommandUrl.LOCALE)) {
             return REDIRECT_HOME;

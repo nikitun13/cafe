@@ -25,6 +25,7 @@ public class UnknownCommand implements Command {
             = "errorMessageKey";
     private static final String ERROR_STATUS_ATTRIBUTE_KEY
             = "errorStatus";
+    public static final String NOTHING_FOUND_KEY = "main.nothingFound";
 
     @Override
     public Dispatch execute(HttpServletRequest request,
@@ -33,7 +34,7 @@ public class UnknownCommand implements Command {
         request.setAttribute(ERROR_STATUS_ATTRIBUTE_KEY,
                 HttpURLConnection.HTTP_NOT_FOUND);
         request.setAttribute(ERROR_MESSAGE_ATTRIBUTE_KEY,
-                "main.nothingFound");
+                NOTHING_FOUND_KEY);
         return RESULT;
     }
 }

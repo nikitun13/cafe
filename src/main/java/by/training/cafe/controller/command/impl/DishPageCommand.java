@@ -2,6 +2,7 @@ package by.training.cafe.controller.command.impl;
 
 import by.training.cafe.controller.command.Command;
 import by.training.cafe.controller.command.CommandUrl;
+import by.training.cafe.controller.command.CommonAttributes;
 import by.training.cafe.controller.command.Dispatch;
 import by.training.cafe.controller.command.Dispatch.DispatchType;
 import by.training.cafe.controller.command.HttpMethod;
@@ -43,10 +44,7 @@ public class DishPageCommand implements Command {
     private static final Logger log
             = LogManager.getLogger(DishPageCommand.class);
     private static final long DEFAULT_LIMIT = 5L;
-    private static final String ERROR_STATUS_ATTRIBUTE_KEY = "errorStatus";
-    private static final String ERROR_MESSAGE_ATTRIBUTE_KEY = "errorMessageKey";
     private static final String REDIRECT_PATH = CommandUrl.DISH_PAGE + "?id=%d";
-
     private static final Dispatch ERROR_GET = new Dispatch(
             DispatchType.FORWARD,
             JspPathUtil.getPath("error"));
@@ -56,8 +54,28 @@ public class DishPageCommand implements Command {
     private static final Dispatch SUCCESS_GET = new Dispatch(
             DispatchType.FORWARD,
             JspPathUtil.getPath("dish"));
-    private static final String SUCCESS_MESSAGE_ATTRIBUTE_KEY
-            = "successMessageKey";
+    public static final String DISH_NOT_FOUND_MESSAGE_KEY
+            = "dish.error.notFound";
+    public static final String INVALID_COMMENT_BODY_MESSAGE_KEY
+            = "dish.error.messageBody";
+    public static final String COMMENT_DTO_IS_INVALID_MESSAGE
+            = "CommentDto is invalid";
+    public static final String COMMENT_ADDED_MESSAGE_KEY
+            = "dish.success.commendAdded";
+    public static final String BODY_PARAMETER_KEY = "body";
+    public static final String RATING_PARAMETER_KEY = "rating";
+    public static final String CURRENT_DISH_ATTRIBUTE_KEY = "currentDish";
+    public static final String DISH_ATTRIBUTE_KEY = "dish";
+    public static final String COUNT_GROUPED_BY_RATING_ATTRIBUTE_KEY
+            = "countGroupedByRating";
+    public static final String PAGE_COUNT_ATTRIBUTE_KEY = "pageCount";
+    public static final String COMMENTS_ATTRIBUTE_KEY = "comments";
+    public static final String AVERAGE_RATING_ATTRIBUTE_KEY = "averageRating";
+    public static final String CURRENT_PAGE_ATTRIBUTE_KEY = "currentPage";
+    public static final String START_PAGE_ATTRIBUTE_KEY = "startPage";
+    public static final String END_PAGE_ATTRIBUTE_KEY = "endPage";
+    public static final String PAGE_ATTRIBUTE_KEY = "page";
+    public static final String ID_PARAMETER_KEY = "id";
 
     private final ServiceFactory serviceFactory;
 
@@ -78,12 +96,12 @@ public class DishPageCommand implements Command {
             log.error(e);
             response.setStatus(HTTP_INTERNAL_ERROR);
             request.setAttribute(
-                    ERROR_STATUS_ATTRIBUTE_KEY, HTTP_INTERNAL_ERROR);
+                    CommonAttributes.ERROR_STATUS, HTTP_INTERNAL_ERROR);
         } catch (IllegalArgumentException e) {
             log.error(e);
             response.setStatus(HTTP_BAD_METHOD);
             request.setAttribute(
-                    ERROR_STATUS_ATTRIBUTE_KEY, HTTP_BAD_METHOD);
+                    CommonAttributes.ERROR_STATUS, HTTP_BAD_METHOD);
         }
         return ERROR_GET;
     }
@@ -104,7 +122,7 @@ public class DishPageCommand implements Command {
         }
 
         DishDto dish = maybeDish.get();
-        String page = request.getParameter("page");
+        String page = request.getParameter(PAGE_ATTRIBUTE_KEY);
         log.debug("Received page param = {}", page);
         long currentPage = PaginationUtil.parsePageOrElseDefault(page);
         CommentService commentService
@@ -117,8 +135,8 @@ public class DishPageCommand implements Command {
         if (pageCount > 0) {
             currentPage = PaginationUtil.checkCurrentPageIsInRangeOfTotalPagesOrElseDefault(
                     currentPage, pageCount);
-            Entry<Long, Long> entry
-                    = PaginationUtil.calculateStartAndEndPage(currentPage, pageCount);
+            Entry<Long, Long> entry = PaginationUtil.calculateStartAndEndPage(
+                    currentPage, pageCount);
             long startPage = entry.getKey();
             long endPage = entry.getValue();
             long offset = PaginationUtil.calculateOffset(
@@ -128,48 +146,43 @@ public class DishPageCommand implements Command {
                     dish, DEFAULT_LIMIT, offset);
             Double averageRating = commentService.averageDishRating(dish);
 
-            request.setAttribute("comments", comments);
-            request.setAttribute("averageRating", averageRating);
-            request.setAttribute("currentPage", currentPage);
-            request.setAttribute("startPage", startPage);
-            request.setAttribute("endPage", endPage);
+            request.setAttribute(COMMENTS_ATTRIBUTE_KEY, comments);
+            request.setAttribute(AVERAGE_RATING_ATTRIBUTE_KEY, averageRating);
+            request.setAttribute(CURRENT_PAGE_ATTRIBUTE_KEY, currentPage);
+            request.setAttribute(START_PAGE_ATTRIBUTE_KEY, startPage);
+            request.setAttribute(END_PAGE_ATTRIBUTE_KEY, endPage);
             log.debug("attribute currentPage = {}", currentPage);
         }
-        request.setAttribute("dish", dish);
-        request.setAttribute("countGroupedByRating", countGroupedByRating);
-        request.setAttribute("pageCount", pageCount);
+        request.setAttribute(DISH_ATTRIBUTE_KEY, dish);
+        request.setAttribute(COUNT_GROUPED_BY_RATING_ATTRIBUTE_KEY,
+                countGroupedByRating);
+        request.setAttribute(PAGE_COUNT_ATTRIBUTE_KEY, pageCount);
 
         HttpSession session = request.getSession();
-        session.setAttribute("currentDish", dish);
+        session.setAttribute(CURRENT_DISH_ATTRIBUTE_KEY, dish);
 
-        Object errorMessageKey = session.getAttribute(
-                ERROR_MESSAGE_ATTRIBUTE_KEY);
-        Object successMessageKey = session.getAttribute(
-                SUCCESS_MESSAGE_ATTRIBUTE_KEY);
-        if (errorMessageKey != null) {
-            session.removeAttribute(ERROR_MESSAGE_ATTRIBUTE_KEY);
-            request.setAttribute(ERROR_MESSAGE_ATTRIBUTE_KEY,
-                    errorMessageKey);
-        } else if (successMessageKey != null) {
-            session.removeAttribute(SUCCESS_MESSAGE_ATTRIBUTE_KEY);
-            request.setAttribute(SUCCESS_MESSAGE_ATTRIBUTE_KEY,
-                    successMessageKey);
-        }
+        replaceAttributeToRequest(session, request,
+                CommonAttributes.ERROR_MESSAGE_KEY);
+        replaceAttributeToRequest(session, request,
+                CommonAttributes.SUCCESS_MESSAGE_KEY);
+
         return SUCCESS_GET;
     }
 
     private Dispatch doPost(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        UserDto user = (UserDto) session.getAttribute("user");
-        DishDto dish = (DishDto) session.getAttribute("currentDish");
+        UserDto user = (UserDto) session.getAttribute(CommonAttributes.USER);
+        DishDto dish = (DishDto) session.getAttribute(
+                CURRENT_DISH_ATTRIBUTE_KEY);
         if (user == null || dish == null) {
             log.error("User or dish is null. User: {}. Dish: {}", user, dish);
             return internalErrorOccurred(session);
         }
 
         try {
-            Short rating = Short.valueOf(request.getParameter("rating"));
-            String body = request.getParameter("body");
+            Short rating = Short.valueOf(
+                    request.getParameter(RATING_PARAMETER_KEY));
+            String body = request.getParameter(BODY_PARAMETER_KEY);
 
             CommentService commentService
                     = serviceFactory.getService(CommentService.class);
@@ -182,17 +195,17 @@ public class DishPageCommand implements Command {
                     .createdAt(new Timestamp(System.currentTimeMillis()))
                     .build();
             commentService.create(comment);
-            session.setAttribute(SUCCESS_MESSAGE_ATTRIBUTE_KEY,
-                    "dish.success.commendAdded");
+            session.setAttribute(CommonAttributes.SUCCESS_MESSAGE_KEY,
+                    COMMENT_ADDED_MESSAGE_KEY);
             return new Dispatch(
                     DispatchType.REDIRECT,
                     REDIRECT_PATH.formatted(dish.getId()));
         } catch (ServiceException | NumberFormatException e) {
             log.error(e);
-            if (e.getMessage().startsWith("CommentDto is invalid")
+            if (e.getMessage().startsWith(COMMENT_DTO_IS_INVALID_MESSAGE)
                     || e.getClass().equals(NumberFormatException.class)) {
-                session.setAttribute(ERROR_MESSAGE_ATTRIBUTE_KEY,
-                        "dish.error.messageBody");
+                session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
+                        INVALID_COMMENT_BODY_MESSAGE_KEY);
                 return new Dispatch(DispatchType.REDIRECT,
                         REDIRECT_PATH.formatted(dish.getId()));
             }
@@ -201,13 +214,14 @@ public class DishPageCommand implements Command {
     }
 
     private Dispatch internalErrorOccurred(HttpSession session) {
-        session.setAttribute("isErrorOccurred", Boolean.TRUE);
-        session.setAttribute(ERROR_STATUS_ATTRIBUTE_KEY, HTTP_INTERNAL_ERROR);
+        session.setAttribute(CommonAttributes.IS_ERROR_OCCURRED, Boolean.TRUE);
+        session.setAttribute(CommonAttributes.ERROR_STATUS,
+                HTTP_INTERNAL_ERROR);
         return ERROR_POST;
     }
 
     private Optional<Long> extractIdParameter(HttpServletRequest request) {
-        String id = request.getParameter("id");
+        String id = request.getParameter(ID_PARAMETER_KEY);
         log.debug("Received id param = {}", id);
         if (id == null) {
             return Optional.empty();
@@ -226,8 +240,19 @@ public class DishPageCommand implements Command {
     private Dispatch dishNotFound(HttpServletRequest request,
                                   HttpServletResponse response) {
         response.setStatus(HTTP_NOT_FOUND);
-        request.setAttribute(ERROR_STATUS_ATTRIBUTE_KEY, HTTP_NOT_FOUND);
-        request.setAttribute(ERROR_MESSAGE_ATTRIBUTE_KEY, "dish.error.notFound");
+        request.setAttribute(CommonAttributes.ERROR_STATUS, HTTP_NOT_FOUND);
+        request.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
+                DISH_NOT_FOUND_MESSAGE_KEY);
         return ERROR_GET;
+    }
+
+    private void replaceAttributeToRequest(HttpSession session,
+                                           HttpServletRequest request,
+                                           String attributeKey) {
+        Object attribute = session.getAttribute(attributeKey);
+        if (attribute != null) {
+            session.removeAttribute(attributeKey);
+            request.setAttribute(attributeKey, attribute);
+        }
     }
 }
