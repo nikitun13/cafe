@@ -11,6 +11,7 @@ public class CreateUserDto implements Serializable {
 
     private String email;
     private String password;
+    private String repeatPassword;
     private String firstName;
     private String lastName;
     private String phone;
@@ -18,10 +19,11 @@ public class CreateUserDto implements Serializable {
     public CreateUserDto() {
     }
 
-    public CreateUserDto(String email, String password, String firstName,
-                         String lastName, String phone) {
+    public CreateUserDto(String email, String password, String repeatPassword,
+                         String firstName, String lastName, String phone) {
         this.email = email;
         this.password = password;
+        this.repeatPassword = repeatPassword;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
@@ -37,6 +39,10 @@ public class CreateUserDto implements Serializable {
 
     public String getPassword() {
         return this.password;
+    }
+
+    public String getRepeatPassword() {
+        return repeatPassword;
     }
 
     public String getFirstName() {
@@ -71,6 +77,10 @@ public class CreateUserDto implements Serializable {
         this.phone = phone;
     }
 
+    public void setRepeatPassword(String repeatPassword) {
+        this.repeatPassword = repeatPassword;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -78,6 +88,7 @@ public class CreateUserDto implements Serializable {
         CreateUserDto that = (CreateUserDto) o;
         return Objects.equals(email, that.email)
                 && Objects.equals(password, that.password)
+                && Objects.equals(repeatPassword, that.repeatPassword)
                 && Objects.equals(firstName, that.firstName)
                 && Objects.equals(lastName, that.lastName)
                 && Objects.equals(phone, that.phone);
@@ -85,8 +96,8 @@ public class CreateUserDto implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(email, password, firstName,
-                lastName, phone);
+        return Objects.hash(email, password, repeatPassword,
+                firstName, lastName, phone);
     }
 
     @Override
@@ -94,6 +105,7 @@ public class CreateUserDto implements Serializable {
         return "CreateUserDto{"
                 + "email='" + email + '\''
                 + ", password='" + password + '\''
+                + ", repeatPassword='" + repeatPassword + '\''
                 + ", firstName='" + firstName + '\''
                 + ", lastName='" + lastName + '\''
                 + ", phone='" + phone + '\''
@@ -104,6 +116,7 @@ public class CreateUserDto implements Serializable {
 
         private String email;
         private String password;
+        private String repeatPassword;
         private String firstName;
         private String lastName;
         private String phone;
@@ -118,6 +131,11 @@ public class CreateUserDto implements Serializable {
 
         public CreateUserDtoBuilder password(String password) {
             this.password = password;
+            return this;
+        }
+
+        public CreateUserDtoBuilder repeatPassword(String repeatPassword) {
+            this.repeatPassword = repeatPassword;
             return this;
         }
 
@@ -137,8 +155,8 @@ public class CreateUserDto implements Serializable {
         }
 
         public CreateUserDto build() {
-            return new CreateUserDto(email, password, firstName,
-                    lastName, phone);
+            return new CreateUserDto(email, password, repeatPassword,
+                    firstName, lastName, phone);
         }
     }
 }

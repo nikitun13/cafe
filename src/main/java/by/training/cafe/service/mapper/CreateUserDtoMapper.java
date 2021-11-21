@@ -37,12 +37,12 @@ public final class CreateUserDtoMapper implements Mapper<User, CreateUserDto> {
     @Override
     public User mapDtoToEntity(CreateUserDto createUserDto) {
         log.debug("received UserDto: {}", createUserDto);
-        var email = createUserDto.getEmail();
+        var email = createUserDto.getEmail().strip();
         var password = createUserDto.getPassword();
         var firstName = StringUtil.capitalizeFirstLetter(
-                createUserDto.getFirstName().toLowerCase());
+                createUserDto.getFirstName().strip().toLowerCase());
         var lastName = StringUtil.capitalizeFirstLetter(
-                createUserDto.getLastName().toLowerCase());
+                createUserDto.getLastName().strip().toLowerCase());
         var phone = createUserDto.getPhone();
         User user = User.builder()
                 .email(email)

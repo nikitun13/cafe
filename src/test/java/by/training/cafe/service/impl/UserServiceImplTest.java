@@ -147,6 +147,7 @@ class UserServiceImplTest {
         hansCreateDto = CreateUserDto.builder()
                 .email("hans@gmail.com")
                 .password("qwerty123")
+                .repeatPassword("qwerty123")
                 .firstName("haNs")
                 .lastName("MüNz")
                 .phone("+375254444444")

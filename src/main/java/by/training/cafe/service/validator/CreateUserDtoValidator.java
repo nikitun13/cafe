@@ -14,6 +14,7 @@ public final class CreateUserDtoValidator implements Validator<CreateUserDto> {
 
     private static final CreateUserDtoValidator INSTANCE
             = new CreateUserDtoValidator();
+    private static final int NAME_MAX_LENGTH = 128;
 
     private final Validator<String> stringValidator
             = StringValidator.getInstance();
@@ -38,14 +39,19 @@ public final class CreateUserDtoValidator implements Validator<CreateUserDto> {
         }
         var email = createUserDto.getEmail();
         var password = createUserDto.getPassword();
+        var repeatPassword = createUserDto.getRepeatPassword();
         var firstName = createUserDto.getFirstName();
         var lastName = createUserDto.getLastName();
         var phone = createUserDto.getPhone();
 
-        return emailValidator.isValid(email)
+        return password != null
+                && password.equals(repeatPassword)
+                && emailValidator.isValid(email)
                 && passwordValidator.isValid(password)
                 && stringValidator.isValid(firstName)
+                && firstName.length() <= NAME_MAX_LENGTH
                 && stringValidator.isValid(lastName)
+                && lastName.length() <= NAME_MAX_LENGTH
                 && phoneValidator.isValid(phone);
     }
 }
