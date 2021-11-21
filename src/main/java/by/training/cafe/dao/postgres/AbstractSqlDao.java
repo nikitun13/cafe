@@ -39,6 +39,9 @@ public abstract class AbstractSqlDao<K, E> {
     protected static final String WHERE_SQL = " WHERE ";
     protected static final String LIMIT_SQL = " LIMIT ?";
     protected static final String OFFSET_SQL = " OFFSET ?";
+    protected static final String VIOLATE_UNIQUE_CONSTRAINT_CODE = "23505";
+    protected static final String VIOLATE_UNIQUE_CONSTRAINT_MESSAGE
+            = "Violate unique constraint";
 
     protected final Connection connection;
 
@@ -131,6 +134,9 @@ public abstract class AbstractSqlDao<K, E> {
                 return Optional.empty();
             }
         } catch (SQLException e) {
+            if (e.getSQLState().equals(VIOLATE_UNIQUE_CONSTRAINT_CODE)) {
+                throw new DaoException(VIOLATE_UNIQUE_CONSTRAINT_MESSAGE, e);
+            }
             throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
         }
     }

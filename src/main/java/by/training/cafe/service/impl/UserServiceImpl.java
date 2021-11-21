@@ -13,7 +13,11 @@ import by.training.cafe.service.UserService;
 import by.training.cafe.service.mapper.CreateUserDtoMapper;
 import by.training.cafe.service.mapper.Mapper;
 import by.training.cafe.service.mapper.UserDtoMapper;
-import by.training.cafe.service.validator.*;
+import by.training.cafe.service.validator.CreateUserDtoValidator;
+import by.training.cafe.service.validator.EmailValidator;
+import by.training.cafe.service.validator.PasswordValidator;
+import by.training.cafe.service.validator.UserDtoValidator;
+import by.training.cafe.service.validator.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -143,6 +147,17 @@ public class UserServiceImpl implements UserService {
             UserDao userDao = transaction.createDao(UserDao.class);
             userDao.create(user);
         } catch (DaoException e) {
+            if (e.getMessage().startsWith("Violate unique constraint")) {
+                String message = e.getCause().getMessage();
+                String uniqueConstraint = message.substring(
+                        message.indexOf("\"") + 1,
+                        message.lastIndexOf("\""));
+                if (uniqueConstraint.equals("users_email_key")) {
+                    throw new ServiceException("email already exists", e);
+                } else if (uniqueConstraint.equals("users_phone_key")) {
+                    throw new ServiceException("phone already exists", e);
+                }
+            }
             throw new ServiceException("Dao exception during signUp method", e);
         }
         UserDto userDto = userDtoMapper.mapEntityToDto(user);
