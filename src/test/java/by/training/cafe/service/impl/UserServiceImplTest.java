@@ -50,7 +50,7 @@ class UserServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Ivan")
                 .lastName("Melnikov")
-                .phone("+375251111111")
+                .phone("375251111111")
                 .points(30L)
                 .isBlocked(true)
                 .build();
@@ -61,7 +61,7 @@ class UserServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Ivan")
                 .lastName("Melnikov")
-                .phone("+375251111111")
+                .phone("375251111111")
                 .points(30L)
                 .isBlocked(true)
                 .build();
@@ -73,7 +73,7 @@ class UserServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Петр")
                 .lastName("Шариков")
-                .phone("+375442222222")
+                .phone("375442222222")
                 .points(130L)
                 .isBlocked(false)
                 .build();
@@ -84,7 +84,7 @@ class UserServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Петр")
                 .lastName("Шариков")
-                .phone("+375442222222")
+                .phone("375442222222")
                 .points(130L)
                 .isBlocked(false)
                 .build();
@@ -96,7 +96,7 @@ class UserServiceImplTest {
                 .role(UserRole.ADMIN)
                 .firstName("John")
                 .lastName("Henson")
-                .phone("+375333333333")
+                .phone("375333333333")
                 .points(270L)
                 .isBlocked(false)
                 .build();
@@ -107,7 +107,7 @@ class UserServiceImplTest {
                 .role(UserRole.ADMIN)
                 .firstName("John")
                 .lastName("Henson")
-                .phone("+375333333333")
+                .phone("375333333333")
                 .points(270L)
                 .isBlocked(false)
                 .build();
@@ -128,7 +128,7 @@ class UserServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Hans")
                 .lastName("Münz")
-                .phone("+375254444444")
+                .phone("375254444444")
                 .points(0L)
                 .isBlocked(false)
                 .build();
@@ -139,7 +139,7 @@ class UserServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Hans")
                 .lastName("Münz")
-                .phone("+375254444444")
+                .phone("375254444444")
                 .points(0L)
                 .isBlocked(false)
                 .build();
@@ -150,7 +150,7 @@ class UserServiceImplTest {
                 .repeatPassword("qwerty123")
                 .firstName("haNs")
                 .lastName("MüNz")
-                .phone("+375254444444")
+                .phone("375254444444")
                 .build();
 
         adam = User.builder()
@@ -159,7 +159,7 @@ class UserServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Adam")
                 .lastName("Smith")
-                .phone("+375445555555")
+                .phone("375445555555")
                 .points(500L)
                 .isBlocked(false)
                 .build();
@@ -170,7 +170,7 @@ class UserServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Adam")
                 .lastName("Smith")
-                .phone("+375445555555")
+                .phone("375445555555")
                 .points(500L)
                 .isBlocked(false)
                 .build();
@@ -216,15 +216,15 @@ class UserServiceImplTest {
                 Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").build()),
                 Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").firstName("john").build()),
                 Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").firstName("john").lastName("lastname").build()),
-                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").firstName("john").lastName("").phone("+375251002030").build()),
-                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").firstName("").lastName("lastname").phone("+375251002030").build()),
-                Arguments.of(CreateUserDto.builder().password("f34ef").email("valid@email.com").firstName("john").lastName("lastname").phone("+375251002030").build()),
-                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("invalid@.com").firstName("john").lastName("lastname").phone("+375251002030").build()),
-                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").firstName("john").lastName("lastname").phone("+37525030").build()),
-                Arguments.of(CreateUserDto.builder().email("valid@email.com").firstName("john").lastName("lastname").phone("+375251002030").build()),
-                Arguments.of(CreateUserDto.builder().password("asfasdf123").firstName("john").lastName("lastname").phone("+375251002030").build()),
-                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").lastName("lastname").phone("+375251002030").build()),
-                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").firstName("john").phone("+375251002030").build()),
+                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").firstName("john").lastName("").phone("375251002030").build()),
+                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").firstName("").lastName("lastname").phone("375251002030").build()),
+                Arguments.of(CreateUserDto.builder().password("f34ef").email("valid@email.com").firstName("john").lastName("lastname").phone("375251002030").build()),
+                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("invalid@.com").firstName("john").lastName("lastname").phone("375251002030").build()),
+                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").firstName("john").lastName("lastname").phone("37525030").build()),
+                Arguments.of(CreateUserDto.builder().email("valid@email.com").firstName("john").lastName("lastname").phone("375251002030").build()),
+                Arguments.of(CreateUserDto.builder().password("asfasdf123").firstName("john").lastName("lastname").phone("375251002030").build()),
+                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").lastName("lastname").phone("375251002030").build()),
+                Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").firstName("john").phone("375251002030").build()),
                 Arguments.of(CreateUserDto.builder().password("asfasdf123").email("valid@email.com").firstName("john").lastName("lastname").build())
         );
     }
@@ -232,24 +232,24 @@ class UserServiceImplTest {
     public static Stream<Arguments> invalidUserDto() {
         return Stream.of(
                 Arguments.of(UserDto.builder().build()),
-                Arguments.of(UserDto.builder().id(-1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("+375254444444").points(0L).isBlocked(false).build()),
-                Arguments.of(UserDto.builder().id(1_000_003L).email("@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("+375254444444").points(0L).isBlocked(false).build()),
-                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName(" ").lastName("Münz").phone("+375254444444").points(0L).isBlocked(false).build()),
-                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("      ").phone("+375254444444").points(0L).isBlocked(false).build()),
-                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("+37544").points(0L).isBlocked(false).build()),
-                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("+375254444444").points(0L).build()),
-                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("+375254444444").build()),
+                Arguments.of(UserDto.builder().id(-1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("375254444444").points(0L).isBlocked(false).build()),
+                Arguments.of(UserDto.builder().id(1_000_003L).email("@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("375254444444").points(0L).isBlocked(false).build()),
+                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName(" ").lastName("Münz").phone("375254444444").points(0L).isBlocked(false).build()),
+                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("      ").phone("375254444444").points(0L).isBlocked(false).build()),
+                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("37544").points(0L).isBlocked(false).build()),
+                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("375254444444").points(0L).build()),
+                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("375254444444").build()),
                 Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").build()),
                 Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").build()),
                 Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).build()),
                 Arguments.of(UserDto.builder().id(1_000_003L).build()),
-                Arguments.of(UserDto.builder().email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("+375254444444").points(0L).isBlocked(false).build()),
-                Arguments.of(UserDto.builder().id(1_000_003L).role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("+375254444444").points(0L).isBlocked(false).build()),
-                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).lastName("Münz").phone("+375254444444").points(0L).isBlocked(false).build()),
-                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").phone("+375254444444").points(0L).isBlocked(false).build()),
+                Arguments.of(UserDto.builder().email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("375254444444").points(0L).isBlocked(false).build()),
+                Arguments.of(UserDto.builder().id(1_000_003L).role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("375254444444").points(0L).isBlocked(false).build()),
+                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).lastName("Münz").phone("375254444444").points(0L).isBlocked(false).build()),
+                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").phone("375254444444").points(0L).isBlocked(false).build()),
                 Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").points(0L).isBlocked(false).build()),
-                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("+375254444444").isBlocked(false).build()),
-                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("+375254444444").points(0L).build())
+                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("375254444444").isBlocked(false).build()),
+                Arguments.of(UserDto.builder().id(1_000_003L).email("hans@gmail.com").role(UserRole.CLIENT).firstName("Hans").lastName("Münz").phone("375254444444").points(0L).build())
         );
     }
 

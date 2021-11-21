@@ -58,7 +58,7 @@ class OrderServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Ivan")
                 .lastName("Melnikov")
-                .phone("+375251111111")
+                .phone("375251111111")
                 .points(30L)
                 .isBlocked(true)
                 .build();
@@ -69,7 +69,7 @@ class OrderServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Ivan")
                 .lastName("Melnikov")
-                .phone("+375251111111")
+                .phone("375251111111")
                 .points(30L)
                 .isBlocked(true)
                 .build();
@@ -80,7 +80,7 @@ class OrderServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Петр")
                 .lastName("Шариков")
-                .phone("+375442222222")
+                .phone("375442222222")
                 .points(130L)
                 .isBlocked(false)
                 .build();
@@ -91,7 +91,7 @@ class OrderServiceImplTest {
                 .role(UserRole.CLIENT)
                 .firstName("Петр")
                 .lastName("Шариков")
-                .phone("+375442222222")
+                .phone("375442222222")
                 .points(130L)
                 .isBlocked(false)
                 .build();
@@ -103,7 +103,7 @@ class OrderServiceImplTest {
                 .role(UserRole.ADMIN)
                 .firstName("John")
                 .lastName("Henson")
-                .phone("+375333333333")
+                .phone("375333333333")
                 .points(270L)
                 .isBlocked(false)
                 .build();
@@ -114,7 +114,7 @@ class OrderServiceImplTest {
                 .role(UserRole.ADMIN)
                 .firstName("John")
                 .lastName("Henson")
-                .phone("+375333333333")
+                .phone("375333333333")
                 .points(270L)
                 .isBlocked(false)
                 .build();
