@@ -44,4 +44,135 @@ $(document).ready(function () {
     $('#search-form').submit(function () {
         return validateSearchBody();
     })
+
+    $('#signInBtn').click(function () {
+        return validateSignInEmail()
+            && validateSignInPassword();
+    })
+
+    let signInEmailInput = $('#signInEmailInput');
+    let signInPasswordInput = $('#signInPasswordInput');
+
+    signInEmailInput.keyup(function () {
+        validateSignInEmail();
+    });
+
+    signInPasswordInput.keyup(function () {
+        validateSignInPassword();
+    });
+
+    function validateSignInEmail() {
+        if (signInEmailInput.val().trim() === "") {
+            signInEmailInput.addClass('is-invalid');
+            return false;
+        } else {
+            signInEmailInput.removeClass('is-invalid');
+            return true;
+        }
+    }
+
+    function validateSignInPassword() {
+        if (signInPasswordInput.val().trim() === "") {
+            signInPasswordInput.addClass('is-invalid');
+            return false;
+        } else {
+            signInPasswordInput.removeClass('is-invalid');
+            return true;
+        }
+    }
+
+    let email = $('#email');
+    let firstName = $('#firstName');
+    let lastName = $('#lastName');
+    let password = $('#password');
+    let repeatPassword = $('#repeatPassword');
+    let phone = $('#phone');
+
+    email.on('keyup', validateEmail)
+    firstName.on('keyup', validateFirstName)
+    lastName.on('keyup', validateLastName)
+    password.on('keyup', validatePassword)
+    repeatPassword.on('keyup', validateRepeatPassword)
+    phone.on('keyup', validatePhone)
+
+    $('#signUpBtn').click(function () {
+        return validateEmail()
+            && validateFirstName()
+            && validateLastName()
+            && validatePhone()
+            && validatePassword()
+            && validateRepeatPassword()
+    })
+
+    let emailRegex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+        + "[^-.][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+
+    function validateEmail() {
+        let val = email.val();
+        if (val.trim() === "" || !val.match(emailRegex)) {
+            email.addClass('is-invalid');
+            return false;
+        } else {
+            email.removeClass('is-invalid');
+            return true;
+        }
+    }
+
+    function validateFirstName() {
+        return validateString(firstName)
+    }
+
+    function validateLastName() {
+        return validateString(lastName)
+    }
+
+    function validateString(element) {
+        let val = element.val();
+        if (val.trim() === "") {
+            element.addClass('is-invalid');
+            return false;
+        } else {
+            element.removeClass('is-invalid');
+            return true;
+        }
+
+    }
+
+    let phoneRegex = "^\\d{10,15}$";
+
+    function validatePhone() {
+        let val = phone.val();
+        if (val.trim() === "" || !val.match(phoneRegex)) {
+            phone.addClass('is-invalid');
+            return false;
+        } else {
+            phone.removeClass('is-invalid');
+            return true;
+        }
+    }
+
+    let passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}";
+
+    function validatePassword() {
+        let val = password.val();
+        if (val.trim() === "" || !val.match(passwordRegex)) {
+            password.addClass('is-invalid');
+            return false;
+        } else {
+            password.removeClass('is-invalid');
+            return true;
+        }
+    }
+
+    function validateRepeatPassword() {
+        let repeatPasswordVal = repeatPassword.val();
+        let passwordVal = password.val();
+        if (passwordVal === repeatPasswordVal) {
+            repeatPassword.removeClass('is-invalid');
+            return true;
+        } else {
+            repeatPassword.addClass('is-invalid');
+            return false;
+        }
+    }
 });

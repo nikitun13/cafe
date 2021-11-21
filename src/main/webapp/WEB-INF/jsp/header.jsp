@@ -81,9 +81,11 @@
                                 <hr class="dropdown-divider"/>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="<c:url value="/signout"/>">
-                                    <fmt:message key="cafe.signOut"/>
-                                </a>
+                                <form method="post" action="<c:url value="/signout"/>" novalidate>
+                                    <button type="submit" class="dropdown-item">
+                                        <fmt:message key="cafe.signOut"/>
+                                    </button>
+                                </form>
                             </li>
                         </ul>
                     </div>
