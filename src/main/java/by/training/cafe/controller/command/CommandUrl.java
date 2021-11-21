@@ -15,6 +15,7 @@ public final class CommandUrl {
     public static final String SIGN_UP = "/signup";
     public static final String SIGN_OUT = "/signout";
     public static final String DISH_PAGE = "/dish";
+    public static final String ERROR = "/error";
 
     private CommandUrl() {
     }

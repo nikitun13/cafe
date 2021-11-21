@@ -47,8 +47,10 @@ public class DispatcherServlet extends HttpServlet {
                          HttpServletResponse resp) {
         try {
             req.getRequestDispatcher(path).forward(req, resp);
-        } catch (ServletException | IOException e) {
-            log.error(e);
+        } catch (ServletException e) {
+            log.error("ServletException occurred", e);
+        } catch (IOException e) {
+            log.error("IOException exception occurred", e);
         }
     }
 
@@ -56,7 +58,7 @@ public class DispatcherServlet extends HttpServlet {
         try {
             resp.sendRedirect(path);
         } catch (IOException e) {
-            log.error(e);
+            log.error("IOException exception occurred", e);
         }
     }
 }

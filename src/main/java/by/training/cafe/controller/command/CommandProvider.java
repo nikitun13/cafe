@@ -23,6 +23,7 @@ public class CommandProvider {
         repository = new HashMap<>();
         repository.put(CommandUrl.MAIN, new MainCommand(serviceFactory));
         repository.put(CommandUrl.LOCALE, new LocaleCommand());
+        repository.put(CommandUrl.ERROR, new ErrorCommand());
         repository.put(CommandUrl.SIGN_IN, new SignInCommand(serviceFactory));
         repository.put(CommandUrl.SIGN_UP, new SignUpCommand(serviceFactory));
         repository.put(CommandUrl.SIGN_OUT, new SignOutCommand());

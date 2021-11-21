@@ -93,12 +93,12 @@ public class DishPageCommand implements Command {
                 case POST -> doPost(request);
             };
         } catch (ServiceException e) {
-            log.error(e);
+            log.error("ServiceException occurred", e);
             response.setStatus(HTTP_INTERNAL_ERROR);
             request.setAttribute(
                     CommonAttributes.ERROR_STATUS, HTTP_INTERNAL_ERROR);
         } catch (IllegalArgumentException e) {
-            log.error(e);
+            log.error("IllegalArgumentException occurred", e);
             response.setStatus(HTTP_BAD_METHOD);
             request.setAttribute(
                     CommonAttributes.ERROR_STATUS, HTTP_BAD_METHOD);
@@ -201,7 +201,7 @@ public class DishPageCommand implements Command {
                     DispatchType.REDIRECT,
                     REDIRECT_PATH.formatted(dish.getId()));
         } catch (ServiceException | NumberFormatException e) {
-            log.error(e);
+            log.error("Exception occurred", e);
             if (e.getMessage().startsWith(COMMENT_DTO_IS_INVALID_MESSAGE)
                     || e.getClass().equals(NumberFormatException.class)) {
                 session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
@@ -232,7 +232,7 @@ public class DishPageCommand implements Command {
                 return Optional.of(parsedId);
             }
         } catch (NumberFormatException e) {
-            log.error(e);
+            log.error("NumberFormatException occurred", e);
         }
         return Optional.empty();
     }

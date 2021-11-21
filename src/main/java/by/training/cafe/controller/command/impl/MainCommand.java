@@ -75,7 +75,7 @@ public class MainCommand implements Command {
             request.setAttribute(GROUPED_DISHES_ATTRIBUTE_KEY, groupedDishes);
             return SUCCESS;
         } catch (ServiceException e) {
-            log.error(e);
+            log.error("ServiceException occurred", e);
             if (e.getMessage().startsWith(STRING_IS_INVALID_MESSAGE)) {
                 request.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
                         SEARCH_STRING_IS_INVALID_KEY);

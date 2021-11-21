@@ -48,7 +48,7 @@ public class LocaleCommand implements Command {
         }
         String referer = request.getHeader(REFERER_HEADER);
         log.debug("header referer = {}", referer);
-        if (referer == null || referer.startsWith(CommandUrl.LOCALE)) {
+        if (referer == null || referer.contains(CommandUrl.LOCALE)) {
             return REDIRECT_HOME;
         } else {
             return new Dispatch(DispatchType.REDIRECT, referer);
