@@ -54,28 +54,28 @@ public class DishPageCommand implements Command {
     private static final Dispatch SUCCESS_GET = new Dispatch(
             DispatchType.FORWARD,
             JspPathUtil.getPath("dish"));
-    public static final String DISH_NOT_FOUND_MESSAGE_KEY
+    private static final String DISH_NOT_FOUND_MESSAGE_KEY
             = "dish.error.notFound";
-    public static final String INVALID_COMMENT_BODY_MESSAGE_KEY
+    private static final String INVALID_COMMENT_BODY_MESSAGE_KEY
             = "dish.error.messageBody";
-    public static final String COMMENT_DTO_IS_INVALID_MESSAGE
+    private static final String COMMENT_DTO_IS_INVALID_MESSAGE
             = "CommentDto is invalid";
-    public static final String COMMENT_ADDED_MESSAGE_KEY
+    private static final String COMMENT_ADDED_MESSAGE_KEY
             = "dish.success.commendAdded";
-    public static final String BODY_PARAMETER_KEY = "body";
-    public static final String RATING_PARAMETER_KEY = "rating";
-    public static final String CURRENT_DISH_ATTRIBUTE_KEY = "currentDish";
-    public static final String DISH_ATTRIBUTE_KEY = "dish";
-    public static final String COUNT_GROUPED_BY_RATING_ATTRIBUTE_KEY
+    private static final String BODY_PARAMETER_KEY = "body";
+    private static final String RATING_PARAMETER_KEY = "rating";
+    private static final String CURRENT_DISH_ATTRIBUTE_KEY = "currentDish";
+    private static final String DISH_ATTRIBUTE_KEY = "dish";
+    private static final String COUNT_GROUPED_BY_RATING_ATTRIBUTE_KEY
             = "countGroupedByRating";
-    public static final String PAGE_COUNT_ATTRIBUTE_KEY = "pageCount";
-    public static final String COMMENTS_ATTRIBUTE_KEY = "comments";
-    public static final String AVERAGE_RATING_ATTRIBUTE_KEY = "averageRating";
-    public static final String CURRENT_PAGE_ATTRIBUTE_KEY = "currentPage";
-    public static final String START_PAGE_ATTRIBUTE_KEY = "startPage";
-    public static final String END_PAGE_ATTRIBUTE_KEY = "endPage";
-    public static final String PAGE_ATTRIBUTE_KEY = "page";
-    public static final String ID_PARAMETER_KEY = "id";
+    private static final String PAGE_COUNT_ATTRIBUTE_KEY = "pageCount";
+    private static final String COMMENTS_ATTRIBUTE_KEY = "comments";
+    private static final String AVERAGE_RATING_ATTRIBUTE_KEY = "averageRating";
+    private static final String CURRENT_PAGE_ATTRIBUTE_KEY = "currentPage";
+    private static final String START_PAGE_ATTRIBUTE_KEY = "startPage";
+    private static final String END_PAGE_ATTRIBUTE_KEY = "endPage";
+    private static final String PAGE_ATTRIBUTE_KEY = "page";
+    private static final String ID_PARAMETER_KEY = "id";
 
     private final ServiceFactory serviceFactory;
 

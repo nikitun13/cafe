@@ -25,7 +25,7 @@ public class UnknownCommand implements Command {
             = "errorMessageKey";
     private static final String ERROR_STATUS_ATTRIBUTE_KEY
             = "errorStatus";
-    public static final String NOTHING_FOUND_KEY = "main.nothingFound";
+    private static final String NOTHING_FOUND_KEY = "main.nothingFound";
 
     @Override
     public Dispatch execute(HttpServletRequest request,
