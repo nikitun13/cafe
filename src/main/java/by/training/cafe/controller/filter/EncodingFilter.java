@@ -1,5 +1,7 @@
 package by.training.cafe.controller.filter;
 
+import by.training.cafe.controller.command.CommonAttributes;
+
 import javax.servlet.*;
 import java.io.IOException;
 
@@ -10,9 +12,8 @@ public class EncodingFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) {
         ServletContext context = filterConfig.getServletContext();
-        String encodingKey = "encoding";
-        encoding = (String) context.getAttribute(encodingKey);
-        context.removeAttribute(encodingKey);
+        encoding = (String) context.getAttribute(CommonAttributes.ENCODING);
+        context.removeAttribute(CommonAttributes.ENCODING);
     }
 
     @Override

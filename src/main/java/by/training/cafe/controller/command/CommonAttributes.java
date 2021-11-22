@@ -14,6 +14,10 @@ public final class CommonAttributes {
     public static final String PASSWORD = "password";
     public static final String REPEAT_PASSWORD = "repeatPassword";
     public static final String PHONE = "phone";
+    public static final String LOCALE = "locale";
+    public static final String COMMAND = "command";
+    public static final String SERVICE_FACTORY = "serviceFactory";
+    public static final String ENCODING = "encoding";
 
     private CommonAttributes() {
     }

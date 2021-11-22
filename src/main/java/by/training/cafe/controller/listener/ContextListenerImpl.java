@@ -1,5 +1,6 @@
 package by.training.cafe.controller.listener;
 
+import by.training.cafe.controller.command.CommonAttributes;
 import by.training.cafe.service.ServiceFactory;
 import by.training.cafe.service.impl.ServiceFactoryImpl;
 import by.training.cafe.util.PropertiesUtil;
@@ -17,6 +18,8 @@ public class ContextListenerImpl implements ServletContextListener {
 
     private static final Logger log
             = LogManager.getLogger(ContextListenerImpl.class);
+    private static final String ENCODING_KEY = "app.encoding";
+
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -24,10 +27,9 @@ public class ContextListenerImpl implements ServletContextListener {
         Locale.setDefault(Locale.ENGLISH);
         ServiceFactory serviceFactory = ServiceFactoryImpl.getInstance();
         ServletContext context = sce.getServletContext();
-        context.setAttribute("serviceFactory", serviceFactory);
-
-        String encoding = PropertiesUtil.get("app.encoding");
-        context.setAttribute("encoding", encoding);
+        context.setAttribute(CommonAttributes.SERVICE_FACTORY, serviceFactory);
+        String encoding = PropertiesUtil.get(ENCODING_KEY);
+        context.setAttribute(CommonAttributes.ENCODING, encoding);
     }
 
     @Override

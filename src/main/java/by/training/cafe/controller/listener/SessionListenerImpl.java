@@ -12,6 +12,8 @@ public class SessionListenerImpl implements HttpSessionAttributeListener {
 
     private static final Logger log
             = LogManager.getLogger(SessionListenerImpl.class);
+    public static final String JSTL_REQUEST_CHARSET_KEY
+            = "javax.servlet.jsp.jstl.fmt.request.charset";
 
     @Override
     public void attributeAdded(HttpSessionBindingEvent event) {
@@ -38,14 +40,13 @@ public class SessionListenerImpl implements HttpSessionAttributeListener {
     @Override
     public void attributeReplaced(HttpSessionBindingEvent event) {
         String name = event.getName();
-        if (name.equals("javax.servlet.jsp.jstl.fmt.request.charset")) {
-            return;
-        }
-        String sessionId = event.getSession().getId();
-        Object value = event.getValue();
+        if (!name.equals(JSTL_REQUEST_CHARSET_KEY)) {
+            String sessionId = event.getSession().getId();
+            Object value = event.getValue();
 
-        log.debug("Attribute '{}' was replaced with value = '{}'."
-                        + " Session id = {}",
-                name, value, sessionId);
+            log.debug("Attribute '{}' was replaced with value = '{}'."
+                            + " Session id = {}",
+                    name, value, sessionId);
+        }
     }
 }

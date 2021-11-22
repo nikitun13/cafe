@@ -2,6 +2,7 @@ package by.training.cafe.controller.command.impl;
 
 import by.training.cafe.controller.command.Command;
 import by.training.cafe.controller.command.CommandUrl;
+import by.training.cafe.controller.command.CommonAttributes;
 import by.training.cafe.controller.command.Dispatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +30,6 @@ public class LocaleCommand implements Command {
             DispatchType.REDIRECT,
             CommandUrl.MAIN);
     private static final String LOCALE_PARAMETER_KEY = "lc";
-    private static final String LOCALE_ATTRIBUTE_KEY = "locale";
     private static final String REFERER_HEADER = "referer";
 
     @Override
@@ -40,8 +40,8 @@ public class LocaleCommand implements Command {
         if (lc != null) {
             lc = lc.toLowerCase();
             if (LOCALES.contains(lc)) {
-                request.getSession().setAttribute(LOCALE_ATTRIBUTE_KEY, lc);
-                Cookie cookie = new Cookie(LOCALE_ATTRIBUTE_KEY, lc);
+                request.getSession().setAttribute(CommonAttributes.LOCALE, lc);
+                Cookie cookie = new Cookie(CommonAttributes.LOCALE, lc);
                 cookie.setMaxAge(Integer.MAX_VALUE);
                 response.addCookie(cookie);
             }

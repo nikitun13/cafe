@@ -2,6 +2,7 @@ package by.training.cafe.controller.filter;
 
 import by.training.cafe.controller.command.Command;
 import by.training.cafe.controller.command.CommandProvider;
+import by.training.cafe.controller.command.CommonAttributes;
 import by.training.cafe.service.ServiceFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,10 +21,9 @@ public class CommandProviderFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) {
         ServletContext context = filterConfig.getServletContext();
-        String serviceFactoryKey = "serviceFactory";
         ServiceFactory serviceFactory
-                = (ServiceFactory) context.getAttribute(serviceFactoryKey);
-        context.removeAttribute(serviceFactoryKey);
+                = (ServiceFactory) context.getAttribute(CommonAttributes.SERVICE_FACTORY);
+        context.removeAttribute(CommonAttributes.SERVICE_FACTORY);
         commandProvider = new CommandProvider(serviceFactory);
     }
 
@@ -37,7 +37,7 @@ public class CommandProviderFilter implements Filter {
         Command command = commandProvider.getCommand(commandKey);
         String sessionId = request.getSession().getId();
         log.debug("command: {} for sessionId = {}", command, sessionId);
-        request.setAttribute("command", command);
+        request.setAttribute(CommonAttributes.COMMAND, command);
         filterChain.doFilter(servletRequest, servletResponse);
     }
 }

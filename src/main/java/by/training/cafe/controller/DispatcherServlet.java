@@ -1,6 +1,7 @@
 package by.training.cafe.controller;
 
 import by.training.cafe.controller.command.Command;
+import by.training.cafe.controller.command.CommonAttributes;
 import by.training.cafe.controller.command.Dispatch;
 import by.training.cafe.controller.command.Dispatch.DispatchType;
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +29,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void handleRequest(HttpServletRequest req, HttpServletResponse resp) {
-        Command command = (Command) req.getAttribute("command");
+        Command command = (Command) req.getAttribute(CommonAttributes.COMMAND);
         log.debug("get command attribute: {}", command);
         Dispatch result = command.execute(req, resp);
         log.debug("execution result: {}", result);
