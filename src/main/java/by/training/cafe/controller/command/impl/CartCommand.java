@@ -1,10 +1,6 @@
 package by.training.cafe.controller.command.impl;
 
-import by.training.cafe.controller.command.Command;
-import by.training.cafe.controller.command.CommandUri;
-import by.training.cafe.controller.command.CommonAttributes;
-import by.training.cafe.controller.command.Dispatch;
-import by.training.cafe.controller.command.HttpMethod;
+import by.training.cafe.controller.command.*;
 import by.training.cafe.dto.CreateOrderDto;
 import by.training.cafe.dto.DishDto;
 import by.training.cafe.dto.OrderedDishDto;
@@ -20,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.net.HttpURLConnection;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -110,7 +105,9 @@ public class CartCommand implements Command {
             orderProcessService.createOrder(createOrderDto, orderedDishes);
         } catch (NumberFormatException | ServiceException e) {
             log.error("Exception occurred", e);
-            return sendBadRequest(request);
+            session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
+                    CHECK_DATA_MESSAGE_KEY);
+            return ERROR_POST;
         }
         session.setAttribute(CommonAttributes.ORDER_CREATED, Boolean.TRUE);
         return SUCCESS_POST;
@@ -131,8 +128,11 @@ public class CartCommand implements Command {
         request.setAttribute(MIN_DATE_TIMESTAMP, minDateTimestamp);
         request.setAttribute(MAX_DATE_TIMESTAMP, maxDateTimestamp);
         HttpSession session = request.getSession();
-        replaceAttributeToRequest(session, request,
-                CommonAttributes.ERROR_MESSAGE_KEY);
+        Object attribute = session.getAttribute(CommonAttributes.ERROR_MESSAGE_KEY);
+        if (attribute != null) {
+            session.removeAttribute(CommonAttributes.ERROR_MESSAGE_KEY);
+            request.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY, attribute);
+        }
         return SUCCESS_GET;
     }
 
@@ -171,23 +171,5 @@ public class CartCommand implements Command {
             log.error("Service exception occurred", e);
             return Collections.emptyList();
         }
-    }
-
-    private void replaceAttributeToRequest(HttpSession session,
-                                           HttpServletRequest request,
-                                           String attributeKey) {
-        Object attribute = session.getAttribute(attributeKey);
-        if (attribute != null) {
-            session.removeAttribute(attributeKey);
-            request.setAttribute(attributeKey, attribute);
-        }
-    }
-
-    private Dispatch sendBadRequest(HttpServletRequest request) {
-        request.setAttribute(CommonAttributes.ERROR_STATUS,
-                HttpURLConnection.HTTP_BAD_REQUEST);
-        request.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
-                CHECK_DATA_MESSAGE_KEY);
-        return ERROR_POST;
     }
 }
