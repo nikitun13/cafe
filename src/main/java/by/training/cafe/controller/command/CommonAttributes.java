@@ -18,6 +18,10 @@ public final class CommonAttributes {
     public static final String COMMAND = "command";
     public static final String SERVICE_FACTORY = "serviceFactory";
     public static final String ENCODING = "encoding";
+    public static final String ORDER_CREATED = "orderCreated";
+    public static final String DEBITED_POINTS = "debitedPoints";
+    public static final String EXPECTED_RETRIEVE_DATE = "expectedDate";
+
 
     private CommonAttributes() {
     }

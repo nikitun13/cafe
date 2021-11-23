@@ -31,23 +31,24 @@ public final class ServiceFactoryImpl implements ServiceFactory, AutoCloseable {
         TransactionFactory transactionFactory
                 = TransactionFactoryImpl.getInstance();
         EncoderService encoderService = new BCryptEncoderServiceImpl();
+        UserService userService = new UserServiceImpl(
+                transactionFactory, encoderService);
+        OrderService orderService = new OrderServiceImpl(transactionFactory);
+        OrderedDishService orderedDishService = new OrderedDishServiceImpl(
+                transactionFactory);
+        OrderProcessService orderProcessService = new OrderProcessServiceImpl(
+                orderService, orderedDishService, userService);
         repository = new HashMap<>();
         repository.put(DishService.class,
                 new DishServiceImpl(transactionFactory));
 
-        repository.put(UserService.class,
-                new UserServiceImpl(transactionFactory, encoderService));
-
-        repository.put(OrderService.class,
-                new OrderServiceImpl(transactionFactory));
-
-        repository.put(OrderedDishService.class,
-                new OrderedDishServiceImpl(transactionFactory));
-
+        repository.put(UserService.class, userService);
+        repository.put(OrderService.class, orderService);
+        repository.put(OrderedDishService.class, orderedDishService);
         repository.put(CommentService.class,
                 new CommentServiceImpl(transactionFactory));
-
         repository.put(EncoderService.class, encoderService);
+        repository.put(OrderProcessService.class, orderProcessService);
     }
 
     public static ServiceFactoryImpl getInstance() {
