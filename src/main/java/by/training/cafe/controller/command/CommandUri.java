@@ -20,6 +20,7 @@ public final class CommandUri {
     public static final String ADMIN = "/admin";
     public static final String PROFILE = "/profile";
     public static final String ORDERS = "/profile/orders";
+    public static final String UPDATE_USER = "/updateuser";
 
     private CommandUri() {
     }

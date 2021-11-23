@@ -20,6 +20,15 @@ import javax.servlet.http.HttpSession;
 import static by.training.cafe.controller.command.Dispatch.DispatchType;
 import static java.net.HttpURLConnection.HTTP_BAD_METHOD;
 
+/**
+ * The class {@code ProfileCommand} is a class that
+ * implements {@link Command}.<br/>
+ * Provides user profile page and user update password
+ * functionality.
+ *
+ * @author Nikita Romanov
+ * @see Command
+ */
 public class ProfileCommand implements Command {
 
     private static final Logger log
@@ -36,10 +45,6 @@ public class ProfileCommand implements Command {
     private static final String OLD_PASSWORD_KEY = "oldPassword";
     private static final String NEW_PASSWORD_KEY = "newPassword";
     private static final String CHECK_DATA_MESSAGE_KEY = "cafe.error.checkData";
-    private static final String EMAIL_ALREADY_EXISTS_MESSAGE_KEY
-            = "signup.error.emailExists";
-    private static final String PHONE_ALREADY_EXISTS_MESSAGE_KEY
-            = "signup.error.phoneExists";
     private static final String UPDATE_PASSWORD_SUCCESS_KEY
             = "profile.updatePassword.success";
 
@@ -85,17 +90,8 @@ public class ProfileCommand implements Command {
             return REDIRECT_TO_PROFILE;
         } catch (ServiceException e) {
             log.error("Service exception occurred", e);
-            String message = e.getMessage();
-            if (message.startsWith(CommonAttributes.EMAIL)) {
-                session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
-                        EMAIL_ALREADY_EXISTS_MESSAGE_KEY);
-            } else if (message.startsWith(CommonAttributes.PHONE)) {
-                session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
-                        PHONE_ALREADY_EXISTS_MESSAGE_KEY);
-            } else {
-                session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
-                        CHECK_DATA_MESSAGE_KEY);
-            }
+            session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
+                    CHECK_DATA_MESSAGE_KEY);
             return REDIRECT_TO_PROFILE;
         }
     }

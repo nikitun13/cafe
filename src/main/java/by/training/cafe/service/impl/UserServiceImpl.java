@@ -170,6 +170,7 @@ public class UserServiceImpl implements UserService {
             UserDao userDao = transaction.createDao(UserDao.class);
             return userDao.update(user);
         } catch (DaoException e) {
+            resolveViolateUniqueConstraintReason(e);
             throw new ServiceException("Dao exception during update method", e);
         }
     }
@@ -209,7 +210,6 @@ public class UserServiceImpl implements UserService {
             }
             return false;
         } catch (DaoException e) {
-            resolveViolateUniqueConstraintReason(e);
             throw new ServiceException(
                     "Dao exception during updatePassword method", e);
         }

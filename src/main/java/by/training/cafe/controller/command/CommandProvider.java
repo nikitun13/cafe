@@ -29,6 +29,8 @@ public class CommandProvider {
         repository.put(CommandUri.SIGN_OUT, new SignOutCommand());
         repository.put(CommandUri.DISH_PAGE, new DishPageCommand(serviceFactory));
         repository.put(CommandUri.CART, new CartCommand(serviceFactory));
+        repository.put(CommandUri.PROFILE, new ProfileCommand(serviceFactory));
+        repository.put(CommandUri.UPDATE_USER, new UpdateUserCommand(serviceFactory));
     }
 
     public Command getCommand(String key) {
