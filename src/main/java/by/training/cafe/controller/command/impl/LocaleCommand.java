@@ -1,7 +1,7 @@
 package by.training.cafe.controller.command.impl;
 
 import by.training.cafe.controller.command.Command;
-import by.training.cafe.controller.command.CommandUrl;
+import by.training.cafe.controller.command.CommandUri;
 import by.training.cafe.controller.command.CommonAttributes;
 import by.training.cafe.controller.command.Dispatch;
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +28,7 @@ public class LocaleCommand implements Command {
     private static final List<String> LOCALES = List.of("en-us", "ru-ru", "de-de");
     private static final Dispatch REDIRECT_HOME = new Dispatch(
             DispatchType.REDIRECT,
-            CommandUrl.MAIN);
+            CommandUri.MAIN);
     private static final String LOCALE_PARAMETER_KEY = "lc";
     private static final String REFERER_HEADER = "referer";
 
@@ -48,7 +48,7 @@ public class LocaleCommand implements Command {
         }
         String referer = request.getHeader(REFERER_HEADER);
         log.debug("header referer = {}", referer);
-        if (referer == null || referer.contains(CommandUrl.LOCALE)) {
+        if (referer == null || referer.contains(CommandUri.LOCALE)) {
             return REDIRECT_HOME;
         } else {
             return new Dispatch(DispatchType.REDIRECT, referer);

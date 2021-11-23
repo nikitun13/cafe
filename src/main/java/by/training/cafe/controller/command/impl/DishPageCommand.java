@@ -1,7 +1,7 @@
 package by.training.cafe.controller.command.impl;
 
 import by.training.cafe.controller.command.Command;
-import by.training.cafe.controller.command.CommandUrl;
+import by.training.cafe.controller.command.CommandUri;
 import by.training.cafe.controller.command.CommonAttributes;
 import by.training.cafe.controller.command.Dispatch;
 import by.training.cafe.controller.command.Dispatch.DispatchType;
@@ -27,9 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import static java.net.HttpURLConnection.HTTP_BAD_METHOD;
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
-import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.*;
 
 /**
  * The class {@code DishPageCommand} is a class that
@@ -44,13 +42,13 @@ public class DishPageCommand implements Command {
     private static final Logger log
             = LogManager.getLogger(DishPageCommand.class);
     private static final long DEFAULT_LIMIT = 5L;
-    private static final String REDIRECT_PATH = CommandUrl.DISH_PAGE + "?id=%d";
+    private static final String REDIRECT_PATH = CommandUri.DISH_PAGE + "?id=%d";
     private static final Dispatch ERROR_GET = new Dispatch(
             DispatchType.FORWARD,
             JspPathUtil.getPath("error"));
     private static final Dispatch ERROR_POST = new Dispatch(
             DispatchType.REDIRECT,
-            CommandUrl.ERROR);
+            CommandUri.ERROR);
     private static final Dispatch SUCCESS_GET = new Dispatch(
             DispatchType.FORWARD,
             JspPathUtil.getPath("dish"));
@@ -94,9 +92,9 @@ public class DishPageCommand implements Command {
             };
         } catch (ServiceException e) {
             log.error("ServiceException occurred", e);
-            response.setStatus(HTTP_INTERNAL_ERROR);
+            response.setStatus(HTTP_BAD_REQUEST);
             request.setAttribute(
-                    CommonAttributes.ERROR_STATUS, HTTP_INTERNAL_ERROR);
+                    CommonAttributes.ERROR_STATUS, HTTP_BAD_REQUEST);
         } catch (IllegalArgumentException e) {
             log.error("IllegalArgumentException occurred", e);
             response.setStatus(HTTP_BAD_METHOD);
@@ -176,7 +174,7 @@ public class DishPageCommand implements Command {
                 CURRENT_DISH_ATTRIBUTE_KEY);
         if (user == null || dish == null) {
             log.error("User or dish is null. User: {}. Dish: {}", user, dish);
-            return internalErrorOccurred(session);
+            return badRequest(session);
         }
 
         try {
@@ -209,14 +207,14 @@ public class DishPageCommand implements Command {
                 return new Dispatch(DispatchType.REDIRECT,
                         REDIRECT_PATH.formatted(dish.getId()));
             }
-            return internalErrorOccurred(session);
+            return badRequest(session);
         }
     }
 
-    private Dispatch internalErrorOccurred(HttpSession session) {
+    private Dispatch badRequest(HttpSession session) {
         session.setAttribute(CommonAttributes.IS_ERROR_OCCURRED, Boolean.TRUE);
         session.setAttribute(CommonAttributes.ERROR_STATUS,
-                HTTP_INTERNAL_ERROR);
+                HTTP_BAD_REQUEST);
         return ERROR_POST;
     }
 

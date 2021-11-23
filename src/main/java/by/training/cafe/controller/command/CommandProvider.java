@@ -21,13 +21,14 @@ public class CommandProvider {
     public CommandProvider(ServiceFactory serviceFactory) {
         unknownCommand = new UnknownCommand();
         repository = new HashMap<>();
-        repository.put(CommandUrl.MAIN, new MainCommand(serviceFactory));
-        repository.put(CommandUrl.LOCALE, new LocaleCommand());
-        repository.put(CommandUrl.ERROR, new ErrorCommand());
-        repository.put(CommandUrl.SIGN_IN, new SignInCommand(serviceFactory));
-        repository.put(CommandUrl.SIGN_UP, new SignUpCommand(serviceFactory));
-        repository.put(CommandUrl.SIGN_OUT, new SignOutCommand());
-        repository.put(CommandUrl.DISH_PAGE, new DishPageCommand(serviceFactory));
+        repository.put(CommandUri.MAIN, new MainCommand(serviceFactory));
+        repository.put(CommandUri.LOCALE, new LocaleCommand());
+        repository.put(CommandUri.ERROR, new ErrorCommand());
+        repository.put(CommandUri.SIGN_IN, new SignInCommand(serviceFactory));
+        repository.put(CommandUri.SIGN_UP, new SignUpCommand(serviceFactory));
+        repository.put(CommandUri.SIGN_OUT, new SignOutCommand());
+        repository.put(CommandUri.DISH_PAGE, new DishPageCommand(serviceFactory));
+        repository.put(CommandUri.CART, new CartCommand(serviceFactory));
     }
 
     public Command getCommand(String key) {

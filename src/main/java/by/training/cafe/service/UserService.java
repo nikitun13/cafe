@@ -9,7 +9,7 @@ import java.util.Optional;
 
 /**
  * The class {@code UserService} is a class that
- * implements {@link Service}.<br/>
+ * extends {@link Service}.<br/>
  * Provides different business logic with {@link User} entities
  * using {@link UserDto} and {@link CreateUserDto}.
  *

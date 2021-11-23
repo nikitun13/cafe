@@ -8,7 +8,7 @@ import java.util.Optional;
 
 /**
  * The class {@code OrderedDishService} is a class that
- * implements {@link Service}.<br/>
+ * extends {@link Service}.<br/>
  * Provides different business logic with {@code OrderedDish} entities
  * using {@link OrderedDishDto}.
  *

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 /**
  * The class {@code CommentService} is a class that
- * implements {@link Service}.<br/>
+ * extends {@link Service}.<br/>
  * Provides different business logic with {@code comment} entities
  * using {@link CommentDto}.
  *

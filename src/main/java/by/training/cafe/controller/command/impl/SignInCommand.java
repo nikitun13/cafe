@@ -1,10 +1,7 @@
 package by.training.cafe.controller.command.impl;
 
-import by.training.cafe.controller.command.Command;
-import by.training.cafe.controller.command.CommandUrl;
-import by.training.cafe.controller.command.CommonAttributes;
-import by.training.cafe.controller.command.Dispatch;
-import by.training.cafe.controller.command.HttpMethod;
+import by.training.cafe.controller.command.*;
+import by.training.cafe.controller.command.CommandUri;
 import by.training.cafe.dto.UserDto;
 import by.training.cafe.service.ServiceException;
 import by.training.cafe.service.ServiceFactory;
@@ -42,16 +39,16 @@ public class SignInCommand implements Command {
             JspPathUtil.getPath("sign-in"));
     private static final Dispatch SIGNED_IN_USER_REDIRECT = new Dispatch(
             DispatchType.REDIRECT,
-            CommandUrl.MAIN);
+            CommandUri.MAIN);
     private static final Dispatch SUCCESS_POST_NO_REFERER = new Dispatch(
             DispatchType.REDIRECT,
-            CommandUrl.MAIN);
+            CommandUri.MAIN);
     private static final Dispatch ERROR_POST = new Dispatch(
             DispatchType.REDIRECT,
-            CommandUrl.SIGN_IN);
+            CommandUri.SIGN_IN);
     private static final Dispatch INTERNAL_ERROR_POST = new Dispatch(
             DispatchType.REDIRECT,
-            CommandUrl.ERROR);
+            CommandUri.ERROR);
     private static final String INCORRECT_EMAIL_OR_PASSWORD_KEY
             = "signin.error.incorrect";
     private static final String EMAIL_OR_PASSWORD_IS_INVALID_MESSAGE
@@ -76,8 +73,8 @@ public class SignInCommand implements Command {
         } catch (IllegalArgumentException e) {
             log.error("IllegalArgumentException occurred", e);
             response.setStatus(HTTP_BAD_METHOD);
-            request.setAttribute(
-                    CommonAttributes.ERROR_STATUS, HTTP_BAD_METHOD);
+            request.setAttribute(CommonAttributes.ERROR_STATUS,
+                    HTTP_BAD_METHOD);
         }
         return ERROR_GET;
     }
@@ -99,8 +96,8 @@ public class SignInCommand implements Command {
                         INCORRECT_EMAIL_OR_PASSWORD_KEY);
                 return ERROR_POST;
             }
-            session.setAttribute(
-                    CommonAttributes.IS_ERROR_OCCURRED, Boolean.TRUE);
+            session.setAttribute(CommonAttributes.IS_ERROR_OCCURRED,
+                    Boolean.TRUE);
             session.setAttribute(CommonAttributes.ERROR_STATUS,
                     HTTP_INTERNAL_ERROR);
             return INTERNAL_ERROR_POST;
@@ -132,8 +129,8 @@ public class SignInCommand implements Command {
         }
         String referer = request.getHeader(REFERER_HEADER);
         if (referer != null
-                && !referer.contains(CommandUrl.SIGN_IN)
-                && !referer.contains(CommandUrl.SIGN_UP)) {
+                && !referer.contains(CommandUri.SIGN_IN)
+                && !referer.contains(CommandUri.SIGN_UP)) {
             log.debug("header referer = {}", referer);
             session.setAttribute(CommonAttributes.LAST_PAGE, referer);
         }

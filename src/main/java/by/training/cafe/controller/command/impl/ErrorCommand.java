@@ -1,7 +1,7 @@
 package by.training.cafe.controller.command.impl;
 
 import by.training.cafe.controller.command.Command;
-import by.training.cafe.controller.command.CommandUrl;
+import by.training.cafe.controller.command.CommandUri;
 import by.training.cafe.controller.command.CommonAttributes;
 import by.training.cafe.controller.command.Dispatch;
 import by.training.cafe.controller.command.Dispatch.DispatchType;
@@ -24,7 +24,7 @@ public class ErrorCommand implements Command {
 
     private static final Dispatch REDIRECT_HOME = new Dispatch(
             DispatchType.REDIRECT,
-            CommandUrl.MAIN);
+            CommandUri.MAIN);
     private static final Dispatch FORWARD_ERROR = new Dispatch(
             DispatchType.FORWARD,
             JspPathUtil.getPath("error"));

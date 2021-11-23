@@ -2,7 +2,7 @@ package by.training.cafe.service;
 
 /**
  * The class {@code EncoderService} is a class that
- * implements {@link Service}.<br/>
+ * extends {@link Service}.<br/>
  * Encodes string and checks if the given string
  * matches the given hash.<br/>
  * The Hash-function used is implementation dependent.

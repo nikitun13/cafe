@@ -1,7 +1,7 @@
 package by.training.cafe.controller.command.impl;
 
 import by.training.cafe.controller.command.Command;
-import by.training.cafe.controller.command.CommandUrl;
+import by.training.cafe.controller.command.CommandUri;
 import by.training.cafe.controller.command.CommonAttributes;
 import by.training.cafe.controller.command.Dispatch;
 import by.training.cafe.controller.command.HttpMethod;
@@ -31,7 +31,7 @@ public class SignOutCommand implements Command {
             JspPathUtil.getPath("error"));
     private static final Dispatch SUCCESS = new Dispatch(
             DispatchType.REDIRECT,
-            CommandUrl.MAIN);
+            CommandUri.MAIN);
 
     @Override
     public Dispatch execute(HttpServletRequest request,

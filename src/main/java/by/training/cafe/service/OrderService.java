@@ -10,7 +10,7 @@ import java.util.Optional;
 
 /**
  * The class {@code OrderService} is a class that
- * implements {@link Service}.<br/>
+ * extends {@link Service}.<br/>
  * Provides different business logic with {@code order} entities
  * using {@link OrderDto} and {@link CreateOrderDto}.
  *

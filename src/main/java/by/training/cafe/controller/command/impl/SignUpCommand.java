@@ -1,7 +1,7 @@
 package by.training.cafe.controller.command.impl;
 
 import by.training.cafe.controller.command.Command;
-import by.training.cafe.controller.command.CommandUrl;
+import by.training.cafe.controller.command.CommandUri;
 import by.training.cafe.controller.command.CommonAttributes;
 import by.training.cafe.controller.command.Dispatch;
 import by.training.cafe.controller.command.HttpMethod;
@@ -41,17 +41,17 @@ public class SignUpCommand implements Command {
             JspPathUtil.getPath("sign-up"));
     private static final Dispatch SIGNED_IN_USER_REDIRECT = new Dispatch(
             DispatchType.REDIRECT,
-            CommandUrl.MAIN);
+            CommandUri.MAIN);
     private static final Dispatch SUCCESS_POST = new Dispatch(
             DispatchType.REDIRECT,
-            CommandUrl.SIGN_IN);
+            CommandUri.SIGN_IN);
     private static final Dispatch ERROR_POST = new Dispatch(
             DispatchType.REDIRECT,
-            CommandUrl.SIGN_UP);
+            CommandUri.SIGN_UP);
     private static final String REFERER_HEADER = "referer";
     private static final String SIGN_UP_SUCCESS_MESSAGE = "signup.success";
     private static final String CHECK_INPUT_DATA_MESSAGE_KEY
-            = "signup.error.checkData";
+            = "cafe.error.checkData";
     private static final String EMAIL_ALREADY_EXISTS_MESSAGE_KEY
             = "signup.error.emailExists";
     private static final String PHONE_ALREADY_EXISTS_MESSAGE_KEY
@@ -129,8 +129,8 @@ public class SignUpCommand implements Command {
         }
         String referer = request.getHeader(REFERER_HEADER);
         if (referer != null
-                && !referer.contains(CommandUrl.SIGN_IN)
-                && !referer.contains(CommandUrl.SIGN_UP)) {
+                && !referer.contains(CommandUri.SIGN_IN)
+                && !referer.contains(CommandUri.SIGN_UP)) {
             log.debug("header referer = {}", referer);
             session.setAttribute(CommonAttributes.LAST_PAGE, referer);
         }
