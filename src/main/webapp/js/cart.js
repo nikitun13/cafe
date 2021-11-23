@@ -1,3 +1,5 @@
+let debitedPointsElement = $('#debitedPoints');
+
 var shoppingCart = (function () {
 
     cart = [];
@@ -147,8 +149,11 @@ $('.clear-cart').click(function () {
     displayCart();
 });
 
+let emptyCart = $('#emptyCart');
 
 function displayCart() {
+    setMaxDebitedPoints()
+    setTotalPrice();
     var cartArray = shoppingCart.listCart();
     var output = "";
     for (var i in cartArray) {
@@ -156,9 +161,9 @@ function displayCart() {
             " <li class=\"list-group-item\">\n" +
             "                        <div class=\"d-flex justify-content-between\">\n" +
             "                             <div class=\"col-12 my-1\">\n" +
-            "                                <img src='/img/dishes/dish-" + cartArray[i].id + ".png' alt='" + cartArray[i].name + " picture'" +
+            "                                <img class='cart-img' src='/img/dishes/dish-" + cartArray[i].id + ".png' alt='" + cartArray[i].name + " picture'" +
             "                                 style=\"width: 32px; height: auto;\"/>\n" +
-            "                                <span>" + cartArray[i].name + "</span>\n" +
+            "                                <span class='cart-dish-name'>" + cartArray[i].name + "</span>\n" +
             "                             </div>\n" +
             "                             <button type=\"button\" class=\"btn-close mt-1 delete-item\" data-id='" + cartArray[i].id + "' aria-label=\"Close\"></button>\n" +
             "                        </div>" +
@@ -183,6 +188,14 @@ function displayCart() {
             "                            <span>" + cartArray[i].price + " BYN</span>\n" +
             "                        </div>\n" +
             "                    </li>";
+    }
+    let totalCount = shoppingCart.totalCount();
+    if (emptyCart.length) {
+        if (totalCount === 0) {
+            emptyCart.removeAttr('hidden')
+        } else {
+            emptyCart.attr('hidden')
+        }
     }
     $('.show-cart').html(output);
     $('.total-cart').html(shoppingCart.totalCart());
@@ -210,3 +223,106 @@ $('.show-cart').on("click", ".delete-item", function (event) {
 });
 
 displayCart();
+
+function setMaxDebitedPoints() {
+    let max = calcMaxDebitedPoints()
+    debitedPointsElement.attr('max', max)
+}
+
+function calcMaxDebitedPoints() {
+    let totalInPoints = shoppingCart.totalCart() * 100;
+    let availablePoints = Number($('#availablePoints').html());
+    return Math.min(totalInPoints, availablePoints);
+}
+
+function setTotalPrice() {
+    let debitedPoints = Number(debitedPointsElement.val());
+    let totalInPoints = shoppingCart.totalCart() * 100;
+
+    $('#totalPrice').html(Number((totalInPoints - debitedPoints) / 100).toFixed(2))
+}
+
+setTotalPrice();
+
+debitedPointsElement.on('input', function () {
+    if (validateDebitedPoints()) {
+        setTotalPrice()
+    }
+})
+
+$('#orderForm').submit(function () {
+    if (validateOrderForm()) {
+        addHiddenInput()
+        return true
+    }
+    return false
+})
+
+function validateOrderForm() {
+    return validateIsEmpty()
+        && validateExpectedDate()
+        && validateDebitedPoints()
+        && validateTotalPrice()
+}
+
+function validateIsEmpty() {
+    let totalCount = shoppingCart.totalCount();
+    if (totalCount === 0) {
+        $('#submitOrderButtonBlock').addClass('is-invalid');
+        return false;
+    }
+    return true;
+}
+
+let expectedDateElement = $('#expectedDate');
+let maxDate = new Date(expectedDateElement.attr('max'));
+let minDate = new Date(expectedDateElement.attr('min'));
+
+function validateExpectedDate() {
+    let expectedDate = new Date(expectedDateElement.val());
+    if (expectedDate < minDate || expectedDate > maxDate) {
+        expectedDateElement.addClass('is-invalid');
+        return false;
+    } else {
+        expectedDateElement.removeClass('is-invalid');
+        return true;
+    }
+}
+
+expectedDateElement.on('input', validateExpectedDate)
+
+function validateDebitedPoints() {
+    let max = calcMaxDebitedPoints();
+    let debitedPoints = Number(debitedPointsElement.val());
+    if (isNaN(debitedPoints) || isNaN(max)
+        || debitedPoints < 0 || debitedPoints > max) {
+        debitedPointsElement.addClass('is-invalid');
+        $('#debitedPointsBlock').addClass('is-invalid');
+        return false;
+    } else {
+        debitedPointsElement.removeClass('is-invalid');
+        $('#debitedPointsBlock').removeClass('is-invalid');
+        return true;
+    }
+}
+
+function validateTotalPrice() {
+    let totalPrice = Number($('#totalPrice').html());
+    return !(isNaN(totalPrice) || totalPrice < 0);
+
+}
+
+function addHiddenInput() {
+    let cartArray = shoppingCart.listCart();
+    for (const orderedDish of cartArray) {
+        $('<input />').attr('type', 'hidden')
+            .attr('name', 'orderedDishes')
+            .attr('value', orderedDish.id + "-" + orderedDish.count)
+            .appendTo('#orderForm')
+    }
+    let expectedDate = new Date(expectedDateElement.val());
+    $('<input />').attr('type', 'hidden')
+        .attr('name', 'expectedDate')
+        .attr('value', expectedDate.getTime())
+        .appendTo('#orderForm')
+}

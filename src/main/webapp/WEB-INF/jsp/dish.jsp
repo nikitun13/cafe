@@ -269,9 +269,18 @@
                         </span>
                     <span><span class="total-cart"></span> BYN</span>
                 </div>
-                <a href="<c:url value="/cart"/>" class="btn btn-outline-success col-12 text-center">
-                    <fmt:message key="cart.order"/>
-                </a>
+                <c:choose>
+                    <c:when test="${not empty user}">
+                        <a href="<c:url value="/cart"/>" class="btn btn-outline-success col-12 text-center">
+                            <fmt:message key="cart.order"/>
+                        </a>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="<c:url value="/signin"/>" class="btn btn-outline-success col-12 text-center">
+                            <fmt:message key="cart.order"/>
+                        </a>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </aside>

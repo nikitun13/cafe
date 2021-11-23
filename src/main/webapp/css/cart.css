@@ -1,0 +1,55 @@
+.card {
+    margin: auto;
+    max-width: 800px;
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 1rem;
+}
+
+@media (max-width: 767px) {
+    .card {
+        margin: 1rem auto
+    }
+}
+
+.cart {
+    background-color: #fff;
+    padding: 1rem 1.2rem;
+    border-bottom-left-radius: 1rem;
+    border-top-left-radius: 1rem
+}
+
+@media (max-width: 767px) {
+    .cart {
+        padding: 1rem;
+        border-bottom-left-radius: unset;
+        border-top-right-radius: 1rem
+    }
+}
+
+.summary {
+    background-color: #e5e5e5;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    padding: 1rem;
+    color: rgb(65, 65, 65)
+}
+
+@media (max-width: 767px) {
+    .summary {
+        border-top-right-radius: unset;
+        border-bottom-left-radius: 1rem
+    }
+}
+
+a {
+    text-decoration: none
+}
+
+.cart-img {
+    width: 70px !important;
+}
+
+.cart-dish-name {
+    font-size: 20px;
+    margin-left: 0.5em;
+}

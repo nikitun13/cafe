@@ -175,4 +175,12 @@ $(document).ready(function () {
             return false;
         }
     }
+
+    function clearCartIfOrderCreated() {
+        if ($('#createdOrder').length) {
+            localStorage.removeItem('shoppingCart');
+        }
+    }
+
+    clearCartIfOrderCreated();
 });
