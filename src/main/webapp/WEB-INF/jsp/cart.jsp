@@ -27,9 +27,7 @@
                 <div class="row border-bottom border-secondary">
                     <div class="col">
                         <h4>
-                            <strong>
-                                <fmt:message key="cafe.cart"/>
-                            </strong>
+                            <fmt:message key="cafe.cart"/>
                         </h4>
                     </div>
                 </div>
@@ -47,9 +45,7 @@
             <div class="col-md-5 summary">
                 <div class="border-bottom border-secondary row">
                     <h4>
-                        <strong>
-                            <fmt:message key="cart.summary"/>
-                        </strong>
+                        <fmt:message key="cart.summary"/>
                     </h4>
                 </div>
                 <form method="post" id="orderForm" class="fs-5" novalidate>

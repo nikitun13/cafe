@@ -78,13 +78,16 @@
                 </label>
                 <input type="password" class="form-control" id="repeatPassword"
                        name="repeatPassword" maxlength="128" minlength="8">
+                <div class="invalid-feedback">
+                    <fmt:message key="input.error.passwordMismatch"/>
+                </div>
             </div>
             <div class="col-md-6">
                 <label for="phone" class="form-label">
                     <fmt:message key="input.phone"/>
                 </label>
                 <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">+</span>
+                    <span class="input-group-text">+</span>
                     <input type="tel" class="form-control" id="phone" name="phone"
                            minlength="10" maxlength="15"
                     <c:if test="${not empty phone}">

@@ -100,7 +100,7 @@ $(document).ready(function () {
             && validateFirstName()
             && validateLastName()
             && validatePhone()
-            && validatePassword()
+            && validatePassword(password)
             && validateRepeatPassword()
     })
 
@@ -153,17 +153,6 @@ $(document).ready(function () {
 
     let passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}";
 
-    function validatePassword() {
-        let val = password.val();
-        if (val.trim() === "" || !val.match(passwordRegex)) {
-            password.addClass('is-invalid');
-            return false;
-        } else {
-            password.removeClass('is-invalid');
-            return true;
-        }
-    }
-
     function validateRepeatPassword() {
         let repeatPasswordVal = repeatPassword.val();
         let passwordVal = password.val();
@@ -183,4 +172,52 @@ $(document).ready(function () {
     }
 
     clearCartIfOrderCreated();
+
+    let oldPassword = $('#oldPassword');
+    let newPassword = $('#newPassword');
+    let repeatNewPassword = $('#repeatNewPassword');
+
+    oldPassword.on('keyup', function () {
+        validatePassword(oldPassword)
+    })
+    newPassword.on('keyup', function () {
+        validatePassword(newPassword)
+    })
+    repeatNewPassword.on('keyup', validateRepeatNewPassword)
+
+    function validatePassword(passwordElement) {
+        let val = passwordElement.val();
+        if (val.trim() === "" || !val.match(passwordRegex)) {
+            passwordElement.addClass('is-invalid');
+            return false;
+        } else {
+            passwordElement.removeClass('is-invalid');
+            return true;
+        }
+    }
+
+    function validateRepeatNewPassword() {
+        let repeatPasswordVal = repeatNewPassword.val();
+        let passwordVal = newPassword.val();
+        if (passwordVal === repeatPasswordVal) {
+            repeatNewPassword.removeClass('is-invalid');
+            return true;
+        } else {
+            repeatNewPassword.addClass('is-invalid');
+            return false;
+        }
+    }
+
+    $('#userInfo').submit(function () {
+        return validateEmail()
+            && validateFirstName()
+            && validateLastName()
+            && validatePhone()
+    })
+
+    $('#userPass').submit(function () {
+        return validatePassword(oldPassword)
+            && validatePassword(newPassword)
+            && validateRepeatNewPassword()
+    })
 });
