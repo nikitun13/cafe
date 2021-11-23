@@ -88,7 +88,8 @@ public interface UserService extends Service {
      *                          or DaoException occurred.
      */
     boolean updatePassword(UserDto userDto, String oldPassword,
-                           String newPassword) throws ServiceException;
+                           String newPassword, String repeatNewPassword)
+            throws ServiceException;
 
     /**
      * Deletes {@code user} from the storage.

@@ -467,7 +467,7 @@ class UserServiceImplTest {
                 .when(encoderService)
                 .encode(newPassword);
 
-        boolean actual = service.updatePassword(IVAN_DTO, oldPassword, newPassword);
+        boolean actual = service.updatePassword(IVAN_DTO, oldPassword, newPassword, newPassword);
 
         assertThat(actual).isTrue();
     }
@@ -481,7 +481,7 @@ class UserServiceImplTest {
                 .when(userDao)
                 .findById(hansDto.getId());
 
-        boolean actual = service.updatePassword(hansDto, oldPassword, newPassword);
+        boolean actual = service.updatePassword(hansDto, oldPassword, newPassword, newPassword);
 
         assertThat(actual).isFalse();
     }
@@ -498,7 +498,7 @@ class UserServiceImplTest {
                 .when(encoderService)
                 .matches(any(), eq(hans.getPassword()));
 
-        boolean actual = service.updatePassword(hansDto, oldPassword, newPassword);
+        boolean actual = service.updatePassword(hansDto, oldPassword, newPassword, newPassword);
 
         assertThat(actual).isFalse();
     }
@@ -509,7 +509,7 @@ class UserServiceImplTest {
     @Tag("updatePassword")
     void shouldThrowExceptionIfInvalidDtoReceivedForUpdatePasswordMethod(UserDto dto) {
         String dummy = "dummyPass123";
-        assertThatThrownBy(() -> service.updatePassword(dto, dummy, dummy)).isInstanceOf(ServiceException.class);
+        assertThatThrownBy(() -> service.updatePassword(dto, dummy, dummy, dummy)).isInstanceOf(ServiceException.class);
     }
 
     @ParameterizedTest
@@ -517,7 +517,19 @@ class UserServiceImplTest {
     @Tag("updatePassword")
     void shouldThrowExceptionIfInvalidPasswordReceivedForUpdatePasswordMethod(String oldPassword, String newPassword) {
         UserDto dummy = adamDto;
-        assertThatThrownBy(() -> service.updatePassword(dummy, oldPassword, newPassword)).isInstanceOf(ServiceException.class);
+        assertThatThrownBy(() -> service.updatePassword(dummy, oldPassword, newPassword, newPassword)).isInstanceOf(ServiceException.class);
+    }
+
+    @Test
+    @Tag("updatePassword")
+    void shouldThrowExceptionIfNewAndRepeatPasswordMismatch() {
+        UserDto dummyUser = adamDto;
+        String dummyPassword = "qwerty123";
+        String newPassword = "123qwerty";
+        String repeatPassword = "qwerty123";
+
+        assertThatThrownBy(() -> service.updatePassword(dummyUser, dummyPassword, newPassword, repeatPassword))
+                .isInstanceOf(ServiceException.class);
     }
 
     @Test

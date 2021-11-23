@@ -41,6 +41,10 @@ public class UserServiceImpl implements UserService {
             = "Result list: {}";
     private static final String USER_DTO_IS_INVALID_MESSAGE
             = "UserDto is invalid: ";
+    private static final String VIOLATE_UNIQUE_CONSTRAINT
+            = "Violate unique constraint";
+    private static final String USERS_EMAIL_KEY = "users_email_key";
+    private static final String USERS_PHONE_KEY = "users_phone_key";
 
     private final Mapper<User, UserDto> userDtoMapper
             = UserDtoMapper.getInstance();
@@ -147,17 +151,7 @@ public class UserServiceImpl implements UserService {
             UserDao userDao = transaction.createDao(UserDao.class);
             userDao.create(user);
         } catch (DaoException e) {
-            if (e.getMessage().startsWith("Violate unique constraint")) {
-                String message = e.getCause().getMessage();
-                String uniqueConstraint = message.substring(
-                        message.indexOf("\"") + 1,
-                        message.lastIndexOf("\""));
-                if (uniqueConstraint.equals("users_email_key")) {
-                    throw new ServiceException("email already exists", e);
-                } else if (uniqueConstraint.equals("users_phone_key")) {
-                    throw new ServiceException("phone already exists", e);
-                }
-            }
+            resolveViolateUniqueConstraintReason(e);
             throw new ServiceException("Dao exception during signUp method", e);
         }
         UserDto userDto = userDtoMapper.mapEntityToDto(user);
@@ -182,15 +176,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updatePassword(UserDto userDto,
-                                  String oldPassword, String newPassword)
+                                  String oldPassword,
+                                  String newPassword,
+                                  String repeatNewPassword)
             throws ServiceException {
         log.debug("Received userDto = {}, oldPassword = {}, newPassword = {}",
                 userDto, oldPassword, newPassword);
-        if (!userDtoValidator.isValid(userDto)
-                || !passwordValidator.isValid(oldPassword)
-                || !passwordValidator.isValid(newPassword)) {
+        if (!passwordValidator.isValid(newPassword)
+                || !newPassword.equals(repeatNewPassword)
+                || !userDtoValidator.isValid(userDto)
+                || !passwordValidator.isValid(oldPassword)) {
             throw new ServiceException(
-                    ("UserDto or oldPassword or newPassword is invalid. "
+                    ("UserDto or oldPassword or newPassword is invalid "
+                            + "or new and repeatPassword mismatch. "
                             + "UserDto = %s. OldPassword = %s. NewPassword = %s")
                             .formatted(userDto, oldPassword, newPassword)
             );
@@ -211,6 +209,7 @@ public class UserServiceImpl implements UserService {
             }
             return false;
         } catch (DaoException e) {
+            resolveViolateUniqueConstraintReason(e);
             throw new ServiceException(
                     "Dao exception during updatePassword method", e);
         }
@@ -228,6 +227,21 @@ public class UserServiceImpl implements UserService {
             return userDao.delete(id);
         } catch (DaoException e) {
             throw new ServiceException("Dao exception during delete method", e);
+        }
+    }
+
+    private void resolveViolateUniqueConstraintReason(DaoException e)
+            throws ServiceException {
+        if (e.getMessage().startsWith(VIOLATE_UNIQUE_CONSTRAINT)) {
+            String message = e.getCause().getMessage();
+            String uniqueConstraint = message.substring(
+                    message.indexOf("\"") + 1,
+                    message.lastIndexOf("\""));
+            if (uniqueConstraint.equals(USERS_EMAIL_KEY)) {
+                throw new ServiceException("email already exists", e);
+            } else if (uniqueConstraint.equals(USERS_PHONE_KEY)) {
+                throw new ServiceException("phone already exists", e);
+            }
         }
     }
 }

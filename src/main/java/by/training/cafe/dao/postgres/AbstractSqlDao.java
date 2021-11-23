@@ -99,6 +99,9 @@ public abstract class AbstractSqlDao<K, E> {
             log.debug("updated rows: {}", updateCount);
             return updateCount;
         } catch (SQLException e) {
+            if (e.getSQLState().equals(VIOLATE_UNIQUE_CONSTRAINT_CODE)) {
+                throw new DaoException(VIOLATE_UNIQUE_CONSTRAINT_MESSAGE, e);
+            }
             throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
         }
     }
