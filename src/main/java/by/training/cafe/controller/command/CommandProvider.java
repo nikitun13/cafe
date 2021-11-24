@@ -31,6 +31,8 @@ public class CommandProvider {
         repository.put(CommandUri.CART, new CartCommand(serviceFactory));
         repository.put(CommandUri.PROFILE, new ProfileCommand(serviceFactory));
         repository.put(CommandUri.UPDATE_USER, new UpdateUserCommand(serviceFactory));
+        repository.put(CommandUri.ORDERS, new OrdersCommand(serviceFactory));
+        repository.put(CommandUri.ASYNC_ORDERED_DISHES, new OrderedDishesAsyncCommand(serviceFactory));
     }
 
     public Command getCommand(String key) {

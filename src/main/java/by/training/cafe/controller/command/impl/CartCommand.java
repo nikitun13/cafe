@@ -56,7 +56,7 @@ public class CartCommand implements Command {
     private static final String MIN_DATE = "minDate";
     private static final String MAX_DATE = "maxDate";
     private static final String CHECK_DATA_MESSAGE_KEY = "cafe.error.checkData";
-    private static final String ORDERED_DISHES = "orderedDishes";
+    private static final String ORDER_CREATED_KEY = "profile.order.create.success";
 
     private final ServiceFactory serviceFactory;
 
@@ -90,7 +90,7 @@ public class CartCommand implements Command {
                     request.getParameter(CommonAttributes.DEBITED_POINTS));
             Timestamp expectedRetrieveDate = new Timestamp(Long.parseLong(
                     request.getParameter(CommonAttributes.EXPECTED_RETRIEVE_DATE)));
-            String[] pairs = request.getParameterValues(ORDERED_DISHES);
+            String[] pairs = request.getParameterValues(CommonAttributes.ORDERED_DISHES);
             List<OrderedDishDto> orderedDishes = createOrderedDishes(pairs);
 
             CreateOrderDto createOrderDto = CreateOrderDto.builder()
@@ -110,6 +110,7 @@ public class CartCommand implements Command {
             return ERROR_POST;
         }
         session.setAttribute(CommonAttributes.ORDER_CREATED, Boolean.TRUE);
+        session.setAttribute(CommonAttributes.SUCCESS_MESSAGE_KEY, ORDER_CREATED_KEY);
         return SUCCESS_POST;
     }
 

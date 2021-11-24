@@ -21,7 +21,9 @@ public final class CommonAttributes {
     public static final String ORDER_CREATED = "orderCreated";
     public static final String DEBITED_POINTS = "debitedPoints";
     public static final String EXPECTED_RETRIEVE_DATE = "expectedDate";
-
+    public static final String ORDERS = "orders";
+    public static final String ORDERED_DISHES = "orderedDishes";
+    public static final String ORDER_ID = "orderId";
 
     private CommonAttributes() {
     }
