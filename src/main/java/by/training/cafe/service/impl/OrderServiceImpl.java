@@ -11,6 +11,7 @@ import by.training.cafe.service.ServiceException;
 import by.training.cafe.service.mapper.CreateOrderDtoMapper;
 import by.training.cafe.service.mapper.Mapper;
 import by.training.cafe.service.mapper.OrderDtoMapper;
+import by.training.cafe.service.mapper.UserDtoMapper;
 import by.training.cafe.service.validator.CreateOrderDtoValidator;
 import by.training.cafe.service.validator.OrderDtoValidator;
 import by.training.cafe.service.validator.UserDtoValidator;
@@ -48,6 +49,8 @@ public class OrderServiceImpl implements OrderService {
             = OrderDtoValidator.getInstance();
     private final Validator<CreateOrderDto> createOrderDtoValidator
             = CreateOrderDtoValidator.getInstance();
+    private final Mapper<User, UserDto> userDtoMapper =
+            UserDtoMapper.getInstance();
     private final Validator<UserDto> userDtoValidator
             = UserDtoValidator.getInstance();
 
@@ -167,10 +170,11 @@ public class OrderServiceImpl implements OrderService {
             throw new ServiceException(
                     "Dao exception during findByUserId method", e);
         }
+        User user = userDtoMapper.mapDtoToEntity(userDto);
+        orders.forEach(order -> order.setUser(user));
         List<OrderDto> result = orders.stream()
                 .map(orderDtoMapper::mapEntityToDto)
                 .toList();
-        result.forEach(dto -> dto.setUser(userDto));
         log.debug(RESULT_LIST_LOG_MESSAGE, result);
         return result;
     }

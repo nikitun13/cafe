@@ -43,7 +43,7 @@ public class CommentDaoImpl
     private static final String CREATED_AT_COLUMN_NAME = "created_at";
 
     private static final String ORDER_BY_CREATED_AT_DESC_SQL
-            = " ORDER BY created_at DESC";
+            = ORDER_BY_SQL + CREATED_AT_COLUMN_NAME + DESC_SQL;
     private static final String FIND_ALL_SQL = """
             SELECT id, user_id, dish_id, rating, body, created_at
             FROM comment""";

@@ -148,7 +148,7 @@ class OrderDaoImplTest {
     public static Stream<Arguments> dataForFindByUserIdMethod() {
         return Stream.of(
                 Arguments.of(1000003L, List.of(HANS_ORDER)),
-                Arguments.of(1000000L, List.of(IVAN_FIRST_ORDER, IVAN_SECOND_ORDER)),
+                Arguments.of(1000000L, List.of(IVAN_SECOND_ORDER, IVAN_FIRST_ORDER)),
                 Arguments.of(1000001L, List.of(PETR_ORDER)),
                 Arguments.of(1000002L, Collections.emptyList())
         );

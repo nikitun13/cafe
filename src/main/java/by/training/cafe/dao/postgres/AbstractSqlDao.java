@@ -36,6 +36,8 @@ public abstract class AbstractSqlDao<K, E> {
     protected static final String PERCENT = "%";
     protected static final String AND_SQL = " AND ";
     protected static final String OR_SQL = " OR ";
+    protected static final String ORDER_BY_SQL = " ORDER BY ";
+    protected static final String DESC_SQL = " DESC ";
     protected static final String WHERE_SQL = " WHERE ";
     protected static final String LIMIT_SQL = " LIMIT ?";
     protected static final String OFFSET_SQL = " OFFSET ?";

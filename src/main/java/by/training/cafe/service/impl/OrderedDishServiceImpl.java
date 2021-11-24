@@ -1,6 +1,12 @@
 package by.training.cafe.service.impl;
 
-import by.training.cafe.dao.*;
+import by.training.cafe.dao.DaoException;
+import by.training.cafe.dao.DishDao;
+import by.training.cafe.dao.OrderDao;
+import by.training.cafe.dao.OrderedDishDao;
+import by.training.cafe.dao.Transaction;
+import by.training.cafe.dao.TransactionFactory;
+import by.training.cafe.dao.UserDao;
 import by.training.cafe.dto.OrderDto;
 import by.training.cafe.dto.OrderedDishDto;
 import by.training.cafe.entity.Dish;
@@ -10,6 +16,7 @@ import by.training.cafe.entity.User;
 import by.training.cafe.service.OrderedDishService;
 import by.training.cafe.service.ServiceException;
 import by.training.cafe.service.mapper.Mapper;
+import by.training.cafe.service.mapper.OrderDtoMapper;
 import by.training.cafe.service.mapper.OrderedDishMapper;
 import by.training.cafe.service.validator.OrderDtoValidator;
 import by.training.cafe.service.validator.OrderedDishDtoValidator;
@@ -45,6 +52,8 @@ public class OrderedDishServiceImpl implements OrderedDishService {
             = OrderedDishDtoValidator.getInstance();
     private final Validator<OrderDto> orderDtoValidator
             = OrderDtoValidator.getInstance();
+    private final Mapper<Order, OrderDto> orderDtoMapper
+            = OrderDtoMapper.getInstance();
     private final TransactionFactory transactionFactory;
 
     public OrderedDishServiceImpl(TransactionFactory transactionFactory) {
@@ -188,10 +197,11 @@ public class OrderedDishServiceImpl implements OrderedDishService {
             throw new ServiceException(
                     "Dao exception during findByOrder method", e);
         }
+        Order order = orderDtoMapper.mapDtoToEntity(orderDto);
+        orderedDishes.forEach(orderedDish -> orderedDish.setOrder(order));
         List<OrderedDishDto> result = orderedDishes.stream()
                 .map(mapper::mapEntityToDto)
                 .toList();
-        result.forEach(orderedDishDto -> orderedDishDto.setOrder(orderDto));
         log.debug(RESULT_LIST_LOG_MESSAGE, result);
         return result;
     }

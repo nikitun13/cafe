@@ -15,7 +15,9 @@ import by.training.cafe.entity.User;
 import by.training.cafe.service.CommentService;
 import by.training.cafe.service.ServiceException;
 import by.training.cafe.service.mapper.CommentMapper;
+import by.training.cafe.service.mapper.DishMapper;
 import by.training.cafe.service.mapper.Mapper;
+import by.training.cafe.service.mapper.UserDtoMapper;
 import by.training.cafe.service.validator.CommentDtoValidator;
 import by.training.cafe.service.validator.DishDtoValidator;
 import by.training.cafe.service.validator.UserDtoValidator;
@@ -60,8 +62,12 @@ public class CommentServiceImpl implements CommentService {
             = CommentDtoValidator.getInstance();
     private final Validator<DishDto> dishDtoValidator
             = DishDtoValidator.getInstance();
+    private final Mapper<Dish, DishDto> dishDishDtoMapper
+            = DishMapper.getInstance();
     private final Validator<UserDto> userDtoValidator
             = UserDtoValidator.getInstance();
+    private final Mapper<User, UserDto> userDtoMapper
+            = UserDtoMapper.getInstance();
     private final TransactionFactory transactionFactory;
 
     public CommentServiceImpl(TransactionFactory transactionFactory) {
@@ -213,14 +219,18 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments;
         try (Transaction transaction = transactionFactory.createTransaction()) {
             CommentDao commentDao = transaction.createDao(CommentDao.class);
-            comments = commentDao.findByUserIdOrderByCreatedAtDesc(
-                    userDto.getId());
-            setUserAndDishToComment(comments, transaction);
+            comments = commentDao.findByUserIdOrderByCreatedAtDesc(userDto.getId());
+            DishDao dishDao = transaction.createDao(DishDao.class);
+            for (Comment comment : comments) {
+                findDishAndSetToComment(dishDao, comment);
+            }
         } catch (DaoException e) {
             throw new ServiceException(
                     "Dao exception during "
                             + "findByUserDtoOrderByCreatedAtDesc method", e);
         }
+        User user = userDtoMapper.mapDtoToEntity(userDto);
+        comments.forEach(comment -> comment.setUser(user));
         List<CommentDto> result = comments.stream()
                 .map(mapper::mapEntityToDto)
                 .toList();
@@ -240,12 +250,17 @@ public class CommentServiceImpl implements CommentService {
             CommentDao commentDao = transaction.createDao(CommentDao.class);
             comments = commentDao.findByDishIdOrderByCreatedAtDesc(
                     dishDto.getId());
-            setUserAndDishToComment(comments, transaction);
+            UserDao userDao = transaction.createDao(UserDao.class);
+            for (Comment comment : comments) {
+                findUserAndSetToComment(userDao, comment);
+            }
         } catch (DaoException e) {
             throw new ServiceException(
                     "Dao exception during"
                             + " findByDishDtoOrderByCreatedAtDesc method", e);
         }
+        Dish dish = dishDishDtoMapper.mapDtoToEntity(dishDto);
+        comments.forEach(comment -> comment.setDish(dish));
         List<CommentDto> result = comments.stream()
                 .map(mapper::mapEntityToDto)
                 .toList();
@@ -273,16 +288,20 @@ public class CommentServiceImpl implements CommentService {
             CommentDao commentDao = transaction.createDao(CommentDao.class);
             comments = commentDao.findByDishIdOrderByCreatedAtDesc(
                     dishDto.getId(), limit, offset);
-            setUserAndDishToComment(comments, transaction);
+            UserDao userDao = transaction.createDao(UserDao.class);
+            for (Comment comment : comments) {
+                findUserAndSetToComment(userDao, comment);
+            }
         } catch (DaoException e) {
             throw new ServiceException(
                     "Dao exception during findByDishDtoOrderByCreatedAtDesc"
                             + " method with limit and offset", e);
         }
+        Dish dish = dishDishDtoMapper.mapDtoToEntity(dishDto);
+        comments.forEach(comment -> comment.setDish(dish));
         List<CommentDto> result = comments.stream()
                 .map(mapper::mapEntityToDto)
                 .toList();
-        result.forEach(dto -> dto.setDish(dishDto));
         log.debug(RESULT_LIST_LOG_MESSAGE, result);
         return result;
     }

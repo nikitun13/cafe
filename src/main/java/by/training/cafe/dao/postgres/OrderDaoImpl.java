@@ -41,6 +41,8 @@ public class OrderDaoImpl
     private static final String ACCRUED_POINTS_COLUMN_NAME = "accrued_points";
     private static final String TOTAL_PRICE_COLUMN_NAME = "total_price";
 
+    private static final String ORDER_BY_CREATED_AT_DESC_SQL
+            = ORDER_BY_SQL + CREATED_AT_COLUMN_NAME + DESC_SQL;
     private static final String FIND_ALL_SQL = """
             SELECT id, user_id, created_at, expected_retrieve_date, actual_retrieve_date,
             status, debited_points, accrued_points, total_price
@@ -49,8 +51,9 @@ public class OrderDaoImpl
             = FIND_ALL_SQL + LIMIT_SQL + OFFSET_SQL;
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
-    private static final String FIND_BY_USER_ID_SQL
-            = FIND_ALL_SQL + WHERE_SQL + "user_id = ?";
+    private static final String FIND_BY_USER_ID_ORDER_BY_CREATED_AT_DESC_SQL
+            = FIND_ALL_SQL + WHERE_SQL + "user_id = ?"
+            + ORDER_BY_CREATED_AT_DESC_SQL;
     private static final String FIND_BY_STATUS_SQL
             = FIND_ALL_SQL + WHERE_SQL + "status = ?::order_status";
     private static final String FIND_BY_CREATED_AT_BETWEEN_SQL
@@ -171,7 +174,7 @@ public class OrderDaoImpl
     public List<Order> findByUserId(Long userId) throws DaoException {
         log.debug("Received userId = {}", userId);
         List<Order> orders = executeSelectQuery(
-                FIND_BY_USER_ID_SQL, List.of(userId));
+                FIND_BY_USER_ID_ORDER_BY_CREATED_AT_DESC_SQL, List.of(userId));
         log.debug(RESULT_LOG_MESSAGE, orders);
         return orders;
     }
