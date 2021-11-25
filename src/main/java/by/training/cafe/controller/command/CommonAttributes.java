@@ -24,6 +24,11 @@ public final class CommonAttributes {
     public static final String ORDERS = "orders";
     public static final String ORDERED_DISHES = "orderedDishes";
     public static final String ORDER_ID = "orderId";
+    public static final String CURRENT_PAGE = "currentPage";
+    public static final String START_PAGE = "startPage";
+    public static final String END_PAGE = "endPage";
+    public static final String PAGE = "page";
+    public static final String PAGE_COUNT = "pageCount";
 
     private CommonAttributes() {
     }

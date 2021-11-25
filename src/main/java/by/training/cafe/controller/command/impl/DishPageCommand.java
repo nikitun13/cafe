@@ -68,13 +68,8 @@ public class DishPageCommand implements Command {
     private static final String DISH_ATTRIBUTE_KEY = "dish";
     private static final String COUNT_GROUPED_BY_RATING_ATTRIBUTE_KEY
             = "countGroupedByRating";
-    private static final String PAGE_COUNT_ATTRIBUTE_KEY = "pageCount";
     private static final String COMMENTS_ATTRIBUTE_KEY = "comments";
     private static final String AVERAGE_RATING_ATTRIBUTE_KEY = "averageRating";
-    private static final String CURRENT_PAGE_ATTRIBUTE_KEY = "currentPage";
-    private static final String START_PAGE_ATTRIBUTE_KEY = "startPage";
-    private static final String END_PAGE_ATTRIBUTE_KEY = "endPage";
-    private static final String PAGE_ATTRIBUTE_KEY = "page";
     private static final String ID_PARAMETER_KEY = "id";
 
     private final ServiceFactory serviceFactory;
@@ -131,7 +126,7 @@ public class DishPageCommand implements Command {
         long totalPages = paginationService.calculateTotalPages(
                 totalComments, DEFAULT_LIMIT);
         if (totalPages > 0) {
-            String page = request.getParameter(PAGE_ATTRIBUTE_KEY);
+            String page = request.getParameter(CommonAttributes.PAGE);
             log.debug("Received page param = {}", page);
             long currentPage;
             try {
@@ -156,15 +151,15 @@ public class DishPageCommand implements Command {
 
             request.setAttribute(COMMENTS_ATTRIBUTE_KEY, comments);
             request.setAttribute(AVERAGE_RATING_ATTRIBUTE_KEY, averageRating);
-            request.setAttribute(CURRENT_PAGE_ATTRIBUTE_KEY, currentPage);
-            request.setAttribute(START_PAGE_ATTRIBUTE_KEY, startPage);
-            request.setAttribute(END_PAGE_ATTRIBUTE_KEY, endPage);
+            request.setAttribute(CommonAttributes.CURRENT_PAGE, currentPage);
+            request.setAttribute(CommonAttributes.START_PAGE, startPage);
+            request.setAttribute(CommonAttributes.END_PAGE, endPage);
             log.debug("attribute currentPage = {}", currentPage);
         }
         request.setAttribute(DISH_ATTRIBUTE_KEY, dish);
         request.setAttribute(COUNT_GROUPED_BY_RATING_ATTRIBUTE_KEY,
                 countGroupedByRating);
-        request.setAttribute(PAGE_COUNT_ATTRIBUTE_KEY, totalPages);
+        request.setAttribute(CommonAttributes.PAGE_COUNT, totalPages);
 
         HttpSession session = request.getSession();
         session.setAttribute(CURRENT_DISH_ATTRIBUTE_KEY, dish);

@@ -56,12 +56,11 @@ public class UpdateUserCommand implements Command {
     public Dispatch execute(HttpServletRequest request,
                             HttpServletResponse response) {
         String method = request.getMethod();
+        HttpSession session = request.getSession();
         if (!method.equals(HttpMethod.POST.name())) {
-            response.setStatus(HTTP_BAD_METHOD);
-            request.setAttribute(CommonAttributes.ERROR_STATUS, HTTP_BAD_METHOD);
+            session.setAttribute(CommonAttributes.ERROR_STATUS, HTTP_BAD_METHOD);
             return ERROR;
         }
-        HttpSession session = request.getSession();
         UserDto user = (UserDto) session.getAttribute(CommonAttributes.USER);
 
         if (user == null) {
