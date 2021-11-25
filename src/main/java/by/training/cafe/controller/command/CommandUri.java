@@ -22,6 +22,7 @@ public final class CommandUri {
     public static final String ORDERS = "/profile/orders";
     public static final String UPDATE_USER = "/updateuser";
     public static final String ASYNC_ORDERED_DISHES = "/async/ordereddishes";
+    public static final String ADMIN_ORDERS = "/admin/orders";
 
     private CommandUri() {
     }

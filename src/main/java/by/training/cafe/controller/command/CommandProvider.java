@@ -33,6 +33,8 @@ public class CommandProvider {
         repository.put(CommandUri.UPDATE_USER, new UpdateUserCommand(serviceFactory));
         repository.put(CommandUri.ORDERS, new OrdersCommand(serviceFactory));
         repository.put(CommandUri.ASYNC_ORDERED_DISHES, new OrderedDishesAsyncCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN, new AdminCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN_ORDERS, new AdminOrdersCommand(serviceFactory));
     }
 
     public Command getCommand(String key) {

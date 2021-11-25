@@ -11,10 +11,10 @@ import by.training.cafe.dto.DishDto;
 import by.training.cafe.dto.UserDto;
 import by.training.cafe.service.CommentService;
 import by.training.cafe.service.DishService;
+import by.training.cafe.service.PaginationService;
 import by.training.cafe.service.ServiceException;
 import by.training.cafe.service.ServiceFactory;
 import by.training.cafe.util.JspPathUtil;
-import by.training.cafe.util.PaginationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +27,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import static java.net.HttpURLConnection.*;
+import static java.net.HttpURLConnection.HTTP_BAD_METHOD;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
 /**
  * The class {@code DishPageCommand} is a class that
@@ -118,26 +120,34 @@ public class DishPageCommand implements Command {
         if (maybeDish.isEmpty()) {
             return dishNotFound(request, response);
         }
-
         DishDto dish = maybeDish.get();
-        String page = request.getParameter(PAGE_ATTRIBUTE_KEY);
-        log.debug("Received page param = {}", page);
-        long currentPage = PaginationUtil.parsePageOrElseDefault(page);
         CommentService commentService
                 = serviceFactory.getService(CommentService.class);
         Map<Short, Long> countGroupedByRating
                 = commentService.countCommentsByDishGroupByRating(dish);
         Long totalComments = commentService.countByDishDto(dish);
-        long pageCount = PaginationUtil.calculateNumberOfPages(
+        PaginationService paginationService
+                = serviceFactory.getService(PaginationService.class);
+        long totalPages = paginationService.calculateTotalPages(
                 totalComments, DEFAULT_LIMIT);
-        if (pageCount > 0) {
-            currentPage = PaginationUtil.checkCurrentPageIsInRangeOfTotalPagesOrElseDefault(
-                    currentPage, pageCount);
-            Entry<Long, Long> entry = PaginationUtil.calculateStartAndEndPage(
-                    currentPage, pageCount);
+        if (totalPages > 0) {
+            String page = request.getParameter(PAGE_ATTRIBUTE_KEY);
+            log.debug("Received page param = {}", page);
+            long currentPage;
+            try {
+                currentPage = Long.parseLong(page);
+                currentPage = paginationService.isValidCurrentPageOrElseGet(
+                        currentPage, totalPages,
+                        () -> 1L);
+            } catch (NumberFormatException e) {
+                log.error("Invalid page param", e);
+                currentPage = 1L;
+            }
+            Entry<Long, Long> entry = paginationService.calculateStartAndEndPage(
+                    currentPage, totalPages, 2);
             long startPage = entry.getKey();
             long endPage = entry.getValue();
-            long offset = PaginationUtil.calculateOffset(
+            long offset = paginationService.calculateOffset(
                     DEFAULT_LIMIT, currentPage);
             List<CommentDto> comments
                     = commentService.findByDishDtoOrderByCreatedAtDesc(
@@ -154,7 +164,7 @@ public class DishPageCommand implements Command {
         request.setAttribute(DISH_ATTRIBUTE_KEY, dish);
         request.setAttribute(COUNT_GROUPED_BY_RATING_ATTRIBUTE_KEY,
                 countGroupedByRating);
-        request.setAttribute(PAGE_COUNT_ATTRIBUTE_KEY, pageCount);
+        request.setAttribute(PAGE_COUNT_ATTRIBUTE_KEY, totalPages);
 
         HttpSession session = request.getSession();
         session.setAttribute(CURRENT_DISH_ATTRIBUTE_KEY, dish);

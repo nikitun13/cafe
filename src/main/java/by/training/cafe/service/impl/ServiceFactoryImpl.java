@@ -38,6 +38,9 @@ public final class ServiceFactoryImpl implements ServiceFactory, AutoCloseable {
                 transactionFactory);
         OrderProcessService orderProcessService = new OrderProcessServiceImpl(
                 orderService, orderedDishService, userService);
+        CommentService commentService = new CommentServiceImpl(transactionFactory);
+        PaginationService paginationService = new PaginationServiceImpl();
+
         repository = new HashMap<>();
         repository.put(DishService.class,
                 new DishServiceImpl(transactionFactory));
@@ -45,10 +48,10 @@ public final class ServiceFactoryImpl implements ServiceFactory, AutoCloseable {
         repository.put(UserService.class, userService);
         repository.put(OrderService.class, orderService);
         repository.put(OrderedDishService.class, orderedDishService);
-        repository.put(CommentService.class,
-                new CommentServiceImpl(transactionFactory));
+        repository.put(CommentService.class, commentService);
         repository.put(EncoderService.class, encoderService);
         repository.put(OrderProcessService.class, orderProcessService);
+        repository.put(PaginationService.class, paginationService);
     }
 
     public static ServiceFactoryImpl getInstance() {
