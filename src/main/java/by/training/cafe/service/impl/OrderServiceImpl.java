@@ -1,6 +1,10 @@
 package by.training.cafe.service.impl;
 
-import by.training.cafe.dao.*;
+import by.training.cafe.dao.DaoException;
+import by.training.cafe.dao.OrderDao;
+import by.training.cafe.dao.Transaction;
+import by.training.cafe.dao.TransactionFactory;
+import by.training.cafe.dao.UserDao;
 import by.training.cafe.dto.CreateOrderDto;
 import by.training.cafe.dto.OrderDto;
 import by.training.cafe.dto.UserDto;
@@ -66,6 +70,34 @@ public class OrderServiceImpl implements OrderService {
         try (Transaction transaction = transactionFactory.createTransaction()) {
             OrderDao orderDao = transaction.createDao(OrderDao.class);
             orders = orderDao.findAll();
+            if (!orders.isEmpty()) {
+                UserDao userDao = transaction.createDao(UserDao.class);
+                for (Order order : orders) {
+                    findUserAndSetToOrder(userDao, order);
+                }
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during findAll method", e);
+        }
+        List<OrderDto> result = orders.stream()
+                .map(orderDtoMapper::mapEntityToDto)
+                .toList();
+        log.debug(RESULT_LIST_LOG_MESSAGE, result);
+        return result;
+    }
+
+    @Override
+    public List<OrderDto> findAll(long limit, long offset) throws ServiceException {
+        if (limit < 1 || offset < 0) {
+            throw new ServiceException(
+                    "Limit or offset is invalid. Limit = %d, offset = %d"
+                            .formatted(limit, offset));
+        }
+        List<Order> orders;
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            OrderDao orderDao = transaction.createDao(OrderDao.class);
+            orders = orderDao.findAll(limit, offset);
             if (!orders.isEmpty()) {
                 UserDao userDao = transaction.createDao(UserDao.class);
                 for (Order order : orders) {
@@ -208,6 +240,17 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
         log.debug(RESULT_LIST_LOG_MESSAGE, result);
         return result;
+    }
+
+    @Override
+    public Long countOrders() throws ServiceException {
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            OrderDao orderDao = transaction.createDao(OrderDao.class);
+            return orderDao.count();
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during countOrders method", e);
+        }
     }
 
     private void findUserAndSetToOrder(UserDao userDao, Order order)

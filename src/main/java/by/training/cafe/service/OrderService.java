@@ -31,6 +31,19 @@ public interface OrderService extends Service {
     List<OrderDto> findAll() throws ServiceException;
 
     /**
+     * Returns entities mapped to {@link OrderDto}
+     * from storage with the given {@code limit} and {@code offset}.
+     *
+     * @param limit  returning number of DTOs.
+     * @param offset offset in the storage.
+     * @return all entities mapped to {@link OrderDto}.
+     * @throws ServiceException if DaoException occurred or
+     *                          {@code limit} or {@code offset}
+     *                          is invalid.
+     */
+    List<OrderDto> findAll(long limit, long offset) throws ServiceException;
+
+    /**
      * Finds {@code order} by {@code id} and maps it to {@link OrderDto}.
      *
      * @param id entity {@code id}.
@@ -98,4 +111,12 @@ public interface OrderService extends Service {
      */
     List<OrderDto> findByCreatedAtBetween(Timestamp from, Timestamp to)
             throws ServiceException;
+
+    /**
+     * Counts number of entities in the storage.
+     *
+     * @return number of entities.
+     * @throws ServiceException if DaoException occurred.
+     */
+    Long countOrders() throws ServiceException;
 }

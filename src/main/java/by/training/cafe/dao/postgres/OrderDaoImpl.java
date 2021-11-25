@@ -47,8 +47,10 @@ public class OrderDaoImpl
             SELECT id, user_id, created_at, expected_retrieve_date, actual_retrieve_date,
             status, debited_points, accrued_points, total_price
             FROM orders""";
-    private static final String FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL
-            = FIND_ALL_SQL + LIMIT_SQL + OFFSET_SQL;
+    private static final String FIND_ALL_ORDER_BY_CREATED_AT_DESC
+            = FIND_ALL_SQL + ORDER_BY_SQL + CREATED_AT_COLUMN_NAME + DESC_SQL;
+    private static final String FIND_ALL_ORDER_BY_CREATED_AT_DESC_WITH_LIMIT_AND_OFFSET
+            = FIND_ALL_ORDER_BY_CREATED_AT_DESC + LIMIT_SQL + OFFSET_SQL;
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
     private static final String FIND_BY_USER_ID_ORDER_BY_CREATED_AT_DESC_SQL
@@ -87,7 +89,7 @@ public class OrderDaoImpl
     @Override
     public List<Order> findAll() throws DaoException {
         List<Order> orders = executeSelectQuery(
-                FIND_ALL_SQL, Collections.emptyList());
+                FIND_ALL_ORDER_BY_CREATED_AT_DESC, Collections.emptyList());
         log.debug(RESULT_LOG_MESSAGE, orders);
         return orders;
     }
@@ -96,7 +98,8 @@ public class OrderDaoImpl
     public List<Order> findAll(Long limit, Long offset) throws DaoException {
         log.debug("Received limit = {}, offset = {}", limit, offset);
         List<Order> orders = executeSelectQuery(
-                FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL, List.of(limit, offset));
+                FIND_ALL_ORDER_BY_CREATED_AT_DESC_WITH_LIMIT_AND_OFFSET,
+                List.of(limit, offset));
         log.debug(RESULT_LOG_MESSAGE, orders);
         return orders;
     }
