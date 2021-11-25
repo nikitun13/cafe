@@ -40,8 +40,9 @@
         </form>
 
         <div class="col-md-3 col-sm-12 text-end">
+            <c:set var="user" value="${sessionScope.user}"/>
             <c:choose>
-                <c:when test="${empty sessionScope.user}">
+                <c:when test="${empty user}">
                     <a href="<c:url value="/signin"/>" class="btn btn-outline-primary me-2">
                         <fmt:message key="cafe.signIn"/>
                     </a>
@@ -50,9 +51,11 @@
                     </a>
                 </c:when>
                 <c:otherwise>
-                    <div class="flex-shrink-0 dropdown d-flex justify-content-end me-2">
+                    <div class="flex-shrink-0 dropdown d-flex justify-content-end mx-2">
                         <button class="d-block link-dark text-decoration-none dropdown-toggle border-0 bg-light"
                                 id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="mt-1"><c:out value="${user.firstName}"/> <c:out
+                                    value="${user.lastName}"/></span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
                                  class="bi bi-person-circle" viewBox="0 0 16 16">
                                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"></path>
@@ -77,6 +80,13 @@
                                     <fmt:message key="cafe.cart"/>
                                 </a>
                             </li>
+                            <c:if test="${sessionScope.user.role.name().equals('ADMIN')}">
+                                <li>
+                                    <a class="dropdown-item" href="<c:url value="/admin"/>">
+                                        <fmt:message key="cafe.admin"/>
+                                    </a>
+                                </li>
+                            </c:if>
                             <li>
                                 <hr class="dropdown-divider"/>
                             </li>

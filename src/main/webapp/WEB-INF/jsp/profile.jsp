@@ -12,7 +12,6 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="<c:url value="/css/bootstrap.min.css"/>"/>
-    <link rel="stylesheet" href="<c:url value="/css/signin.css"/>"/>
     <link rel="shortcut icon" href="<c:url value="/img/favicon.ico"/>" type="image/x-icon"/>
     <title>Cafe - <fmt:message key="cafe.profile"/></title>
 </head>
