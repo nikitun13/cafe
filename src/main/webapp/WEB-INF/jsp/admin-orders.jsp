@@ -64,7 +64,7 @@
                                         formaction="<c:url value="/admin/completeorders"/>">
                                     <fmt:message key="admin.orders.complete"/>
                                 </button>
-                                <button type="submit" class="btn btn-outline-warning mx-3 orders-submit"
+                                <button type="submit" class="btn btn-outline-secondary mx-3 orders-submit"
                                         formaction="<c:url value="/admin/pendingorders"/>">
                                     <fmt:message key="admin.orders.pending"/>
                                 </button>
