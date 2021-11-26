@@ -35,6 +35,10 @@ public class CommandProvider {
         repository.put(CommandUri.ASYNC_ORDERED_DISHES, new OrderedDishesAsyncCommand(serviceFactory));
         repository.put(CommandUri.ADMIN, new AdminCommand(serviceFactory));
         repository.put(CommandUri.ADMIN_ORDERS, new AdminOrdersCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN_COMPLETE_ORDERS, new CompleteOrdersCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN_CANCEL_ORDERS, new CancelOrdersCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN_TO_PENDING_ORDERS, new ToPendingOrdersCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN_TO_NOT_COLLECTED_ORDERS, new ToNotCollectedOrdersCommand(serviceFactory));
     }
 
     public Command getCommand(String key) {
