@@ -45,4 +45,15 @@ public interface OrderDao extends BaseDao<Long, Order> {
      */
     List<Order> findByCreatedAtBetween(Timestamp from, Timestamp to)
             throws DaoException;
+
+    /**
+     * Counts number of orders by the given {@code status}
+     * and {@code userId}.
+     *
+     * @param userId id of the {@code user}.
+     * @param status order {@code status}.
+     * @return number of orders.
+     * @throws DaoException if storage access error occurs.
+     */
+    Long countByStatusAndUserId(String status, Long userId) throws DaoException;
 }

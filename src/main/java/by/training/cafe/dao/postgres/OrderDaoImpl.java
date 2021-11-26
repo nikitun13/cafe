@@ -81,6 +81,9 @@ public class OrderDaoImpl
     private static final String COUNT_SQL = """
             SELECT count(id)
             FROM orders""";
+    private static final String COUNT_BY_STATUS_AND_USER_ID_SQL = COUNT_SQL
+            + WHERE_SQL + STATUS_COLUMN_NAME + " = ?::order_status"
+            + AND_SQL + USER_ID_COLUMN_NAME + " = ?";
 
     public OrderDaoImpl(Connection connection) {
         super(connection);
@@ -191,6 +194,13 @@ public class OrderDaoImpl
                 FIND_BY_CREATED_AT_BETWEEN_SQL, List.of(from, to));
         log.debug(RESULT_LOG_MESSAGE, orders);
         return orders;
+    }
+
+    @Override
+    public Long countByStatusAndUserId(String status, Long userId) throws DaoException {
+        Long count = executeCountQuery(COUNT_BY_STATUS_AND_USER_ID_SQL, status, userId);
+        log.debug("Count result: {}", count);
+        return count;
     }
 
     @Override
