@@ -60,6 +60,10 @@ public class AdminOrdersCommand implements Command {
                     HTTP_BAD_METHOD);
             return ERROR;
         }
+        replaceAttributeToRequest(session, request,
+                CommonAttributes.ERROR_MESSAGE_KEY);
+        replaceAttributeToRequest(session, request,
+                CommonAttributes.SUCCESS_MESSAGE_KEY);
         OrderService orderService
                 = serviceFactory.getService(OrderService.class);
         try {
@@ -95,7 +99,7 @@ public class AdminOrdersCommand implements Command {
                     currentPage, totalPages,
                     () -> 1L);
         } catch (NumberFormatException e) {
-            log.error("Invalid page param", e);
+            log.debug("Invalid page param", e);
             currentPage = 1L;
         }
         Map.Entry<Long, Long> entry = paginationService.calculateStartAndEndPage(
@@ -111,5 +115,15 @@ public class AdminOrdersCommand implements Command {
         request.setAttribute(CommonAttributes.END_PAGE, endPage);
         log.debug("attribute currentPage = {}", currentPage);
         return offset;
+    }
+
+    private void replaceAttributeToRequest(HttpSession session,
+                                           HttpServletRequest request,
+                                           String attributeKey) {
+        Object attribute = session.getAttribute(attributeKey);
+        if (attribute != null) {
+            session.removeAttribute(attributeKey);
+            request.setAttribute(attributeKey, attribute);
+        }
     }
 }

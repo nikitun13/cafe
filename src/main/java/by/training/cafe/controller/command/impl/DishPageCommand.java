@@ -135,7 +135,7 @@ public class DishPageCommand implements Command {
                         currentPage, totalPages,
                         () -> 1L);
             } catch (NumberFormatException e) {
-                log.error("Invalid page param", e);
+                log.debug("Invalid page param", e);
                 currentPage = 1L;
             }
             Entry<Long, Long> entry = paginationService.calculateStartAndEndPage(

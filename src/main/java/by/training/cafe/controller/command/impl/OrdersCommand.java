@@ -13,6 +13,7 @@ import by.training.cafe.service.OrderService;
 import by.training.cafe.service.OrderedDishService;
 import by.training.cafe.service.ServiceException;
 import by.training.cafe.service.ServiceFactory;
+import by.training.cafe.service.UserService;
 import by.training.cafe.util.JspPathUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -106,6 +107,16 @@ public class OrdersCommand implements Command {
     private Dispatch doGet(HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserDto user = (UserDto) session.getAttribute(CommonAttributes.USER);
+        UserService userService = serviceFactory.getService(UserService.class);
+        try {
+            Optional<UserDto> maybeUser = userService.findById(user.getId());
+            if (maybeUser.isPresent()) {
+                user = maybeUser.get();
+                session.setAttribute(CommonAttributes.USER, user);
+            }
+        } catch (ServiceException e) {
+            log.error("Service exception occurred", e);
+        }
         replaceAttributeToRequest(session, request,
                 CommonAttributes.ERROR_MESSAGE_KEY);
         replaceAttributeToRequest(session, request,

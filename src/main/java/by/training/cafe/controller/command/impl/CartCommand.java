@@ -1,6 +1,10 @@
 package by.training.cafe.controller.command.impl;
 
-import by.training.cafe.controller.command.*;
+import by.training.cafe.controller.command.Command;
+import by.training.cafe.controller.command.CommandUri;
+import by.training.cafe.controller.command.CommonAttributes;
+import by.training.cafe.controller.command.Dispatch;
+import by.training.cafe.controller.command.HttpMethod;
 import by.training.cafe.dto.CreateOrderDto;
 import by.training.cafe.dto.DishDto;
 import by.training.cafe.dto.OrderedDishDto;
@@ -9,6 +13,7 @@ import by.training.cafe.service.DishService;
 import by.training.cafe.service.OrderProcessService;
 import by.training.cafe.service.ServiceException;
 import by.training.cafe.service.ServiceFactory;
+import by.training.cafe.service.UserService;
 import by.training.cafe.util.JspPathUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,7 +61,8 @@ public class CartCommand implements Command {
     private static final String MIN_DATE = "minDate";
     private static final String MAX_DATE = "maxDate";
     private static final String CHECK_DATA_MESSAGE_KEY = "cafe.error.checkData";
-    private static final String ORDER_CREATED_KEY = "profile.order.create.success";
+    private static final String ORDER_CREATED_KEY
+            = "profile.order.create.success";
 
     private final ServiceFactory serviceFactory;
 
@@ -85,12 +91,19 @@ public class CartCommand implements Command {
     private Dispatch doPost(HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserDto user = (UserDto) session.getAttribute(CommonAttributes.USER);
+        UserService userService = serviceFactory.getService(UserService.class);
         try {
+            Optional<UserDto> maybeUser = userService.findById(user.getId());
+            if (maybeUser.isPresent()) {
+                user = maybeUser.get();
+            }
             long debitedPoints = Long.parseLong(
                     request.getParameter(CommonAttributes.DEBITED_POINTS));
             Timestamp expectedRetrieveDate = new Timestamp(Long.parseLong(
-                    request.getParameter(CommonAttributes.EXPECTED_RETRIEVE_DATE)));
-            String[] pairs = request.getParameterValues(CommonAttributes.ORDERED_DISHES);
+                    request.getParameter(
+                            CommonAttributes.EXPECTED_RETRIEVE_DATE)));
+            String[] pairs = request.getParameterValues(
+                    CommonAttributes.ORDERED_DISHES);
             List<OrderedDishDto> orderedDishes = createOrderedDishes(pairs);
 
             CreateOrderDto createOrderDto = CreateOrderDto.builder()
@@ -103,6 +116,9 @@ public class CartCommand implements Command {
             OrderProcessService orderProcessService
                     = serviceFactory.getService(OrderProcessService.class);
             orderProcessService.createOrder(createOrderDto, orderedDishes);
+            Long id = user.getId();
+            userService.findById(id).ifPresent(updatedUser ->
+                    session.setAttribute(CommonAttributes.USER, updatedUser));
         } catch (NumberFormatException | ServiceException e) {
             log.error("Exception occurred", e);
             session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
@@ -110,11 +126,23 @@ public class CartCommand implements Command {
             return ERROR_POST;
         }
         session.setAttribute(CommonAttributes.ORDER_CREATED, Boolean.TRUE);
-        session.setAttribute(CommonAttributes.SUCCESS_MESSAGE_KEY, ORDER_CREATED_KEY);
+        session.setAttribute(CommonAttributes.SUCCESS_MESSAGE_KEY,
+                ORDER_CREATED_KEY);
         return SUCCESS_POST;
     }
 
     private Dispatch doGet(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        UserService userService = serviceFactory.getService(UserService.class);
+        UserDto userDto = (UserDto) session.getAttribute(CommonAttributes.USER);
+        try {
+            Optional<UserDto> maybeUser = userService.findById(userDto.getId());
+            maybeUser.ifPresent(
+                    dto -> session.setAttribute(CommonAttributes.USER, dto));
+        } catch (ServiceException e) {
+            log.error("Service exception occurred", e);
+        }
+
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime minDateLocalDateTime = now.plus(1L, ChronoUnit.HOURS);
         LocalDateTime maxDateLocalDateTime = now.plus(1L, ChronoUnit.WEEKS);
@@ -128,8 +156,8 @@ public class CartCommand implements Command {
         Timestamp maxDateTimestamp = Timestamp.valueOf(maxDateLocalDateTime);
         request.setAttribute(MIN_DATE_TIMESTAMP, minDateTimestamp);
         request.setAttribute(MAX_DATE_TIMESTAMP, maxDateTimestamp);
-        HttpSession session = request.getSession();
-        Object attribute = session.getAttribute(CommonAttributes.ERROR_MESSAGE_KEY);
+        Object attribute = session.getAttribute(
+                CommonAttributes.ERROR_MESSAGE_KEY);
         if (attribute != null) {
             session.removeAttribute(CommonAttributes.ERROR_MESSAGE_KEY);
             request.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY, attribute);
