@@ -12,6 +12,7 @@ import by.training.cafe.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -36,6 +37,21 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private static final Duration FIVE_MINUTES
             = Duration.of(5L, ChronoUnit.MINUTES);
     private static final String PENDING = "Pending";
+    private static final String COMPLETED = "Completed";
+    private static final String NOT_COLLECTED = "Not_collected";
+    private static final String CANCELED = "Canceled";
+    private static final double FIVE_PERCENT = 0.05;
+    private static final String RECEIVED_ORDER_DTO_LOG_MESSAGE
+            = "Received orderDto: {}";
+    private static final String ORDER_DTO_IS_INVALID_MESSAGE
+            = "OrderDto is invalid. Order dto: ";
+    private static final String RECEIVED_ORDERS_LIST_LOG_MESSAGE
+            = "Received orders list: {}";
+    private static final String ORDERS_CANT_BE_NULL_MESSAGE
+            = "Orders can't be null";
+    private static final String NOT_ENOUGH_POINTS_MESSAGE
+            = "Not enough points. Points: ";
+    private static final int MAX_NOT_COLLECTED_ORDERS = 2;
 
     private final OrderService orderService;
     private final OrderedDishService orderedDishService;
@@ -107,7 +123,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     @Override
     public boolean isDeletableOrder(OrderDto orderDto,
                                     Duration timeout) throws ServiceException {
-        log.debug("Received orderDto: {}", orderDto);
+        log.debug(RECEIVED_ORDER_DTO_LOG_MESSAGE, orderDto);
         if (orderDto == null
                 || orderDto.getCreatedAt() == null
                 || timeout == null
@@ -135,9 +151,9 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     public Map<OrderDto, Boolean> isDeletableOrders(List<OrderDto> orders,
                                                     Duration timeout)
             throws ServiceException {
-        log.debug("Received orders: {}", orders);
+        log.debug(RECEIVED_ORDERS_LIST_LOG_MESSAGE, orders);
         if (orders == null) {
-            throw new ServiceException("Orders can't be null");
+            throw new ServiceException(ORDERS_CANT_BE_NULL_MESSAGE);
         }
         Map<OrderDto, Boolean> result = new HashMap<>();
         for (OrderDto order : orders) {
@@ -145,6 +161,147 @@ public class OrderProcessServiceImpl implements OrderProcessService {
         }
         log.debug("Result map: {}", result);
         return result;
+    }
+
+    @Override
+    public void completeOrder(OrderDto orderDto) throws ServiceException {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        completeOrder(orderDto, now);
+    }
+
+    @Override
+    public void completeOrders(List<OrderDto> orders) throws ServiceException {
+        log.debug(RECEIVED_ORDERS_LIST_LOG_MESSAGE, orders);
+        if (orders == null) {
+            throw new ServiceException(ORDERS_CANT_BE_NULL_MESSAGE);
+        }
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        for (OrderDto order : orders) {
+            completeOrder(order, now);
+        }
+    }
+
+    @Override
+    public void cancelOrder(OrderDto orderDto) throws ServiceException {
+        log.debug(RECEIVED_ORDER_DTO_LOG_MESSAGE, orderDto);
+        if (!validateOrderDto(orderDto)) {
+            throw new ServiceException(ORDER_DTO_IS_INVALID_MESSAGE + orderDto);
+        }
+        if (orderDto.getStatus().equals(CANCELED)) {
+            return;
+        }
+        Long accruedPoints = orderDto.getAccruedPoints();
+        Long debitedPoints = orderDto.getDebitedPoints();
+        UserDto user = orderDto.getUser();
+        Long currentPoints = user.getPoints();
+        long points = currentPoints + debitedPoints - accruedPoints;
+        if (points < 0L) {
+            throw new ServiceException(NOT_ENOUGH_POINTS_MESSAGE + points);
+        }
+
+        Long currentTotalPrice = orderDto.getTotalPrice();
+        Long totalPrice = currentTotalPrice + debitedPoints;
+        orderDto.setTotalPrice(totalPrice);
+        user.setPoints(points);
+        orderDto.setStatus(CANCELED);
+        orderDto.setAccruedPoints(0L);
+        orderDto.setDebitedPoints(0L);
+        orderDto.setActualRetrieveDate(null);
+
+        orderService.update(orderDto);
+        userService.update(user);
+    }
+
+    @Override
+    public void cancelOrders(List<OrderDto> orders) throws ServiceException {
+        log.debug(RECEIVED_ORDERS_LIST_LOG_MESSAGE, orders);
+        if (orders == null) {
+            throw new ServiceException(ORDERS_CANT_BE_NULL_MESSAGE);
+        }
+        for (OrderDto order : orders) {
+            cancelOrder(order);
+        }
+    }
+
+    @Override
+    public void toPendingOrder(OrderDto orderDto) throws ServiceException {
+        log.debug(RECEIVED_ORDER_DTO_LOG_MESSAGE, orderDto);
+        if (!validateOrderDto(orderDto)) {
+            throw new ServiceException(ORDER_DTO_IS_INVALID_MESSAGE + orderDto);
+        }
+        if (orderDto.getStatus().equals(PENDING)) {
+            return;
+        }
+        Long accruedPoints = orderDto.getAccruedPoints();
+        UserDto user = orderDto.getUser();
+        Long currentPoints = user.getPoints();
+        long points = currentPoints - accruedPoints;
+        if (points < 0L) {
+            throw new ServiceException(NOT_ENOUGH_POINTS_MESSAGE + points);
+        }
+
+        orderDto.setStatus(PENDING);
+        orderDto.setAccruedPoints(0L);
+        orderDto.setActualRetrieveDate(null);
+
+        orderService.update(orderDto);
+
+        user.setPoints(points);
+        userService.update(user);
+    }
+
+    @Override
+    public void toPendingOrders(List<OrderDto> orders) throws ServiceException {
+        log.debug(RECEIVED_ORDERS_LIST_LOG_MESSAGE, orders);
+        if (orders == null) {
+            throw new ServiceException(ORDERS_CANT_BE_NULL_MESSAGE);
+        }
+        for (OrderDto order : orders) {
+            toPendingOrder(order);
+        }
+    }
+
+    @Override
+    public void toNotCollectedOrder(OrderDto orderDto) throws ServiceException {
+        log.debug(RECEIVED_ORDER_DTO_LOG_MESSAGE, orderDto);
+        if (!validateOrderDto(orderDto)) {
+            throw new ServiceException(ORDER_DTO_IS_INVALID_MESSAGE + orderDto);
+        }
+        if (orderDto.getStatus().equals(NOT_COLLECTED)) {
+            return;
+        }
+        Long accruedPoints = orderDto.getAccruedPoints();
+        UserDto user = orderDto.getUser();
+        Long currentPoints = user.getPoints();
+        long points = currentPoints - accruedPoints;
+        if (points < 0L) {
+            throw new ServiceException(NOT_ENOUGH_POINTS_MESSAGE + points);
+        }
+        orderDto.setStatus(NOT_COLLECTED);
+        orderDto.setAccruedPoints(0L);
+        orderDto.setActualRetrieveDate(null);
+
+        orderService.update(orderDto);
+
+        user.setPoints(points);
+        Long notCollectedOrders
+                = orderService.countNotCollectedOrdersByUserId(user.getId());
+        if (notCollectedOrders > MAX_NOT_COLLECTED_ORDERS) {
+            user.setBlocked(Boolean.TRUE);
+        }
+        userService.update(user);
+    }
+
+    @Override
+    public void toNotCollectedOrders(List<OrderDto> orders)
+            throws ServiceException {
+        log.debug(RECEIVED_ORDERS_LIST_LOG_MESSAGE, orders);
+        if (orders == null) {
+            throw new ServiceException(ORDERS_CANT_BE_NULL_MESSAGE);
+        }
+        for (OrderDto order : orders) {
+            toNotCollectedOrder(order);
+        }
     }
 
     private boolean validateCreateParams(CreateOrderDto createOrderDto,
@@ -160,5 +317,48 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             }
         }
         return true;
+    }
+
+    private void completeOrder(OrderDto orderDto, Timestamp timestamp)
+            throws ServiceException {
+        log.debug(RECEIVED_ORDER_DTO_LOG_MESSAGE, orderDto);
+        if (!validateOrderDto(orderDto)) {
+            throw new ServiceException(ORDER_DTO_IS_INVALID_MESSAGE + orderDto);
+        }
+        if (orderDto.getStatus().equals(COMPLETED)) {
+            return;
+        }
+        Long totalPrice = orderDto.getTotalPrice();
+        Long accruedPoints = Math.round(totalPrice * FIVE_PERCENT);
+
+        orderDto.setStatus(COMPLETED);
+        orderDto.setActualRetrieveDate(timestamp);
+        orderDto.setAccruedPoints(accruedPoints);
+
+        orderService.update(orderDto);
+
+        UserDto user = orderDto.getUser();
+        Long currentPoints = user.getPoints();
+        Long points = currentPoints + accruedPoints;
+        user.setPoints(points);
+
+        userService.update(user);
+    }
+
+    private boolean validateOrderDto(OrderDto orderDto) {
+        if (orderDto == null || orderDto.getUser() == null) {
+            return false;
+        }
+        String status = orderDto.getStatus();
+        Long debitedPoints = orderDto.getDebitedPoints();
+        Long accruedPoints = orderDto.getAccruedPoints();
+        Long totalPrice = orderDto.getTotalPrice();
+        Long points = orderDto.getUser().getPoints();
+
+        return status != null
+                && debitedPoints != null
+                && accruedPoints != null
+                && totalPrice != null
+                && points != null;
     }
 }

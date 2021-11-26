@@ -44,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
             = "Result list: {}";
     private static final String ORDER_DTO_IS_INVALID_MESSAGE
             = "OrderDto is invalid: ";
+    private static final String NOT_COLLECTED = "NOT_COLLECTED";
 
     private final Mapper<Order, OrderDto> orderDtoMapper
             = OrderDtoMapper.getInstance();
@@ -247,6 +248,22 @@ public class OrderServiceImpl implements OrderService {
         try (Transaction transaction = transactionFactory.createTransaction()) {
             OrderDao orderDao = transaction.createDao(OrderDao.class);
             return orderDao.count();
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during countOrders method", e);
+        }
+    }
+
+    @Override
+    public Long countNotCollectedOrdersByUserId(Long userId)
+            throws ServiceException {
+        log.debug("Received userId: {}", userId);
+        if (userId == null || userId < 1) {
+            throw new ServiceException("UserId is invalid. UserId: " + userId);
+        }
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            OrderDao orderDao = transaction.createDao(OrderDao.class);
+            return orderDao.countByStatusAndUserId(NOT_COLLECTED, userId);
         } catch (DaoException e) {
             throw new ServiceException(
                     "Dao exception during countOrders method", e);

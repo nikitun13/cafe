@@ -119,4 +119,16 @@ public interface OrderService extends Service {
      * @throws ServiceException if DaoException occurred.
      */
     Long countOrders() throws ServiceException;
+
+
+    /**
+     * Counts number of not collected orders by the
+     * given {@code user}.
+     *
+     * @param userId id of the {@code user}.
+     * @return number of not collected orders.
+     * @throws ServiceException if {@code orderDto} is invalid
+     *                          or DaoException occurred.
+     */
+    Long countNotCollectedOrdersByUserId(Long userId) throws ServiceException;
 }

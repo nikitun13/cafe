@@ -73,4 +73,86 @@ public interface OrderProcessService extends Service {
     Map<OrderDto, Boolean> isDeletableOrders(List<OrderDto> orders,
                                              Duration timeout)
             throws ServiceException;
+
+    /**
+     * Completes order.
+     *
+     * @param orderDto {@code order} to be completed.
+     * @throws ServiceException if {@code orderDto} is invalid
+     *                          or {@code DaoException} occurred.
+     */
+    void completeOrder(OrderDto orderDto) throws ServiceException;
+
+    /**
+     * Completes orders.
+     *
+     * @param orders {@code orders} to be completed.
+     * @throws ServiceException if any {@code order} is invalid
+     *                          or {@code DaoException} occurred.
+     * @see #completeOrder(OrderDto)
+     */
+    void completeOrders(List<OrderDto> orders) throws ServiceException;
+
+    /**
+     * Cancels order.
+     *
+     * @param orderDto {@code order} to be canceled.
+     * @throws ServiceException if {@code orderDto} is invalid
+     *                          or {@code order} can't be canceled
+     *                          or {@code DaoException} occurred.
+     */
+    void cancelOrder(OrderDto orderDto) throws ServiceException;
+
+    /**
+     * Cancels orders.
+     *
+     * @param orders {@code orders} to be canceled.
+     * @throws ServiceException if any {@code order} is invalid
+     *                          or any order can't be canceled
+     *                          or {@code DaoException} occurred.
+     * @see #cancelOrder(OrderDto)
+     */
+    void cancelOrders(List<OrderDto> orders) throws ServiceException;
+
+    /**
+     * Mark {@code order} as pending.
+     *
+     * @param orderDto {@code order} to be marked as pending.
+     * @throws ServiceException if {@code orderDto} is invalid
+     *                          or {@code order} can't be marked as pending
+     *                          or {@code DaoException} occurred.
+     */
+    void toPendingOrder(OrderDto orderDto) throws ServiceException;
+
+    /**
+     * Mark orders as pending.
+     *
+     * @param orders {@code orders} to be marked as pending.
+     * @throws ServiceException if any {@code order} is invalid
+     *                          or any order can't be marked as pending
+     *                          or {@code DaoException} occurred.
+     * @see #toPendingOrder(OrderDto)
+     */
+    void toPendingOrders(List<OrderDto> orders) throws ServiceException;
+
+    /**
+     * Mark {@code order} as not collected.
+     *
+     * @param orderDto {@code order} to be marked as not collected.
+     * @throws ServiceException if {@code orderDto} is invalid
+     *                          or {@code order} can't be marked as not collected
+     *                          or {@code DaoException} occurred.
+     */
+    void toNotCollectedOrder(OrderDto orderDto) throws ServiceException;
+
+    /**
+     * Mark orders as not collected.
+     *
+     * @param orders {@code orders} to be marked as pending.
+     * @throws ServiceException if any {@code order} is invalid
+     *                          or any order can't be marked as not collected
+     *                          or {@code DaoException} occurred.
+     * @see #toNotCollectedOrder(OrderDto)
+     */
+    void toNotCollectedOrders(List<OrderDto> orders) throws ServiceException;
 }
