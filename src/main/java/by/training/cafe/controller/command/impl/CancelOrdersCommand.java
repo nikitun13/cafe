@@ -23,6 +23,14 @@ import java.util.Optional;
 
 import static java.net.HttpURLConnection.HTTP_BAD_METHOD;
 
+/**
+ * The class {@code CancelOrdersCommand} is a class that
+ * implements {@link Command}.<br/>
+ * Cancels orders.
+ *
+ * @author Nikita Romanov
+ * @see Command
+ */
 public class CancelOrdersCommand implements Command {
 
     private static final Logger log
@@ -51,6 +59,7 @@ public class CancelOrdersCommand implements Command {
         String method = request.getMethod();
         HttpSession session = request.getSession();
         if (!method.equals(HttpMethod.POST.name())) {
+            session.setAttribute(CommonAttributes.IS_ERROR_OCCURRED, Boolean.TRUE);
             session.setAttribute(CommonAttributes.ERROR_STATUS, HTTP_BAD_METHOD);
             return BAD_METHOD_ERROR;
         }

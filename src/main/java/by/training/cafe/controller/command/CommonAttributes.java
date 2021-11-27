@@ -29,6 +29,7 @@ public final class CommonAttributes {
     public static final String END_PAGE = "endPage";
     public static final String PAGE = "page";
     public static final String PAGE_COUNT = "pageCount";
+    public static final String USERS = "users";
 
     private CommonAttributes() {
     }
