@@ -42,8 +42,8 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
             SELECT id, email, password, role, first_name,
             last_name, phone, points, is_blocked
             FROM users""";
-    private static final String FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL
-            = FIND_ALL_SQL + LIMIT_SQL + OFFSET_SQL;
+    private static final String FIND_ALL_ORDER_BY_ID_DESC_WITH_LIMIT_AND_OFFSET_SQL
+            = FIND_ALL_SQL + ORDER_BY_SQL + ID_COLUMN_NAME + DESC_SQL + LIMIT_SQL + OFFSET_SQL;
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
     private static final String FIND_BY_EMAIL
@@ -93,7 +93,7 @@ public class UserDaoImpl extends AbstractSqlDao<Long, User> implements UserDao {
     public List<User> findAll(Long limit, Long offset) throws DaoException {
         log.debug("Received limit = {}, offset = {}", limit, offset);
         List<User> users = executeSelectQuery(
-                FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL, List.of(limit, offset));
+                FIND_ALL_ORDER_BY_ID_DESC_WITH_LIMIT_AND_OFFSET_SQL, List.of(limit, offset));
         log.debug(RESULT_LOG_MESSAGE, users);
         return users;
     }

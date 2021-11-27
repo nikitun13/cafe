@@ -39,6 +39,8 @@ public class CommandProvider {
         repository.put(CommandUri.ADMIN_CANCEL_ORDERS, new CancelOrdersCommand(serviceFactory));
         repository.put(CommandUri.ADMIN_TO_PENDING_ORDERS, new ToPendingOrdersCommand(serviceFactory));
         repository.put(CommandUri.ADMIN_TO_NOT_COLLECTED_ORDERS, new ToNotCollectedOrdersCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN_USERS, new AdminUsersCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN_UPDATE_USER, new AdminUpdateUserCommand(serviceFactory));
     }
 
     public Command getCommand(String key) {

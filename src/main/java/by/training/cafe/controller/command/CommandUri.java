@@ -27,6 +27,8 @@ public final class CommandUri {
     public static final String ADMIN_TO_PENDING_ORDERS = "/admin/pendingorders";
     public static final String ADMIN_TO_NOT_COLLECTED_ORDERS = "/admin/notcollectedorders";
     public static final String ADMIN_CANCEL_ORDERS = "/admin/cancelorders";
+    public static final String ADMIN_USERS = "/admin/users";
+    public static final String ADMIN_UPDATE_USER = "/admin/updateuser";
 
     private CommandUri() {
     }
