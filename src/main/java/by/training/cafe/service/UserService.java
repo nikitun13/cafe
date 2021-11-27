@@ -2,7 +2,6 @@ package by.training.cafe.service;
 
 import by.training.cafe.dto.CreateUserDto;
 import by.training.cafe.dto.UserDto;
-import by.training.cafe.entity.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,12 +9,11 @@ import java.util.Optional;
 /**
  * The class {@code UserService} is a class that
  * extends {@link Service}.<br/>
- * Provides different business logic with {@link User} entities
+ * Provides different business logic with {@code User} entities
  * using {@link UserDto} and {@link CreateUserDto}.
  *
  * @author Nikita Romanov
  * @see Service
- * @see User
  * @see UserDto
  * @see CreateUserDto
  */
@@ -29,6 +27,19 @@ public interface UserService extends Service {
      * @throws ServiceException if DaoException occurred.
      */
     List<UserDto> findAll() throws ServiceException;
+
+    /**
+     * Returns entities mapped to {@link UserDto}
+     * from storage with the given {@code limit} and {@code offset}.
+     *
+     * @param limit  returning number of DTOs.
+     * @param offset offset in the storage.
+     * @return all entities mapped to {@link UserDto}.
+     * @throws ServiceException if DaoException occurred or
+     *                          {@code limit} or {@code offset}
+     *                          is invalid.
+     */
+    List<UserDto> findAll(long limit, long offset) throws ServiceException;
 
     /**
      * Finds {@code users} by {@code id} and maps it to {@link UserDto}.
@@ -78,9 +89,10 @@ public interface UserService extends Service {
     /**
      * Updates {@code user} password.
      *
-     * @param userDto     {@code user} to update password.
-     * @param oldPassword old {@code user} password to be updated.
-     * @param newPassword new password to be set.
+     * @param userDto           {@code user} to update password.
+     * @param oldPassword       old {@code user} password to be updated.
+     * @param newPassword       new password to be set.
+     * @param repeatNewPassword repeated new password.
      * @return {@code true} if {@code user} password was updated
      * successfully, {@code false} otherwise.
      * @throws ServiceException if {@code userDto} or {@code oldPassword}
@@ -101,4 +113,12 @@ public interface UserService extends Service {
      *                          or DaoException occurred.
      */
     boolean delete(UserDto userDto) throws ServiceException;
+
+    /**
+     * Counts number of entities in the storage.
+     *
+     * @return number of entities.
+     * @throws ServiceException if DaoException occurred.
+     */
+    Long countUsers() throws ServiceException;
 }

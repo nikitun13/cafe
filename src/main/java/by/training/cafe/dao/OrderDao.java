@@ -56,4 +56,17 @@ public interface OrderDao extends BaseDao<Long, Order> {
      * @throws DaoException if storage access error occurs.
      */
     Long countByStatusAndUserId(String status, Long userId) throws DaoException;
+
+    /**
+     * Calculates total amount of money
+     * that was spent on the orders by the {@code user}
+     * and order status.
+     *
+     * @param status order {@code status}.
+     * @param userId id of the {@code user}.
+     * @return total spent of the {@code user}.
+     * @throws DaoException if storage access error occurs.
+     */
+    Long findTotalSpentByStatusAndUserId(String status, Long userId)
+            throws DaoException;
 }

@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -84,6 +85,11 @@ public class OrderDaoImpl
     private static final String COUNT_BY_STATUS_AND_USER_ID_SQL = COUNT_SQL
             + WHERE_SQL + STATUS_COLUMN_NAME + " = ?::order_status"
             + AND_SQL + USER_ID_COLUMN_NAME + " = ?";
+    private static final String FIND_TOTAL_SPENT_BY_STATUS_AND_USER_ID_SQL = """
+            SELECT sum(total_price)::BIGINT
+            FROM orders
+            WHERE status = ?::order_status
+            AND user_id = ?""";
 
     public OrderDaoImpl(Connection connection) {
         super(connection);
@@ -197,10 +203,32 @@ public class OrderDaoImpl
     }
 
     @Override
-    public Long countByStatusAndUserId(String status, Long userId) throws DaoException {
-        Long count = executeCountQuery(COUNT_BY_STATUS_AND_USER_ID_SQL, status, userId);
+    public Long countByStatusAndUserId(String status, Long userId)
+            throws DaoException {
+        Long count = executeCountQuery(COUNT_BY_STATUS_AND_USER_ID_SQL,
+                status, userId);
         log.debug("Count result: {}", count);
         return count;
+    }
+
+    @Override
+    public Long findTotalSpentByStatusAndUserId(String status, Long userId)
+            throws DaoException {
+        log.debug("Received status: {}, and userId: {}", status, userId);
+        try (PreparedStatement statement = connection.prepareStatement(
+                FIND_TOTAL_SPENT_BY_STATUS_AND_USER_ID_SQL)) {
+            statement.setObject(1, status);
+            statement.setObject(2, userId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getObject("sum", Long.class);
+            } else {
+                log.debug("Result set is empty");
+                return 0L;
+            }
+        } catch (SQLException e) {
+            throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
+        }
     }
 
     @Override

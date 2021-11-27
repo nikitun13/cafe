@@ -6,6 +6,7 @@ import by.training.cafe.dto.UserDto;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -131,4 +132,55 @@ public interface OrderService extends Service {
      *                          or DaoException occurred.
      */
     Long countNotCollectedOrdersByUserId(Long userId) throws ServiceException;
+
+    /**
+     * Counts number of completed orders by the
+     * given {@code user}.
+     *
+     * @param userId id of the {@code user}.
+     * @return number of completed orders.
+     * @throws ServiceException if {@code userId} is invalid
+     *                          or DaoException occurred.
+     */
+    Long countCompletedOrdersByUserId(Long userId) throws ServiceException;
+
+    /**
+     * Counts number of completed orders grouped by the
+     * given {@code users}.
+     *
+     * @param users {@code users}.
+     * @return map where key is {@code user}
+     * and value is number of completed orders.
+     * @throws ServiceException if {@code users} is invalid
+     *                          or DaoException occurred.
+     */
+    Map<UserDto, Long> countCompletedOrdersGroupByUserDto(List<UserDto> users)
+            throws ServiceException;
+
+    /**
+     * Calculates total amount of money
+     * that was spent on the orders by the {@code user}.
+     * Only completed orders are counted.
+     *
+     * @param userId id of the {@code user}.
+     * @return total spent of the {@code user}.
+     * @throws ServiceException if {@code userId} is invalid
+     *                          or DaoException occurred.
+     */
+    Long calcTotalSpentByUserId(Long userId) throws ServiceException;
+
+    /**
+     * Calculates total amount of money
+     * that was spent on the orders grouped
+     * by the {@code user}.
+     * Only completed orders are counted.
+     *
+     * @param users {@code users}.
+     * @return map where key is {@code userDto}
+     * and value is total spent of the {@code user}.
+     * @throws ServiceException if {@code users} is invalid
+     *                          or DaoException occurred.
+     */
+    Map<UserDto, Long> calcTotalSpentGroupByUserDto(List<UserDto> users)
+            throws ServiceException;
 }

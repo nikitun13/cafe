@@ -86,6 +86,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDto> findAll(long limit, long offset)
+            throws ServiceException {
+        if (limit < 1 || offset < 0) {
+            throw new ServiceException(
+                    "Limit or offset is invalid. Limit = %d, offset = %d"
+                            .formatted(limit, offset));
+        }
+        List<User> users;
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            UserDao userDao = transaction.createDao(UserDao.class);
+            users = userDao.findAll(limit, offset);
+        } catch (DaoException e) {
+            throw new ServiceException("Dao exception during "
+                    + "findAll method with limit and offset", e);
+        }
+        List<UserDto> result = users.stream()
+                .map(userDtoMapper::mapEntityToDto)
+                .toList();
+        log.debug(RESULT_LIST_LOG_MESSAGE, result);
+        return result;
+    }
+
+    @Override
     public Optional<UserDto> findById(Long id) throws ServiceException {
         log.debug("Received id: {}", id);
         if (id == null || id < 1) {
@@ -227,6 +250,17 @@ public class UserServiceImpl implements UserService {
             return userDao.delete(id);
         } catch (DaoException e) {
             throw new ServiceException("Dao exception during delete method", e);
+        }
+    }
+
+    @Override
+    public Long countUsers() throws ServiceException {
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            UserDao userDao = transaction.createDao(UserDao.class);
+            return userDao.count();
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during countUsers method", e);
         }
     }
 

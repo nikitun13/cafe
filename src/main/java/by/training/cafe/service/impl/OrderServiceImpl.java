@@ -24,7 +24,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -45,6 +47,11 @@ public class OrderServiceImpl implements OrderService {
     private static final String ORDER_DTO_IS_INVALID_MESSAGE
             = "OrderDto is invalid: ";
     private static final String NOT_COLLECTED = "NOT_COLLECTED";
+    private static final String RECEIVED_USER_ID_LOG_MESSAGE
+            = "Received userId: {}";
+    private static final String USER_ID_IS_INVALID_MESSAGE
+            = "UserId is invalid. UserId: ";
+    private static final String COMPLETED = "COMPLETED";
 
     private final Mapper<Order, OrderDto> orderDtoMapper
             = OrderDtoMapper.getInstance();
@@ -89,7 +96,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> findAll(long limit, long offset) throws ServiceException {
+    public List<OrderDto> findAll(long limit, long offset)
+            throws ServiceException {
         if (limit < 1 || offset < 0) {
             throw new ServiceException(
                     "Limit or offset is invalid. Limit = %d, offset = %d"
@@ -135,13 +143,15 @@ public class OrderServiceImpl implements OrderService {
             throw new ServiceException(
                     "Dao exception during findById method", e);
         }
-        Optional<OrderDto> result = maybeOrder.map(orderDtoMapper::mapEntityToDto);
+        Optional<OrderDto> result
+                = maybeOrder.map(orderDtoMapper::mapEntityToDto);
         log.debug("Result optional OrderDto: {}", result);
         return result;
     }
 
     @Override
-    public OrderDto create(CreateOrderDto createOrderDto) throws ServiceException {
+    public OrderDto create(CreateOrderDto createOrderDto)
+            throws ServiceException {
         log.debug("Received CreateOrderDto: {}", createOrderDto);
         if (!createOrderDtoValidator.isValid(createOrderDto)) {
             throw new ServiceException(
@@ -190,7 +200,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> findByUserDto(UserDto userDto) throws ServiceException {
+    public List<OrderDto> findByUserDto(UserDto userDto)
+            throws ServiceException {
         log.debug("Received userDto: {}", userDto);
         if (!userDtoValidator.isValid(userDto)) {
             throw new ServiceException("UserDto is invalid: " + userDto);
@@ -257,17 +268,88 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Long countNotCollectedOrdersByUserId(Long userId)
             throws ServiceException {
-        log.debug("Received userId: {}", userId);
+        log.debug(RECEIVED_USER_ID_LOG_MESSAGE, userId);
         if (userId == null || userId < 1) {
-            throw new ServiceException("UserId is invalid. UserId: " + userId);
+            throw new ServiceException(USER_ID_IS_INVALID_MESSAGE + userId);
         }
         try (Transaction transaction = transactionFactory.createTransaction()) {
             OrderDao orderDao = transaction.createDao(OrderDao.class);
             return orderDao.countByStatusAndUserId(NOT_COLLECTED, userId);
         } catch (DaoException e) {
             throw new ServiceException(
-                    "Dao exception during countOrders method", e);
+                    "Dao exception during "
+                            + "countNotCollectedOrdersByUserId method", e);
         }
+    }
+
+    @Override
+    public Long countCompletedOrdersByUserId(Long userId)
+            throws ServiceException {
+        log.debug(RECEIVED_USER_ID_LOG_MESSAGE, userId);
+        if (userId == null || userId < 1) {
+            throw new ServiceException(USER_ID_IS_INVALID_MESSAGE + userId);
+        }
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            OrderDao orderDao = transaction.createDao(OrderDao.class);
+            return orderDao.countByStatusAndUserId(COMPLETED, userId);
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during "
+                            + "countCompletedOrdersByUserId method", e);
+        }
+    }
+
+    @Override
+    public Map<UserDto, Long> countCompletedOrdersGroupByUserDto(List<UserDto> users)
+            throws ServiceException {
+        log.debug("Received users list: {}", users);
+        if (users == null) {
+            throw new ServiceException("List is invalid.");
+        }
+        Map<UserDto, Long> result = new HashMap<>();
+        for (UserDto user : users) {
+            if (user == null) {
+                throw new ServiceException("UserDto is invalid");
+            }
+            Long totalOrders = countCompletedOrdersByUserId(user.getId());
+            result.put(user, totalOrders);
+        }
+        log.debug("Result map: {}", result);
+        return result;
+    }
+
+    @Override
+    public Long calcTotalSpentByUserId(Long userId) throws ServiceException {
+        log.debug(RECEIVED_USER_ID_LOG_MESSAGE, userId);
+        if (userId == null || userId < 1) {
+            throw new ServiceException(USER_ID_IS_INVALID_MESSAGE + userId);
+        }
+        try (Transaction transaction = transactionFactory.createTransaction()) {
+            OrderDao orderDao = transaction.createDao(OrderDao.class);
+            return orderDao.findTotalSpentByStatusAndUserId(COMPLETED, userId);
+        } catch (DaoException e) {
+            throw new ServiceException(
+                    "Dao exception during calcTotalSpentByUserId method", e);
+        }
+    }
+
+    @Override
+    public Map<UserDto, Long> calcTotalSpentGroupByUserDto(List<UserDto> users)
+            throws ServiceException {
+        log.debug("Received users list: {}", users);
+        if (users == null) {
+            throw new ServiceException("List is invalid.");
+        }
+        Map<UserDto, Long> result = new HashMap<>();
+        for (UserDto user : users) {
+            if (user == null) {
+                throw new ServiceException("UserDto is invalid");
+            }
+            Long totalSpent = calcTotalSpentByUserId(user.getId());
+            result.put(user, totalSpent);
+        }
+        log.debug("Result map: {}", result);
+        return result;
     }
 
     private void findUserAndSetToOrder(UserDao userDao, Order order)
