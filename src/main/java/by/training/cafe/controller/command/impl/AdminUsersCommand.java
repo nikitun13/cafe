@@ -4,11 +4,12 @@ import by.training.cafe.controller.command.Command;
 import by.training.cafe.controller.command.CommonAttributes;
 import by.training.cafe.controller.command.Dispatch;
 import by.training.cafe.controller.command.HttpMethod;
-import by.training.cafe.dto.OrderDto;
+import by.training.cafe.dto.UserDto;
 import by.training.cafe.service.OrderService;
 import by.training.cafe.service.PaginationService;
 import by.training.cafe.service.ServiceException;
 import by.training.cafe.service.ServiceFactory;
+import by.training.cafe.service.UserService;
 import by.training.cafe.util.JspPathUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,28 +25,31 @@ import static java.net.HttpURLConnection.HTTP_BAD_METHOD;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 
 /**
- * The class {@code AdminOrdersCommand} is a class that
+ * The class {@code AdminUsersCommand} is a class that
  * implements {@link Command}.<br/>
- * Provides all orders to admin.
+ * Provides all users to admin.
  *
  * @author Nikita Romanov
  * @see Command
  */
-public class AdminOrdersCommand implements Command {
+public class AdminUsersCommand implements Command {
 
     private static final Logger log
-            = LogManager.getLogger(AdminOrdersCommand.class);
+            = LogManager.getLogger(AdminUsersCommand.class);
     private static final Dispatch SUCCESS = new Dispatch(
             DispatchType.FORWARD,
-            JspPathUtil.getPath("admin-orders"));
+            JspPathUtil.getPath("admin-users"));
     private static final Dispatch ERROR = new Dispatch(
             DispatchType.FORWARD,
             JspPathUtil.getPath("error"));
     private static final int DEFAULT_LIMIT = 10;
+    private static final String TOTAL_SPENT_MAP = "totalSpentMap";
+    private static final String TOTAL_COMPLETED_ORDERS_MAP
+            = "totalCompletedOrders";
 
     private final ServiceFactory serviceFactory;
 
-    public AdminOrdersCommand(ServiceFactory serviceFactory) {
+    public AdminUsersCommand(ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
     }
 
@@ -63,16 +67,26 @@ public class AdminOrdersCommand implements Command {
                 CommonAttributes.ERROR_MESSAGE_KEY);
         replaceAttributeToRequest(session, request,
                 CommonAttributes.SUCCESS_MESSAGE_KEY);
-        OrderService orderService
-                = serviceFactory.getService(OrderService.class);
+        UserService userService
+                = serviceFactory.getService(UserService.class);
         try {
-            Long totalOrders = orderService.countOrders();
+            Long totalOrders = userService.countUsers();
             if (totalOrders > 0) {
                 long offset = calculateOffsetAndSetPageAttributesToRequest(
                         totalOrders, request);
-                List<OrderDto> orders = orderService.findAll(
+                List<UserDto> users = userService.findAll(
                         DEFAULT_LIMIT, offset);
-                request.setAttribute(CommonAttributes.ORDERS, orders);
+                OrderService orderService
+                        = serviceFactory.getService(OrderService.class);
+                Map<UserDto, Long> totalCompletedOrdersMap
+                        = orderService.countCompletedOrdersGroupByUserDto(users);
+                Map<UserDto, Long> totalSpentMap
+                        = orderService.calcTotalSpentGroupByUserDto(users);
+
+                request.setAttribute(TOTAL_SPENT_MAP, totalSpentMap);
+                request.setAttribute(TOTAL_COMPLETED_ORDERS_MAP,
+                        totalCompletedOrdersMap);
+                request.setAttribute(CommonAttributes.USERS, users);
             }
         } catch (ServiceException e) {
             log.error("Service exception occurred", e);
