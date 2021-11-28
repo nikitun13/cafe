@@ -41,6 +41,10 @@ public class CommandProvider {
         repository.put(CommandUri.ADMIN_TO_NOT_COLLECTED_ORDERS, new ToNotCollectedOrdersCommand(serviceFactory));
         repository.put(CommandUri.ADMIN_USERS, new AdminUsersCommand(serviceFactory));
         repository.put(CommandUri.ADMIN_UPDATE_USER, new AdminUpdateUserCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN_DISHES, new AdminDishesCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN_CREATE_DISH, new AdminCreateDishCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN_UPDATE_DISH, new AdminUpdateDishCommand(serviceFactory));
+        repository.put(CommandUri.ADMIN_UPDATE_DESCRIPTION, new AdminUpdateDishDescriptionCommand(serviceFactory));
     }
 
     public Command getCommand(String key) {

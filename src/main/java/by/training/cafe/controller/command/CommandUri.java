@@ -29,6 +29,10 @@ public final class CommandUri {
     public static final String ADMIN_CANCEL_ORDERS = "/admin/cancelorders";
     public static final String ADMIN_USERS = "/admin/users";
     public static final String ADMIN_UPDATE_USER = "/admin/updateuser";
+    public static final String ADMIN_DISHES = "/admin/dishes";
+    public static final String ADMIN_CREATE_DISH = "/admin/createdish";
+    public static final String ADMIN_UPDATE_DISH = "/admin/updatedish";
+    public static final String ADMIN_UPDATE_DESCRIPTION = "/admin/updatedescription";
 
     private CommandUri() {
     }
