@@ -161,7 +161,7 @@ function displayCart() {
             " <li class=\"list-group-item\">\n" +
             "                        <div class=\"d-flex justify-content-between\">\n" +
             "                             <div class=\"col-12 my-1\">\n" +
-            "                                <img class='cart-img' src='/img/dishes/dish-" + cartArray[i].id + ".png' alt='" + cartArray[i].name + " picture'" +
+            "                                <img class='cart-img' src='/images/dishes/dish-" + cartArray[i].id + ".png' alt='" + cartArray[i].name + " picture'" +
             "                                 style=\"width: 32px; height: auto;\"/>\n" +
             "                                <span class='cart-dish-name'>" + cartArray[i].name + "</span>\n" +
             "                             </div>\n" +

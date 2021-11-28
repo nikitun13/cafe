@@ -119,7 +119,7 @@
                                         </th>
                                         <td>
                                             <img class="img-fluid"
-                                                 src="<c:url value="/img/dishes/dish-${dish.id}.png"/>" id="current"
+                                                 src="<c:url value="/images/dishes/dish-${dish.id}.png"/>" id="current"
                                                  alt="${dish.name} picture" style="width: 64px;height: auto">
                                         </td>
                                         <td style="width: 26%">

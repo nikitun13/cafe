@@ -91,7 +91,7 @@
                             <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-12 text-center gy-2">
                                 <div class="card pt-3 h-100 w-100 align-items-center">
                                     <a href="<c:url value="/dish?id=${dish.id}"/>">
-                                        <img src="<c:url value="/img/dishes/dish-${dish.id}.png"/>"
+                                        <img src="<c:url value="/images/dishes/dish-${dish.id}.png"/>"
                                              class="card-img-top p-1"
                                              alt="${dish.name} picture" style="width: 150px; height: auto;"/>
                                     </a>
@@ -127,7 +127,7 @@
                                                 data-name="${dish.name}"
                                                 data-id="${dish.id}"
                                                 data-price="${dish.price/100}"
-                                                data-img="<c:url value="/img/dishes/dish-${dish.id}.png"/>">
+                                                data-img="<c:url value="/images/dishes/dish-${dish.id}.png"/>">
                                             <fmt:message key="cart.addToCart"/>
                                         </button>
                                     </div>

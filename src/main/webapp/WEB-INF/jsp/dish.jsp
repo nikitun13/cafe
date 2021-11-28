@@ -28,7 +28,8 @@
                 <div class="top-area">
                     <div class="row">
                         <div class="col-lg-3 col-md-12 col-12 text-center">
-                            <img class="img-fluid" src="<c:url value="/img/dishes/dish-${dish.id}.png"/>" id="current"
+                            <img class="img-fluid" src="<c:url value="/images/dishes/dish-${dish.id}.png"/>"
+                                 id="current"
                                  alt="${dish.name} picture" style="width: 225px;height: auto">
                         </div>
                         <div class="col-lg-9 col-md-12 col-12">
@@ -48,7 +49,7 @@
                                                 data-name="${dish.name}"
                                                 data-id="${dish.id}"
                                                 data-price="${dish.price/100}"
-                                                data-img="<c:url value="/img/dishes/dish-${dish.id}.png"/>">
+                                                data-img="<c:url value="/images/dishes/dish-${dish.id}.png"/>">
                                             <fmt:message key="cart.addToCart"/>
                                         </button>
                                     </div>
@@ -166,9 +167,9 @@
                                                         </ul>
                                                     </div>
                                                     <span style="font-size: 14px;">
-                                                <fmt:formatDate value="${comment.createdAt}" type="both"
-                                                                timeStyle="medium" dateStyle="short"/>
-                                            </span>
+                                                            <fmt:formatDate value="${comment.createdAt}" type="both"
+                                                                            timeStyle="medium" dateStyle="short"/>
+                                                    </span>
                                                     <p class="text-break"><c:out value="${comment.body}"/></p>
                                                 </div>
                                             </c:forEach>
