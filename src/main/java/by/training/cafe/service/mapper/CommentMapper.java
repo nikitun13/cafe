@@ -41,7 +41,9 @@ public final class CommentMapper implements Mapper<Comment, CommentDto> {
         var user = userDtoMapper.mapDtoToEntity(dto.getUser());
         var dish = dishMapper.mapDtoToEntity(dto.getDish());
         var rating = dto.getRating();
-        var body = dto.getBody().strip();
+        var body = dto.getBody()
+                .strip()
+                .replaceAll("\\s{2,}", " ");
         var createdAt = dto.getCreatedAt();
 
         Comment comment = Comment.builder()

@@ -31,11 +31,15 @@ public final class DishMapper implements Mapper<Dish, DishDto> {
     public Dish mapDtoToEntity(DishDto dto) {
         log.debug("received dto: {}", dto);
         var id = dto.getId();
-        var name = dto.getName();
+        var name = dto.getName()
+                .strip()
+                .replaceAll("\\s{2,}", " ");
         var category = DishCategory.valueOf(
                 dto.getCategory().toUpperCase());
         var price = dto.getPrice();
-        var description = dto.getDescription();
+        var description = dto.getDescription()
+                .strip()
+                .replaceAll("\\s{2,}", " ");
 
         Dish dish = Dish.builder()
                 .id(id)

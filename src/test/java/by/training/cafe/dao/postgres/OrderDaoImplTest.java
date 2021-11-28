@@ -174,7 +174,7 @@ class OrderDaoImplTest {
     @Test
     @Tag("findAll")
     void shouldReturnAllOrdersFromDatabase() throws DaoException {
-        List<Order> expected = List.of(IVAN_FIRST_ORDER, IVAN_SECOND_ORDER, HANS_ORDER, PETR_ORDER);
+        List<Order> expected = List.of(PETR_ORDER, HANS_ORDER, IVAN_SECOND_ORDER, IVAN_FIRST_ORDER);
 
         List<Order> actual = orderDao.findAll();
 

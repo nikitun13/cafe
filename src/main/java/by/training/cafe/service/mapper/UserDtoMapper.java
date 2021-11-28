@@ -35,9 +35,15 @@ public final class UserDtoMapper implements Mapper<User, UserDto> {
         var email = userDto.getEmail();
         var role = userDto.getRole();
         var firstName = StringUtil.capitalizeFirstLetter(
-                userDto.getFirstName().toLowerCase());
+                userDto.getFirstName()
+                        .strip()
+                        .replaceAll("\\s{2,}", " ")
+                        .toLowerCase());
         var lastName = StringUtil.capitalizeFirstLetter(
-                userDto.getLastName().toLowerCase());
+                userDto.getLastName()
+                        .strip()
+                        .replaceAll("\\s{2,}", " ")
+                        .toLowerCase());
         var phone = userDto.getPhone();
         var points = userDto.getPoints();
         var isBlocked = userDto.isBlocked();

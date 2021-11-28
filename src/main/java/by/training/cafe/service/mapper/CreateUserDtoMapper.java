@@ -40,9 +40,15 @@ public final class CreateUserDtoMapper implements Mapper<User, CreateUserDto> {
         var email = createUserDto.getEmail().strip();
         var password = createUserDto.getPassword();
         var firstName = StringUtil.capitalizeFirstLetter(
-                createUserDto.getFirstName().strip().toLowerCase());
+                createUserDto.getFirstName()
+                        .strip()
+                        .replaceAll("\\s{2,}", " ")
+                        .toLowerCase());
         var lastName = StringUtil.capitalizeFirstLetter(
-                createUserDto.getLastName().strip().toLowerCase());
+                createUserDto.getLastName()
+                        .strip()
+                        .replaceAll("\\s{2,}", " ")
+                        .toLowerCase());
         var phone = createUserDto.getPhone();
         User user = User.builder()
                 .email(email)
