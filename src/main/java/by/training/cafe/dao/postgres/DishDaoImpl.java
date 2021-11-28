@@ -38,16 +38,20 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
     private static final String FIND_ALL_SQL = """
             SELECT id, name, category, price, description
             FROM dish""";
-    private static final String FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL
-            = FIND_ALL_SQL + LIMIT_SQL + OFFSET_SQL;
+    private static final String ORDER_BY_ID_SQL = ORDER_BY_SQL + ID_COLUMN_NAME;
+    private static final String FIND_ALL_ORDER_BY_ID_SQL =
+            FIND_ALL_SQL + ORDER_BY_ID_SQL;
+    private static final String FIND_ALL_ORDER_BY_ID_WITH_LIMIT_AND_OFFSET_SQL
+            = FIND_ALL_ORDER_BY_ID_SQL + LIMIT_SQL + OFFSET_SQL;
     private static final String FIND_BY_ID_SQL
             = FIND_ALL_SQL + WHERE_SQL + "id = ?";
     private static final String NAME_LIKE_OR_DESCRIPTION_LIKE_SQL
             = "(name ILIKE ?" + OR_SQL + "description ILIKE ?)";
     private static final String FIND_BY_NAME_LIKE_OR_DESCRIPTION_LIKE_SQL
             = FIND_ALL_SQL + WHERE_SQL + NAME_LIKE_OR_DESCRIPTION_LIKE_SQL;
-    private static final String FIND_BY_CATEGORY_SQL
-            = FIND_ALL_SQL + WHERE_SQL + "category = ?::dish_category";
+    private static final String FIND_BY_CATEGORY_ORDER_BY_ID_SQL
+            = FIND_ALL_SQL + WHERE_SQL + "category = ?::dish_category"
+            + ORDER_BY_ID_SQL;
     private static final String CREATE_SQL = """
             INSERT INTO dish (name, category, price, description)
             VALUES (?, ?::dish_category, ?, ?)""";
@@ -72,7 +76,7 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
     @Override
     public List<Dish> findAll() throws DaoException {
         List<Dish> dishes = executeSelectQuery(
-                FIND_ALL_SQL, Collections.emptyList());
+                FIND_ALL_ORDER_BY_ID_SQL, Collections.emptyList());
         log.debug(RESULT_LOG_MESSAGE, dishes);
         return dishes;
     }
@@ -81,7 +85,7 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
     public List<Dish> findAll(Long limit, Long offset) throws DaoException {
         log.debug("Received limit = {}, offset = {}", limit, offset);
         List<Dish> dishes = executeSelectQuery(
-                FIND_ALL_WITH_LIMIT_AND_OFFSET_SQL, List.of(limit, offset));
+                FIND_ALL_ORDER_BY_ID_WITH_LIMIT_AND_OFFSET_SQL, List.of(limit, offset));
         log.debug(RESULT_LOG_MESSAGE, dishes);
         return dishes;
     }
@@ -183,7 +187,7 @@ public class DishDaoImpl extends AbstractSqlDao<Long, Dish> implements DishDao {
     public List<Dish> findByCategory(String category) throws DaoException {
         log.debug("Received category: {}", category);
         List<Dish> dishes = executeSelectQuery(
-                FIND_BY_CATEGORY_SQL, List.of(category));
+                FIND_BY_CATEGORY_ORDER_BY_ID_SQL, List.of(category));
         log.debug(RESULT_LOG_MESSAGE, dishes);
         return dishes;
     }
