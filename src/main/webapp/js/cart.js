@@ -293,9 +293,11 @@ expectedDateElement.on('input', validateExpectedDate)
 
 function validateDebitedPoints() {
     let max = calcMaxDebitedPoints();
-    let debitedPoints = Number(debitedPointsElement.val());
-    if (isNaN(debitedPoints) || isNaN(max)
-        || debitedPoints < 0 || debitedPoints > max) {
+    let str = debitedPointsElement.val();
+    let debitedPoints = Number(str);
+    if (str.trim() === '' || isNaN(debitedPoints) || isNaN(max)
+        || !Number.isInteger(debitedPoints) || debitedPoints < 0
+        || debitedPoints > max) {
         debitedPointsElement.addClass('is-invalid');
         $('#debitedPointsBlock').addClass('is-invalid');
         return false;
