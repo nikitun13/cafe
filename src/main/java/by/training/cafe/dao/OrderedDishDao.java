@@ -25,4 +25,10 @@ public interface OrderedDishDao
      * @throws DaoException if storage access error occurs.
      */
     List<OrderedDish> findByOrderId(Long orderId) throws DaoException;
+
+    List<Long> findTopDishesId(long limit) throws DaoException;
+
+    Long findTotalPriceByDishId(Long dishId) throws DaoException;
+
+    Long findTotalCountByDishId(Long dishId) throws DaoException;
 }

@@ -9,8 +9,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -62,6 +64,29 @@ public class OrderedDishDaoImpl
     private static final String COUNT_SQL = """
             SELECT count(order_id)
             FROM dish_orders""";
+    private static final String FIND_TOP_DISHES_SQL = """
+            SELECT dish_id
+            FROM dish_orders
+                     JOIN orders on orders.id = order_id
+            WHERE orders.status = 'COMPLETED'
+            GROUP BY dish_id
+            ORDER BY sum(dish_price*dish_count) DESC
+            LIMIT ?""";
+    private static final String FIND_TOTAL_PRICE_BY_DISH_ID = """
+            SELECT sum(dish_price*dish_count)::BIGINT totalPrice
+            FROM dish_orders
+                     JOIN orders on orders.id = order_id
+            WHERE orders.status = 'COMPLETED'
+            AND dish_id = ?""";
+    private static final String FIND_TOTAL_COUNT_BY_DISH_ID = """
+            SELECT sum(dish_count)::BIGINT totalCount
+            FROM dish_orders
+                     JOIN orders on orders.id = order_id
+            WHERE orders.status = 'COMPLETED'
+            AND dish_id = ?""";
+    private static final String TOTAL_PRICE = "totalPrice";
+    private static final String TOTAL_COUNT = "totalCount";
+
 
     public OrderedDishDaoImpl(Connection connection) {
         super(connection);
@@ -135,7 +160,8 @@ public class OrderedDishDaoImpl
     @Override
     public boolean delete(Entry<Long, Long> id) throws DaoException {
         log.debug("Received id: {}", id);
-        int updatedRows = executeUpdateQuery(DELETE_SQL, List.of(id.getKey(), id.getValue()));
+        int updatedRows = executeUpdateQuery(DELETE_SQL,
+                List.of(id.getKey(), id.getValue()));
         boolean isDeleted = isOnlyOneRowUpdated(updatedRows);
         if (isDeleted) {
             log.debug("OrderedDish with id {} was deleted", id);
@@ -152,6 +178,65 @@ public class OrderedDishDaoImpl
                 FIND_BY_ORDER_ID_SQL, List.of(orderId));
         log.debug(RESULT_LOG_MESSAGE, orderedDishes);
         return orderedDishes;
+    }
+
+    @Override
+    public List<Long> findTopDishesId(long limit) throws DaoException {
+        log.debug("Received limit: {}", limit);
+        try (PreparedStatement statement = connection.prepareStatement(
+                FIND_TOP_DISHES_SQL)) {
+            statement.setObject(1, limit);
+            ResultSet resultSet = statement.executeQuery();
+            List<Long> dishesId = new ArrayList<>();
+            while (resultSet.next()) {
+                Long dishId = resultSet.getObject(DISH_ID_COLUMN_NAME, Long.class);
+                dishesId.add(dishId);
+            }
+            log.debug(RESULT_LOG_MESSAGE, dishesId);
+            return dishesId;
+        } catch (SQLException e) {
+            throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
+        }
+    }
+
+    @Override
+    public Long findTotalPriceByDishId(Long dishId) throws DaoException {
+        log.debug("Received dish id: {}", dishId);
+        try (PreparedStatement statement = connection.prepareStatement(
+                FIND_TOTAL_PRICE_BY_DISH_ID)) {
+            statement.setObject(1, dishId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                long totalPrice = resultSet.getLong(TOTAL_PRICE);
+                log.debug("Total price for dishId={}: {}", dishId, totalPrice);
+                return totalPrice;
+            } else {
+                log.debug("Result set is empty");
+                return 0L;
+            }
+        } catch (SQLException e) {
+            throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
+        }
+    }
+
+    @Override
+    public Long findTotalCountByDishId(Long dishId) throws DaoException {
+        log.debug("Received dish id: {}", dishId);
+        try (PreparedStatement statement = connection.prepareStatement(
+                FIND_TOTAL_COUNT_BY_DISH_ID)) {
+            statement.setObject(1, dishId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                long totalCount = resultSet.getLong(TOTAL_COUNT);
+                log.debug("Total count for dishId={}: {}", dishId, totalCount);
+                return totalCount;
+            } else {
+                log.debug("Result set is empty");
+                return 0L;
+            }
+        } catch (SQLException e) {
+            throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
+        }
     }
 
     @Override

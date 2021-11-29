@@ -2,6 +2,7 @@ package by.training.cafe.dao;
 
 import by.training.cafe.entity.Order;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -68,5 +69,10 @@ public interface OrderDao extends BaseDao<Long, Order> {
      * @throws DaoException if storage access error occurs.
      */
     Long findTotalSpentByStatusAndUserId(String status, Long userId)
+            throws DaoException;
+
+    long findSumOfCompletedOrders() throws DaoException;
+
+    long findSumOfCompletedOrderWhereActualRetrieveDateBetween(Date from, Date to)
             throws DaoException;
 }

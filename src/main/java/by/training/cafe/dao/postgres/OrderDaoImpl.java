@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -90,6 +91,15 @@ public class OrderDaoImpl
             FROM orders
             WHERE status = ?::order_status
             AND user_id = ?""";
+    private static final String FIND_SUM_BY_COMPLETED_ORDERS = """
+            SELECT sum(total_price)::BIGINT
+            FROM orders
+            WHERE status='COMPLETED'""";
+    private static final String FIND_SUM_BY_COMPLETED_ORDER_WHERE_ACTUAL_RETRIEVE_DATE_BETWEEN
+            = FIND_SUM_BY_COMPLETED_ORDERS
+            + AND_SQL + "actual_retrieve_date::DATE BETWEEN ? AND ?";
+    private static final String RESULT_SET_IS_EMPTY_LOG_MESSAGE
+            = "Result set is empty";
 
     public OrderDaoImpl(Connection connection) {
         super(connection);
@@ -223,7 +233,48 @@ public class OrderDaoImpl
             if (resultSet.next()) {
                 return resultSet.getObject("sum", Long.class);
             } else {
-                log.debug("Result set is empty");
+                log.debug(RESULT_SET_IS_EMPTY_LOG_MESSAGE);
+                return 0L;
+            }
+        } catch (SQLException e) {
+            throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
+        }
+    }
+
+    @Override
+    public long findSumOfCompletedOrders() throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                FIND_SUM_BY_COMPLETED_ORDERS)) {
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                long sum = resultSet.getLong("sum");
+                log.debug("Sum: {}", sum);
+                return sum;
+            } else {
+                log.debug(RESULT_SET_IS_EMPTY_LOG_MESSAGE);
+                return 0L;
+            }
+        } catch (SQLException e) {
+            throw new DaoException(SQL_EXCEPTION_OCCURRED_MESSAGE, e);
+        }
+    }
+
+    @Override
+    public long findSumOfCompletedOrderWhereActualRetrieveDateBetween(
+            Date from, Date to)
+            throws DaoException {
+        log.debug("Received from {} and to {}", from, to);
+        try (PreparedStatement statement = connection.prepareStatement(
+                FIND_SUM_BY_COMPLETED_ORDER_WHERE_ACTUAL_RETRIEVE_DATE_BETWEEN)) {
+            statement.setObject(1, from);
+            statement.setObject(2, to);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                long sum = resultSet.getLong("sum");
+                log.debug("Sum: {}", sum);
+                return sum;
+            } else {
+                log.debug(RESULT_SET_IS_EMPTY_LOG_MESSAGE);
                 return 0L;
             }
         } catch (SQLException e) {
