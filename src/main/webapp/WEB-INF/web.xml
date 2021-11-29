@@ -23,7 +23,7 @@
 
     <filter>
         <filter-name>SecureFilter</filter-name>
-        <filter-class>by.training.cafe.controller.filter.SecureFilter</filter-class>
+        <filter-class>by.training.cafe.controller.filter.SecurityFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>SecureFilter</filter-name>
