@@ -46,6 +46,8 @@ public class ToPendingOrdersCommand implements Command {
     private static final String NOT_ENOUGH_POINTS = "Not enough points";
     private static final String NOT_ENOUGH_POINTS_MESSAGE_KEY
             = "admin.order.notEnoughPoints";
+    private static final String NOTHING_SELECTED_KEY
+            = "admin.orders.nothingSelected";
 
     private final ServiceFactory serviceFactory;
 
@@ -64,6 +66,12 @@ public class ToPendingOrdersCommand implements Command {
             return BAD_METHOD_ERROR;
         }
         String[] ordersId = request.getParameterValues(CommonAttributes.ORDERS);
+        if (ordersId == null || ordersId.length == 0) {
+            session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
+                    NOTHING_SELECTED_KEY);
+            return REDIRECT_TO_ADMIN_ORDERS;
+        }
+
         OrderService orderService
                 = serviceFactory.getService(OrderService.class);
         List<OrderDto> orders = new ArrayList<>();

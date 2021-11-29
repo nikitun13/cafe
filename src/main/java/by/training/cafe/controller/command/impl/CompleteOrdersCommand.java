@@ -43,6 +43,8 @@ public class CompleteOrdersCommand implements Command {
             CommandUri.ADMIN_ORDERS);
     private static final String SOMETHING_WENT_WRONG_MESSAGE_KEY = "error.oops";
     private static final String UPDATED_MESSAGE_KEY = "admin.order.updated";
+    private static final String NOTHING_SELECTED_KEY
+            = "admin.orders.nothingSelected";
 
     private final ServiceFactory serviceFactory;
 
@@ -61,6 +63,12 @@ public class CompleteOrdersCommand implements Command {
             return BAD_METHOD_ERROR;
         }
         String[] ordersId = request.getParameterValues(CommonAttributes.ORDERS);
+        if (ordersId == null || ordersId.length == 0) {
+            session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
+                    NOTHING_SELECTED_KEY);
+            return REDIRECT_TO_ADMIN_ORDERS;
+        }
+
         OrderService orderService = serviceFactory.getService(OrderService.class);
         try {
             List<OrderDto> orders = new ArrayList<>();
