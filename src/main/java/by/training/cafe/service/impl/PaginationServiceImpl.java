@@ -5,6 +5,13 @@ import by.training.cafe.service.PaginationService;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map;
 
+/**
+ * The class {@code PaginationServiceImpl} is a class
+ * that implements {@link PaginationService}.
+ *
+ * @author Nikita Romanov
+ * @see PaginationService
+ */
 public class PaginationServiceImpl implements PaginationService {
 
     @Override
