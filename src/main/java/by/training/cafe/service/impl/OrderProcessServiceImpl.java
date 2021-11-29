@@ -4,6 +4,7 @@ import by.training.cafe.dto.CreateOrderDto;
 import by.training.cafe.dto.OrderDto;
 import by.training.cafe.dto.OrderedDishDto;
 import by.training.cafe.dto.UserDto;
+import by.training.cafe.entity.UserRole;
 import by.training.cafe.service.OrderProcessService;
 import by.training.cafe.service.OrderService;
 import by.training.cafe.service.OrderedDishService;
@@ -286,7 +287,8 @@ public class OrderProcessServiceImpl implements OrderProcessService {
         user.setPoints(points);
         Long notCollectedOrders
                 = orderService.countNotCollectedOrdersByUserId(user.getId());
-        if (notCollectedOrders > MAX_NOT_COLLECTED_ORDERS) {
+        if (!user.getRole().equals(UserRole.ADMIN)
+                && notCollectedOrders > MAX_NOT_COLLECTED_ORDERS) {
             user.setBlocked(Boolean.TRUE);
         }
         userService.update(user);
