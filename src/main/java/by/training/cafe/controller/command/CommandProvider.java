@@ -45,6 +45,7 @@ public class CommandProvider {
         repository.put(CommandUri.ADMIN_CREATE_DISH, new AdminCreateDishCommand(serviceFactory));
         repository.put(CommandUri.ADMIN_UPDATE_DISH, new AdminUpdateDishCommand(serviceFactory));
         repository.put(CommandUri.ADMIN_UPDATE_DESCRIPTION, new AdminUpdateDishDescriptionCommand(serviceFactory));
+        repository.put(CommandUri.CREATE_COMMENT, new CreateCommentCommand(serviceFactory));
     }
 
     public Command getCommand(String key) {

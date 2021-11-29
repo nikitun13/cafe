@@ -83,17 +83,18 @@ public class ProfileCommand implements Command {
 
         UserService userService = serviceFactory.getService(UserService.class);
         try {
-            userService.updatePassword(user, oldPassword,
-                    newPassword, repeatPassword);
-            session.setAttribute(CommonAttributes.SUCCESS_MESSAGE_KEY,
-                    UPDATE_PASSWORD_SUCCESS_KEY);
-            return REDIRECT_TO_PROFILE;
+            if (userService.updatePassword(user, oldPassword,
+                    newPassword, repeatPassword)) {
+                session.setAttribute(CommonAttributes.SUCCESS_MESSAGE_KEY,
+                        UPDATE_PASSWORD_SUCCESS_KEY);
+                return REDIRECT_TO_PROFILE;
+            }
         } catch (ServiceException e) {
             log.error("Service exception occurred", e);
-            session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
-                    CHECK_DATA_MESSAGE_KEY);
-            return REDIRECT_TO_PROFILE;
         }
+        session.setAttribute(CommonAttributes.ERROR_MESSAGE_KEY,
+                CHECK_DATA_MESSAGE_KEY);
+        return REDIRECT_TO_PROFILE;
     }
 
     private Dispatch doGet(HttpServletRequest request) {
