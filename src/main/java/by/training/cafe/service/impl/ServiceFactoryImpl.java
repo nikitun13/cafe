@@ -2,7 +2,17 @@ package by.training.cafe.service.impl;
 
 import by.training.cafe.dao.TransactionFactory;
 import by.training.cafe.dao.postgres.transaction.TransactionFactoryImpl;
-import by.training.cafe.service.*;
+import by.training.cafe.service.CommentService;
+import by.training.cafe.service.DishService;
+import by.training.cafe.service.EncoderService;
+import by.training.cafe.service.OrderProcessService;
+import by.training.cafe.service.OrderService;
+import by.training.cafe.service.OrderedDishService;
+import by.training.cafe.service.PaginationService;
+import by.training.cafe.service.Service;
+import by.training.cafe.service.ServiceFactory;
+import by.training.cafe.service.StatisticsService;
+import by.training.cafe.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,6 +50,7 @@ public final class ServiceFactoryImpl implements ServiceFactory, AutoCloseable {
                 orderService, orderedDishService, userService);
         CommentService commentService = new CommentServiceImpl(transactionFactory);
         PaginationService paginationService = new PaginationServiceImpl();
+        StatisticsService statisticsService = new StatisticsServiceImpl(transactionFactory);
 
         repository = new HashMap<>();
         repository.put(DishService.class,
@@ -52,6 +63,7 @@ public final class ServiceFactoryImpl implements ServiceFactory, AutoCloseable {
         repository.put(EncoderService.class, encoderService);
         repository.put(OrderProcessService.class, orderProcessService);
         repository.put(PaginationService.class, paginationService);
+        repository.put(StatisticsService.class, statisticsService);
     }
 
     public static ServiceFactoryImpl getInstance() {
