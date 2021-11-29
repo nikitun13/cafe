@@ -110,7 +110,8 @@
                                     </c:when>
                                     <c:otherwise>
                                         <button class="btn btn-warning mt-4 w-100 p-2" data-bs-toggle="modal"
-                                                data-bs-target="#exampleModal">
+                                                data-bs-target="#exampleModal"
+                                                <c:if test="${user.isBlocked()}">disabled</c:if>>
                                             <fmt:message key="dish.leaveReview"/>
                                         </button>
                                     </c:otherwise>
@@ -272,7 +273,8 @@
                 </div>
                 <c:choose>
                     <c:when test="${not empty user}">
-                        <a href="<c:url value="/cart"/>" class="btn btn-outline-success col-12 text-center">
+                        <a href="<c:url value="/profile/cart"/>"
+                           class="btn btn-outline-success col-12 text-center <c:if test="${user.isBlocked()}">disabled</c:if>">
                             <fmt:message key="cart.order"/>
                         </a>
                     </c:when>
@@ -287,7 +289,7 @@
     </aside>
 </main>
 
-<c:if test="${not empty user}">
+<c:if test="${not empty user && !user.isBlocked()}">
     <%-- start modal --%>
     <div class="modal fade review-modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
@@ -299,7 +301,7 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="post" action="<c:url value="/dish"/>">
+                <form method="post" action="<c:url value="/profile/createcomment"/>">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-sm-6">

@@ -38,7 +38,6 @@
                     </c:if>
             />
         </form>
-
         <div class="col-md-3 col-sm-12 text-end">
             <c:set var="user" value="${sessionScope.user}"/>
             <c:choose>
@@ -55,7 +54,9 @@
                         <button class="d-block link-dark text-decoration-none dropdown-toggle border-0 bg-light"
                                 id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="mt-1"><c:out value="${user.firstName}"/> <c:out
-                                    value="${user.lastName}"/></span>
+                                    value="${user.lastName}"/> <c:if test="${user.isBlocked()}"><span
+                                    class="text-danger">(<fmt:message key="cafe.blocked"/>)</span></c:if>
+                            </span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor"
                                  class="bi bi-person-circle" viewBox="0 0 16 16">
                                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"></path>
@@ -66,23 +67,27 @@
                         <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser"
                             style="z-index: 1025">
                             <li>
-                                <a class="dropdown-item" href="<c:url value="/profile"/>">
+                                <a class="dropdown-item <c:if test="${user.isBlocked()}">disabled</c:if>"
+                                   href="<c:url value="/profile"/>">
                                     <fmt:message key="cafe.profile"/>
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="<c:url value="/profile/orders"/>">
+                                <a class="dropdown-item <c:if test="${user.isBlocked()}">disabled</c:if>"
+                                   href="<c:url value="/profile/orders"/>">
                                     <fmt:message key="cafe.profile.orders"/>
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="<c:url value="/cart"/>">
+                                <a class="dropdown-item <c:if test="${user.isBlocked()}">disabled</c:if>"
+                                   href="<c:url value="/profile/cart"/>">
                                     <fmt:message key="cafe.cart"/>
                                 </a>
                             </li>
                             <c:if test="${sessionScope.user.role.name().equals('ADMIN')}">
                                 <li>
-                                    <a class="dropdown-item" href="<c:url value="/admin"/>">
+                                    <a class="dropdown-item <c:if test="${user.isBlocked()}">disabled</c:if>"
+                                       href="<c:url value="/admin"/>">
                                         <fmt:message key="cafe.admin"/>
                                     </a>
                                 </li>

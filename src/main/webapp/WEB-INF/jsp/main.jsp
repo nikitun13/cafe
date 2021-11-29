@@ -162,7 +162,8 @@
                     </div>
                     <c:choose>
                         <c:when test="${not empty sessionScope.user}">
-                            <a href="<c:url value="/cart"/>" class="btn btn-outline-success col-12 text-center">
+                            <a href="<c:url value="/profile/cart"/>"
+                               class="btn btn-outline-success col-12 text-center <c:if test="${sessionScope.user.isBlocked()}">disabled</c:if>">
                                 <fmt:message key="cart.order"/>
                             </a>
                         </c:when>

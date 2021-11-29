@@ -45,7 +45,7 @@
                         <a href="<c:url value="/profile/orders"/>" class="list-group-item list-group-item-action">
                             <fmt:message key="cafe.profile.orders"/>
                         </a>
-                        <a href="<c:url value="/cart"/>" class="list-group-item list-group-item-action">
+                        <a href="<c:url value="/profile/cart"/>" class="list-group-item list-group-item-action">
                             <fmt:message key="cafe.cart"/>
                         </a>
                     </div>
@@ -53,7 +53,7 @@
             </div>
 
             <div class="col-md-5 border-right">
-                <form method="post" action="<c:url value="/updateUser"/>" novalidate id="userInfo">
+                <form method="post" action="<c:url value="/profile/updateuser"/>" novalidate id="userInfo">
                     <div class="p-3 py-5">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="text-right">

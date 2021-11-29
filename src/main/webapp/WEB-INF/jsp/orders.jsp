@@ -49,7 +49,7 @@
                            class="list-group-item list-group-item-action active">
                             <fmt:message key="cafe.profile.orders"/>
                         </a>
-                        <a href="<c:url value="/cart"/>" class="list-group-item list-group-item-action">
+                        <a href="<c:url value="/profile/cart"/>" class="list-group-item list-group-item-action">
                             <fmt:message key="cafe.cart"/>
                         </a>
                     </div>
