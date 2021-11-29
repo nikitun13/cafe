@@ -24,7 +24,7 @@
                 <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2">
                     <div class="list-group w-100 mt-3">
                         <a href="<c:url value="/admin"/>" class="list-group-item list-group-item-action">
-                            <fmt:message key="admin.home"/>
+                            <fmt:message key="admin.statistics"/>
                         </a>
                         <a href="<c:url value="/admin/orders"/>" class="list-group-item list-group-item-action">
                             <fmt:message key="cafe.profile.orders"/>
